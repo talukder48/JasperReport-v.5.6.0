@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DeductionByHO" language="groovy" pageWidth="640" pageHeight="842" columnWidth="610" leftMargin="20" rightMargin="10" topMargin="20" bottomMargin="20" uuid="754fb139-cb9c-4bf8-9d15-9bc73f30685f">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="LOGO_PATH" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\iReport\\PRMS\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="BRANCH_ADDRESS" class="java.lang.String"/>
+	<parameter name="BRANCH_NAME" class="java.lang.String"/>
+	<parameter name="P_ENTITY_NUM" class="java.lang.String">
+		<defaultValueExpression><![CDATA["1"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_BRANCH" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_YEAR" class="java.lang.String"/>
+	<parameter name="P_MONTH" class="java.lang.String"/>
+	<parameter name="P_DEDUCTION_TYPE" class="java.lang.String"/>
+	<parameter name="M_LOGO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select EMP_BRANCH_CODE||':'||EMP_BRANCH_NAME EMP_BRANCH_NAME,
+MONTH_YEAR,
+sum(PF_CONTRIBUTION_AMT  )PF_CONTRIBUTION_AMT,
+sum(PF_ADVANCE_AMT      )PF_ADVANCE_AMT,
+sum(PENSION_AMOUNT      )PENSION_AMOUNT,
+sum(WELFARE             )WELFARE,
+sum(HB_DEDUCTION        )HB_DEDUCTION,
+sum(MOTOR_DEDUCTION     )MOTOR_DEDUCTION,
+sum(COMPUTER_DEDUCTION  )COMPUTER_DEDUCTION,
+sum(GROUP_INS_AMOUNT    )GROUP_INS_AMOUNT,
+sum(GAS_DEDUCTION_AMT   )GAS_DEDUCTION_AMT,
+sum(WATER_DEDUCTION_AMT )WATER_DEDUCTION_AMT,
+sum(ELECT_DEDUCTION_AMT )ELECT_DEDUCTION_AMT,
+sum(NEWS_PAPERDED_AMT   )NEWS_PAPERDED_AMT from table(pkg_rpt.fn_deduction_all('1',$P{P_YEAR},$P{P_MONTH}))
+group by EMP_BRANCH_CODE,
+EMP_BRANCH_NAME,
+MONTH_YEAR
+order by EMP_BRANCH_CODE,
+EMP_BRANCH_NAME,
+MONTH_YEAR]]>
+	</queryString>
+	<field name="EMP_BRANCH_NAME" class="java.lang.String"/>
+	<field name="MONTH_YEAR" class="java.lang.String"/>
+	<field name="PF_CONTRIBUTION_AMT" class="java.math.BigDecimal"/>
+	<field name="PF_ADVANCE_AMT" class="java.math.BigDecimal"/>
+	<field name="PENSION_AMOUNT" class="java.math.BigDecimal"/>
+	<field name="WELFARE" class="java.math.BigDecimal"/>
+	<field name="HB_DEDUCTION" class="java.math.BigDecimal"/>
+	<field name="MOTOR_DEDUCTION" class="java.math.BigDecimal"/>
+	<field name="COMPUTER_DEDUCTION" class="java.math.BigDecimal"/>
+	<field name="GROUP_INS_AMOUNT" class="java.math.BigDecimal"/>
+	<field name="GAS_DEDUCTION_AMT" class="java.math.BigDecimal"/>
+	<field name="WATER_DEDUCTION_AMT" class="java.math.BigDecimal"/>
+	<field name="ELECT_DEDUCTION_AMT" class="java.math.BigDecimal"/>
+	<field name="NEWS_PAPERDED_AMT" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="113" splitType="Immediate">
+			<textField>
+				<reportElement x="0" y="89" width="593" height="18" uuid="6bf37b26-143f-4aff-95fd-76127fa8f7c6"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["For: "+$F{MONTH_YEAR} +","+$P{P_YEAR}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="69" width="593" height="20" uuid="a82516b7-e6dc-4d37-bc03-e38bd2c8156f"/>
+				<box rightPadding="10"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Monthly deduction  Report]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="0" y="0" width="610" height="46" uuid="7f44d106-879e-4be1-81e0-4b8126453f15"/>
+				<subreportParameter name="P_BRANCH">
+					<subreportParameterExpression><![CDATA[$P{P_BRANCH}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="BRANCH_NAME">
+					<subreportParameterExpression><![CDATA[$P{BRANCH_NAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="P_YEAR">
+					<subreportParameterExpression><![CDATA[$P{P_YEAR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="M_LOGO">
+					<subreportParameterExpression><![CDATA[$P{M_LOGO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="P_DEDUCTION_TYPE">
+					<subreportParameterExpression><![CDATA[$P{P_DEDUCTION_TYPE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="BRANCH_ADDRESS">
+					<subreportParameterExpression><![CDATA[$P{BRANCH_ADDRESS}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="P_MONTH">
+					<subreportParameterExpression><![CDATA[$P{P_MONTH}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="P_ENTITY_NUM">
+					<subreportParameterExpression><![CDATA[$P{P_ENTITY_NUM}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LOGO_PATH">
+					<subreportParameterExpression><![CDATA[$P{LOGO_PATH}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Header_Portrait.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="15">
+			<staticText>
+				<reportElement x="388" y="0" width="56" height="15" uuid="3c37c062-fcc9-4a08-a176-927adf990da0"/>
+				<box leftPadding="0" rightPadding="0">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[HB. Adv.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="499" y="0" width="55" height="15" uuid="c2a9e170-b760-4c01-88f4-e32e6a316659"/>
+				<box rightPadding="6">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Computer]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="554" y="0" width="55" height="15" uuid="f95a5b76-dacd-40cf-9882-ca77b3c40a73"/>
+				<box rightPadding="6">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Grp Ins.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="444" y="0" width="55" height="15" uuid="3bb282bc-4125-4e1c-8464-092018e16d24"/>
+				<box leftPadding="4">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Motor ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="283" y="0" width="50" height="15" uuid="7dd91977-a49d-4d36-9260-a40363bb8086"/>
+				<box rightPadding="6">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Welfare]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="113" y="0" width="55" height="15" uuid="b302aada-c757-4853-b188-6001e9cd176f"/>
+				<box leftPadding="0" rightPadding="0">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PF Cont.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="168" y="0" width="55" height="15" uuid="cd2084e1-d0e7-46aa-8209-7c19f1273022"/>
+				<box leftPadding="4">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PF Adv.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="333" y="0" width="55" height="15" uuid="fc73c53c-1e13-4894-88b4-20cada550103"/>
+				<box rightPadding="6">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[N. Paper]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="223" y="0" width="60" height="15" uuid="5063bf26-8677-4b4b-b860-2729f6a763bc"/>
+				<box rightPadding="6">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pension]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="113" height="15" uuid="b2c8ffc2-ad54-4202-bda8-4a2da91b37fc"/>
+				<box leftPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<text><![CDATA[Office]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Prevent">
+			<textField isStretchWithOverflow="true" pattern="#,##0.00;-#,##0.00">
+				<reportElement stretchType="RelativeToTallestObject" x="168" y="0" width="55" height="15" uuid="8d4aad65-3b3e-4f91-91b5-b28726ba2772"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PF_ADVANCE_AMT}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00;-#,##0.00">
+				<reportElement stretchType="RelativeToTallestObject" x="223" y="0" width="60" height="15" uuid="e1955def-87d5-42b1-8024-fa1082549c36"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PENSION_AMOUNT}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00;-#,##0.00">
+				<reportElement stretchType="RelativeToTallestObject" x="283" y="0" width="50" height="15" uuid="33b14c57-1280-445c-9543-b8c5a8f33345"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WELFARE}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00;-#,##0.00">
+				<reportElement stretchType="RelativeToTallestObject" x="333" y="0" width="55" height="15" uuid="c7e22071-1b97-4016-93bb-4088e48786bf"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NEWS_PAPERDED_AMT}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00;-#,##0.00">
+				<reportElement stretchType="RelativeToTallestObject" x="388" y="0" width="56" height="15" uuid="19561c0e-e7d4-44e8-99da-340408b302db"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{HB_DEDUCTION}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00;-#,##0.00">
+				<reportElement stretchType="RelativeToTallestObject" x="444" y="0" width="55" height="15" uuid="455d6efc-efe6-4477-89b5-8c0c610ae0ed"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{MOTOR_DEDUCTION}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00;-#,##0.00">
+				<reportElement stretchType="RelativeToTallestObject" x="499" y="0" width="55" height="15" uuid="c4c30e05-184c-4604-87f4-757c708a7f61"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{COMPUTER_DEDUCTION}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00;-#,##0.00">
+				<reportElement stretchType="RelativeToTallestObject" x="554" y="0" width="55" height="15" uuid="53523349-cca9-4d64-b846-c6bd8589e053"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{GROUP_INS_AMOUNT}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00;-#,##0.00">
+				<reportElement stretchType="RelativeToTallestObject" x="113" y="0" width="55" height="15" uuid="1e7e1a29-c5c7-4b0c-b198-e7410e147396"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PF_CONTRIBUTION_AMT}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="113" height="15" uuid="d4dac2c7-cc55-4a97-b965-309d07afaca5"/>
+				<box leftPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{EMP_BRANCH_NAME}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="15">
+			<textField>
+				<reportElement x="458" y="0" width="80" height="15" uuid="0d326516-5639-4f7f-8d8e-30f638306121"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="538" y="0" width="40" height="15" uuid="f6526058-6bbf-4d8c-ba39-ea06309f2512"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

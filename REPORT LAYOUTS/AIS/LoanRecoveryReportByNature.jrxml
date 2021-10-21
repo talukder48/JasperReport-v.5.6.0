@@ -1,0 +1,876 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="LoanRecoveryReport" language="groovy" pageWidth="1100" pageHeight="600" orientation="Landscape" columnWidth="1060" leftMargin="20" rightMargin="20" topMargin="5" bottomMargin="5" uuid="3bfb03c6-8bd4-4038-833c-aee7dc525392">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="P_FinYear" class="java.lang.String"/>
+	<parameter name="BRANCH_NAME" class="java.lang.String"/>
+	<parameter name="BRANCH_ADDRESS" class="java.lang.String"/>
+	<parameter name="LOGO_PATH" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="M_LOGO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select PRODUCT_NATURE,
+LOC_CODE,
+LOC_NAME,
+
+CL_ACCOUNT,
+CL_BALANCE,
+UC_ACCOUNT,
+UC_BALANCE,
+CL_ACCOUNT+UC_ACCOUNT Total_Account,
+CL_BALANCE+UC_BALANCE Total_Balance,
+CL_OVERDUE,
+UC_OVERDUE,
+CL_OVERDUE+
+UC_OVERDUE total_overdue,
+CL_FALLDUE,
+UC_FALLDUE,
+CL_FALLDUE+
+UC_FALLDUE Total_FALLDUE,
+CL_RECOVERY,
+UC_RECOVERY,
+CL_RECOVERY+UC_RECOVERY Total_Recovery
+
+ from table(pkg_Report_LMS.fn_loan_recovery_data($P{P_FinYear},'%')) order by PRODUCT_NATURE,LOC_CODE]]>
+	</queryString>
+	<field name="PRODUCT_NATURE" class="java.lang.String"/>
+	<field name="LOC_CODE" class="java.lang.String"/>
+	<field name="LOC_NAME" class="java.lang.String"/>
+	<field name="CL_ACCOUNT" class="java.math.BigDecimal"/>
+	<field name="CL_BALANCE" class="java.math.BigDecimal"/>
+	<field name="UC_ACCOUNT" class="java.math.BigDecimal"/>
+	<field name="UC_BALANCE" class="java.math.BigDecimal"/>
+	<field name="TOTAL_ACCOUNT" class="java.math.BigDecimal"/>
+	<field name="TOTAL_BALANCE" class="java.math.BigDecimal"/>
+	<field name="CL_OVERDUE" class="java.math.BigDecimal"/>
+	<field name="UC_OVERDUE" class="java.math.BigDecimal"/>
+	<field name="TOTAL_OVERDUE" class="java.math.BigDecimal"/>
+	<field name="CL_FALLDUE" class="java.math.BigDecimal"/>
+	<field name="UC_FALLDUE" class="java.math.BigDecimal"/>
+	<field name="TOTAL_FALLDUE" class="java.math.BigDecimal"/>
+	<field name="CL_RECOVERY" class="java.math.BigDecimal"/>
+	<field name="UC_RECOVERY" class="java.math.BigDecimal"/>
+	<field name="TOTAL_RECOVERY" class="java.math.BigDecimal"/>
+	<variable name="totalrecovery" class="java.lang.Double" resetType="Group" resetGroup="Nature" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOTAL_RECOVERY}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="ucrecovery" class="java.lang.Double" resetType="Group" resetGroup="Nature" calculation="Sum">
+		<variableExpression><![CDATA[$F{UC_RECOVERY}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="clrecovery" class="java.lang.Double" resetType="Group" resetGroup="Nature" calculation="Sum">
+		<variableExpression><![CDATA[$F{CL_RECOVERY}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="totalfalldue" class="java.lang.Double" resetType="Group" resetGroup="Nature" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOTAL_FALLDUE}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="clfalldue" class="java.lang.Double" resetType="Group" resetGroup="Nature" calculation="Sum">
+		<variableExpression><![CDATA[$F{CL_FALLDUE}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="ucfalldue" class="java.lang.Double" resetType="Group" resetGroup="Nature" calculation="Sum">
+		<variableExpression><![CDATA[$F{UC_FALLDUE}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="v_total_overdue" class="java.lang.Double" resetType="Group" resetGroup="Nature" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOTAL_OVERDUE}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="v_uc_overdue" class="java.lang.Double" resetType="Group" resetGroup="Nature" calculation="Sum">
+		<variableExpression><![CDATA[$F{UC_OVERDUE}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="v_cl_overdue" class="java.lang.Double" resetType="Group" resetGroup="Nature" calculation="Sum">
+		<variableExpression><![CDATA[$F{CL_OVERDUE}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="v_total_balance" class="java.lang.Double" resetType="Group" resetGroup="Nature" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOTAL_BALANCE}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="v_uc_balance" class="java.lang.Double" resetType="Group" resetGroup="Nature" calculation="Sum">
+		<variableExpression><![CDATA[$F{UC_BALANCE}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="v_cl_balance" class="java.lang.Double" resetType="Group" resetGroup="Nature" calculation="Sum">
+		<variableExpression><![CDATA[$F{CL_BALANCE}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="v_total_account" class="java.lang.Number" resetType="Group" resetGroup="Nature" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOTAL_ACCOUNT}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="v_uc_account" class="java.lang.Number" resetType="Group" resetGroup="Nature" calculation="Sum">
+		<variableExpression><![CDATA[$F{UC_ACCOUNT}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="v_cl_account" class="java.lang.Number" resetType="Group" resetGroup="Nature" calculation="Sum">
+		<variableExpression><![CDATA[$F{CL_ACCOUNT}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<group name="Nature" isReprintHeaderOnEachPage="true" keepTogether="true">
+		<groupExpression><![CDATA[$F{PRODUCT_NATURE}]]></groupExpression>
+		<groupHeader>
+			<band height="47">
+				<staticText>
+					<reportElement x="0" y="0" width="80" height="15" uuid="791c4d24-ed48-411c-a22d-da2a2752a996"/>
+					<box leftPadding="3">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Nature]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="80" y="0" width="977" height="15" uuid="655f913c-5253-4ffb-b604-030f9e96f6b6"/>
+					<box leftPadding="3">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{PRODUCT_NATURE}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="983" y="31" width="74" height="16" uuid="66cf3ccb-7ae0-4998-b886-53c5d60c9aa0"/>
+					<box rightPadding="4">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="495" y="31" width="72" height="16" uuid="f76fab42-5d96-4f7c-b361-35337b266222"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[UN-Classified]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="427" y="15" width="210" height="16" uuid="d2a24af5-99c2-492a-a493-059fe43a0c3c"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[OverDue Amount]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="567" y="31" width="70" height="16" uuid="73250055-5b7a-4d8c-a286-3c41b14ce497"/>
+					<box rightPadding="0">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="80" y="31" width="40" height="16" uuid="09250156-a461-4b7c-9572-533c04c0cf21"/>
+					<box leftPadding="3">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[CL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="349" y="31" width="78" height="16" uuid="f4851138-5492-4f5c-b90e-350459496ac6"/>
+					<box leftPadding="1" rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="775" y="31" width="70" height="16" uuid="ab1d9240-343c-497e-96c9-785d6a49157c"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="637" y="15" width="208" height="16" uuid="b1cb6340-d2d3-42cd-9d16-3f76aaf6d9de"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[FallDue Amount]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="913" y="31" width="70" height="16" uuid="72ea9877-fb5e-4f55-8cbb-fae077c5711c"/>
+					<box rightPadding="4">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[UN-Classified]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="80" y="15" width="120" height="16" uuid="acd7b009-a72e-43fb-9fdc-3531ad7c4b51"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Loan Account]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="427" y="31" width="68" height="16" uuid="0f1830cf-ffb0-46ac-a6b7-b30fa5635d9a"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Classified]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="160" y="31" width="40" height="16" uuid="abfe439d-234a-436d-a475-1cab47ca3473"/>
+					<box leftPadding="3">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="270" y="31" width="79" height="16" uuid="a86545b2-d02f-4a36-ab70-fd3303e346ff"/>
+					<box leftPadding="1" rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[UN-Classified]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="200" y="15" width="227" height="16" uuid="00fd6dbd-e29b-40ec-a9d6-563759d6463d"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Loan Balance]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="200" y="31" width="70" height="16" uuid="52418511-88ca-4575-b9ed-3dcfddfab441"/>
+					<box leftPadding="1" rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Classified]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="705" y="31" width="70" height="16" uuid="d3a4543e-a95e-4099-9be7-e4c364cc73b9"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[UN-Classified]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="15" width="80" height="32" uuid="5e69a9bb-ed3b-4366-bb9a-144e34fb94d8"/>
+					<box leftPadding="3">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Office Name]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="637" y="31" width="68" height="16" uuid="6202e52e-601a-40e7-9a55-8b1a9978e4ad"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Classified]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="845" y="31" width="68" height="16" uuid="f06cfd72-ae29-4f11-9e08-c2ed2e0f7eb5"/>
+					<box rightPadding="4">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Classified]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="845" y="15" width="212" height="16" uuid="562f1d99-010b-46a5-9304-3cdf9aeb43aa"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Recovery Amount]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="120" y="31" width="40" height="16" uuid="7387ebc1-9e87-454a-b080-53a6e157704a"/>
+					<box leftPadding="3">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[UC]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="19">
+				<textField pattern="###0.00;-###0.00">
+					<reportElement stretchType="RelativeToTallestObject" x="270" y="0" width="79" height="17" isPrintWhenDetailOverflows="true" uuid="35fea035-7978-4620-84ff-4cb5258c3b1e"/>
+					<box leftPadding="1" rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{v_uc_balance}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00;-###0.00">
+					<reportElement stretchType="RelativeToTallestObject" x="705" y="0" width="70" height="17" isPrintWhenDetailOverflows="true" uuid="f6b58754-6c5d-4797-a21c-afc6b08c373b"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{ucfalldue}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00;-###0.00">
+					<reportElement stretchType="RelativeToTallestObject" x="845" y="0" width="68" height="17" isPrintWhenDetailOverflows="true" uuid="ee84e58f-ebb4-4150-a469-c4714a651972"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{clrecovery}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0">
+					<reportElement stretchType="RelativeToTallestObject" x="120" y="0" width="40" height="17" isPrintWhenDetailOverflows="true" uuid="969aa4aa-7339-4c9a-973c-13dc1365b0be"/>
+					<box leftPadding="0" rightPadding="3">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{v_uc_account}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0">
+					<reportElement stretchType="RelativeToTallestObject" x="80" y="0" width="40" height="17" isPrintWhenDetailOverflows="true" uuid="bb7ff389-f4b4-451a-8156-98e5d2b4d43c"/>
+					<box leftPadding="0" rightPadding="3">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{v_cl_account}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00;-###0.00">
+					<reportElement stretchType="RelativeToTallestObject" x="775" y="0" width="70" height="17" isPrintWhenDetailOverflows="true" uuid="4cbec756-6692-4c53-8344-bf41eb737255"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{totalfalldue}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00;-###0.00">
+					<reportElement stretchType="RelativeToTallestObject" x="637" y="0" width="68" height="17" isPrintWhenDetailOverflows="true" uuid="42b4b130-682a-444e-bc9d-998f1d0fd669"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{clfalldue}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00;-###0.00">
+					<reportElement stretchType="RelativeToTallestObject" x="495" y="0" width="72" height="17" isPrintWhenDetailOverflows="true" uuid="9e1b41cd-f0f9-4cf3-bd16-66c54dca4254"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{v_uc_overdue}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00;-###0.00">
+					<reportElement stretchType="RelativeToTallestObject" x="200" y="0" width="70" height="17" isPrintWhenDetailOverflows="true" uuid="60015450-77e9-478b-9597-4b54f804f142"/>
+					<box leftPadding="1" rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{v_cl_balance}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00;-###0.00">
+					<reportElement stretchType="RelativeToTallestObject" x="983" y="0" width="74" height="17" isPrintWhenDetailOverflows="true" uuid="1debdc06-8e92-4606-9bea-b8039779375b"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{totalrecovery}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00;-###0.00">
+					<reportElement stretchType="RelativeToTallestObject" x="427" y="0" width="68" height="17" isPrintWhenDetailOverflows="true" uuid="09dfc599-d56e-4aa9-b40e-3d37ed866815"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{v_cl_overdue}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0">
+					<reportElement stretchType="RelativeToTallestObject" x="160" y="0" width="40" height="17" isPrintWhenDetailOverflows="true" uuid="bc1091d5-29f4-43fb-803c-41603a7660ce"/>
+					<box leftPadding="0" rightPadding="3">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{v_total_account}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00;-###0.00">
+					<reportElement stretchType="RelativeToTallestObject" x="913" y="0" width="70" height="17" isPrintWhenDetailOverflows="true" uuid="201252f7-cc68-4965-b7f5-38adb864c875"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{ucrecovery}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="80" height="17" isPrintWhenDetailOverflows="true" uuid="15b3f6fb-c4db-4f65-ad4f-bcb6fa2a63ea"/>
+					<box>
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total]]></text>
+				</staticText>
+				<textField pattern="###0.00;-###0.00">
+					<reportElement stretchType="RelativeToTallestObject" x="567" y="0" width="70" height="17" isPrintWhenDetailOverflows="true" uuid="5a0329ee-6e3e-467e-8e55-49927aed22dd"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{v_total_overdue}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00;-###0.00">
+					<reportElement stretchType="RelativeToTallestObject" x="349" y="0" width="78" height="17" isPrintWhenDetailOverflows="true" uuid="2cf65b3e-824c-40e1-b984-6f7e833bbdc0"/>
+					<box leftPadding="1" rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{v_total_balance}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="94" splitType="Stretch">
+			<subreport>
+				<reportElement x="90" y="1" width="903" height="70" uuid="de3e95cc-ba97-4918-b2b9-6199c250c0d2"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="BRANCH_NAME">
+					<subreportParameterExpression><![CDATA[$P{BRANCH_NAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="M_LOGO">
+					<subreportParameterExpression><![CDATA[$P{M_LOGO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="BRANCH_ADDRESS">
+					<subreportParameterExpression><![CDATA[$P{BRANCH_ADDRESS}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LOGO_PATH">
+					<subreportParameterExpression><![CDATA[$P{LOGO_PATH}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Header_Landscape.jasper"]]></subreportExpression>
+			</subreport>
+			<textField>
+				<reportElement x="0" y="72" width="1057" height="20" uuid="945dab9e-c795-4e86-8750-3d26404fe688"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Product Nature Wise Loan Summary Report for Fin. Year : "+ $P{P_FinYear}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField>
+				<reportElement x="80" y="0" width="40" height="15" uuid="3ed44818-cb84-45de-83e5-3a5e5b33966e"/>
+				<box leftPadding="1" rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{CL_ACCOUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="120" y="0" width="40" height="15" uuid="b8deaa22-423e-43cb-a720-99256b130489"/>
+				<box leftPadding="1" rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{UC_ACCOUNT}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="270" y="0" width="79" height="15" uuid="cae52b9c-112b-421d-bcce-58a89c2a9b96"/>
+				<box leftPadding="1" rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{UC_BALANCE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="160" y="0" width="40" height="15" uuid="0373e7ab-8f31-49b5-a1bc-1b610e95e0de"/>
+				<box leftPadding="1" rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TOTAL_ACCOUNT}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="349" y="0" width="78" height="15" uuid="7d10381e-ec5c-4576-9903-52d480360ef2"/>
+				<box leftPadding="1" rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TOTAL_BALANCE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="427" y="0" width="68" height="15" uuid="4afe7f1c-4a85-4fe5-b176-1b8930d2365e"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{CL_OVERDUE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="495" y="0" width="72" height="15" uuid="40a2df8c-3863-484b-acbe-fa0032517cf7"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{UC_OVERDUE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="567" y="0" width="70" height="15" uuid="67e5484b-339d-4ac2-acd4-48aa5df1ae50"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TOTAL_OVERDUE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="705" y="0" width="70" height="15" uuid="76866c84-825a-4b2c-a3a7-0add97211e4f"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{UC_FALLDUE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="637" y="0" width="68" height="15" uuid="fcc3a81a-f514-4b34-bafc-4a6ce9f4a928"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{CL_FALLDUE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="775" y="0" width="70" height="15" uuid="e7085d26-23f2-41d6-b464-1f978f18c806"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TOTAL_FALLDUE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="80" height="15" uuid="03376c03-d7db-460d-b052-b19ae355c550"/>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{LOC_NAME}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="200" y="0" width="70" height="15" uuid="4c060eb5-d646-4679-be2e-ce8f93cc1510"/>
+				<box leftPadding="1" rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{CL_BALANCE}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00;-###0.00">
+				<reportElement stretchType="RelativeToTallestObject" x="983" y="0" width="74" height="15" uuid="8ce9e01e-0521-49eb-949d-7b9b33d627aa"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TOTAL_RECOVERY}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00;-###0.00">
+				<reportElement stretchType="RelativeToTallestObject" x="913" y="0" width="70" height="15" uuid="0a2ecd17-5180-4574-b75f-64240b8b63b9"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{UC_RECOVERY}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00;-###0.00">
+				<reportElement stretchType="RelativeToTallestObject" x="845" y="0" width="68" height="15" uuid="71d48883-6863-4798-8453-0fa8bbdac97a"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{CL_RECOVERY}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

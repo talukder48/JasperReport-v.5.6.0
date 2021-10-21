@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Deduction_report" language="groovy" pageWidth="650" pageHeight="842" columnWidth="610" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="05815d0f-e285-4990-a60d-27acf1a7c592">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\iReport\\PRMS\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="LOGO_PATH" class="java.lang.String"/>
+	<parameter name="BRANCH_ADDRESS" class="java.lang.String"/>
+	<parameter name="BRANCH_NAME" class="java.lang.String"/>
+	<parameter name="P_ENTITY_NUM" class="java.lang.String">
+		<defaultValueExpression><![CDATA["1"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_BRANCH" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_YEAR" class="java.lang.String"/>
+	<parameter name="P_MONTH" class="java.lang.String"/>
+	<parameter name="P_DEDUCTION_TYPE" class="java.lang.String"/>
+	<parameter name="M_LOGO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT *FROM TABLE(PKG_RPT.FN_DED_DATA($P{P_ENTITY_NUM},$P{P_BRANCH},$P{P_YEAR},$P{P_MONTH},$P{P_DEDUCTION_TYPE})) ORDER BY DESIG_CODE]]>
+	</queryString>
+	<field name="BRANCH_CODE" class="java.lang.String"/>
+	<field name="EMP_ID" class="java.lang.String"/>
+	<field name="EMP_NAME" class="java.lang.String"/>
+	<field name="DESIGNATION" class="java.lang.String"/>
+	<field name="MONTH" class="java.lang.String"/>
+	<field name="DESIG_CODE" class="java.math.BigDecimal"/>
+	<field name="MONTH_YEAR" class="java.lang.String"/>
+	<field name="MONTH_CODE" class="java.math.BigDecimal"/>
+	<field name="DEDUCTION_TYPE" class="java.lang.String"/>
+	<field name="DEDUCTION_AMT" class="java.math.BigDecimal"/>
+	<variable name="Serial" class="java.lang.Number">
+		<variableExpression><![CDATA[$V{Serial}+1]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="Total_deduction_amt" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{DEDUCTION_AMT}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="64" splitType="Stretch">
+			<subreport>
+				<reportElement x="1" y="1" width="555" height="46" uuid="a658d94c-9458-4cb9-83d2-4b9f87e985e8"/>
+				<subreportParameter name="P_BRANCH">
+					<subreportParameterExpression><![CDATA[$P{P_BRANCH}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="BRANCH_NAME">
+					<subreportParameterExpression><![CDATA[$P{BRANCH_NAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="P_YEAR">
+					<subreportParameterExpression><![CDATA[$P{P_YEAR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="M_LOGO">
+					<subreportParameterExpression><![CDATA[$P{M_LOGO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="P_DEDUCTION_TYPE">
+					<subreportParameterExpression><![CDATA[$P{P_DEDUCTION_TYPE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="BRANCH_ADDRESS">
+					<subreportParameterExpression><![CDATA[$P{BRANCH_ADDRESS}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="P_MONTH">
+					<subreportParameterExpression><![CDATA[$P{P_MONTH}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="P_ENTITY_NUM">
+					<subreportParameterExpression><![CDATA[$P{P_ENTITY_NUM}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LOGO_PATH">
+					<subreportParameterExpression><![CDATA[$P{LOGO_PATH}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Header_Portrait.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="61" splitType="Stretch">
+			<textField>
+				<reportElement x="19" y="36" width="350" height="18" uuid="3b7048a2-916c-4595-9336-a6efcd7d2cef"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["For: "+$F{MONTH} +", "+$P{P_YEAR}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="19" y="16" width="537" height="20" uuid="b0774e2d-d794-4332-a61d-0a43fd6bb854"/>
+				<textElement>
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{P_DEDUCTION_TYPE}.equalsIgnoreCase("HBL") ? "Report on HB Advance Deduction" :
+(
+    $P{P_DEDUCTION_TYPE}.equalsIgnoreCase("COM") ? "Report on Computer Deduction" :
+    (
+        $P{P_DEDUCTION_TYPE}.equalsIgnoreCase("MOT") ? "Report on Motorcycle Deduction" :
+            (
+                $P{P_DEDUCTION_TYPE}.equalsIgnoreCase("PFA") ? "Report on PF Advance Deduction":
+                 (
+                      $P{P_DEDUCTION_TYPE}.equalsIgnoreCase("PFC") ? "Report on PF Contribution":
+                      (
+                         $P{P_DEDUCTION_TYPE}.equalsIgnoreCase("INC") ? "Income Tex Deduction":
+                         (
+                           $P{P_DEDUCTION_TYPE}.equalsIgnoreCase("WEL") ? "Report on Welfare  Deduction":(
+                             $P{P_DEDUCTION_TYPE}.equalsIgnoreCase("WAT") ? "Report on Water Bill Deduction":
+                             ( $P{P_DEDUCTION_TYPE}.equalsIgnoreCase("GAS") ? "Report on Gas Bill  Deduction":
+                                 ( $P{P_DEDUCTION_TYPE}.equalsIgnoreCase("ELE") ? "Report on Electric Bill  Deduction":
+                                     ( $P{P_DEDUCTION_TYPE}.equalsIgnoreCase("GEN") ? "Report on Grp. Insurance  Deduction":
+                                     " Report on Pension Fund"))
+                             )
+                            )
+
+
+                         )
+                       )
+                 )
+           )
+    )
+ )]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="47" y="0" width="71" height="20" uuid="f4b0aa89-1c5c-4f10-b9e9-022d30386a88"/>
+				<box leftPadding="3">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Emplyee ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="118" y="0" width="183" height="20" uuid="6fa74bfa-b4cd-46d3-96da-c420f4e1f216"/>
+				<box leftPadding="5">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Employee Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="301" y="0" width="159" height="20" uuid="fff96d34-9273-4a9f-9eb7-6ab75f8d00aa"/>
+				<box leftPadding="9">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Designation]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="460" y="0" width="96" height="20" uuid="91676b03-e71c-4d7b-99ae-d9be481cf4cd"/>
+				<box leftPadding="6">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Deduction Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="19" y="0" width="28" height="20" uuid="10bc252b-8ce0-4813-abff-811572fa494c"/>
+				<box leftPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[SL ]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement x="47" y="0" width="71" height="22" uuid="0b64f802-379b-423e-9132-99e60f371e80"/>
+				<box leftPadding="4">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{EMP_ID}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="118" y="0" width="183" height="22" uuid="24aed547-477c-4597-b823-a98fc11d2d48"/>
+				<box leftPadding="3">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{EMP_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="301" y="0" width="159" height="22" uuid="ba04eb8c-ca79-4a6f-93b4-a32f9b9d7163"/>
+				<box leftPadding="3">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DESIGNATION}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="460" y="0" width="96" height="22" uuid="e584781f-6364-487e-8dfd-2b2197b9501e"/>
+				<box leftPadding="2" rightPadding="3">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DEDUCTION_AMT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="19" y="0" width="28" height="22" uuid="3c54f321-1153-45d5-a4cd-c1f36c922b86"/>
+				<box leftPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{Serial}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="24" splitType="Stretch">
+			<textField>
+				<reportElement x="436" y="3" width="80" height="20" uuid="f545cc12-dde4-4698-874f-8926b8207602"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="516" y="3" width="40" height="20" uuid="67e48a02-ccfd-4efa-88fc-aa271786b224"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch">
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="460" y="0" width="96" height="20" uuid="c61777f0-dad6-4a90-bee5-5569edfe0aab"/>
+				<box rightPadding="4">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Total_deduction_amt}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="19" y="0" width="441" height="20" uuid="6e7cec21-9119-4343-bc82-ea366e6fc399"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Amount:]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Header_Landscape" language="groovy" pageWidth="842" pageHeight="100" orientation="Landscape" columnWidth="842" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="1a610fb0-a3f3-416f-86b4-e2477dcf2392">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="BRANCH_NAME" class="java.lang.String"/>
+	<parameter name="BRANCH_ADDRESS" class="java.lang.String"/>
+	<parameter name="LOGO_PATH" class="java.lang.String"/>
+	<parameter name="p_LoanType" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT * FROM DUAL]]>
+	</queryString>
+	<field name="DUMMY" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="100">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="127" y="55" width="715" height="21" uuid="9cdef60d-3ce8-4d17-be23-69b96ea40443"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{BRANCH_ADDRESS}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="127" y="34" width="715" height="21" uuid="77b26382-1450-4be3-8e1a-bc928c1e481c"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{BRANCH_NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="127" y="0" width="715" height="34" uuid="2252c250-0896-4cca-bcb1-df4760a42e71"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="24" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Bangladesh House Building Finance Corporation]]></text>
+			</staticText>
+			<image>
+				<reportElement x="0" y="0" width="127" height="97" uuid="1c752c64-7dc9-4ab3-8930-d5ee67c76397"/>
+				<imageExpression><![CDATA[$P{LOGO_PATH}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="127" y="76" width="715" height="20" uuid="908a0a8d-c726-47d0-97e6-b457eb4b42c4"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{p_LoanType}.equalsIgnoreCase("HBL") ? "HB Advance Statement(Provisional)" :
+( $P{p_LoanType}.equalsIgnoreCase("COM") ? "Computer Advance Statement(Provisional)" :
+    ($P{p_LoanType}.equalsIgnoreCase("MOT") ? "Motorcycle Advance Statement(Provisional)" :
+      "PF Advanced Statement (Provisional)")
+  )
+
+]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+</jasperReport>

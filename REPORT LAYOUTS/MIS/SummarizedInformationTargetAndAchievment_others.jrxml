@@ -1,0 +1,959 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SummarizedInformationTargetAndAchievment" language="groovy" pageWidth="1260" pageHeight="595" orientation="Landscape" columnWidth="1250" leftMargin="5" rightMargin="5" topMargin="20" bottomMargin="20" uuid="0e4a8fa0-f796-418a-8f87-97e678c8be84">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="943"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="M_LOGO" class="java.lang.String"/>
+	<parameter name="P_BRANCH" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_ENTITY_NUM" class="java.lang.String">
+		<defaultValueExpression><![CDATA["1"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="BRANCH_NAME" class="java.lang.String"/>
+	<parameter name="BRANCH_ADDRESS" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["D:\\iReport\\PRMS\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="LOGO_PATH" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select OPERATION_CODE,
+case OPERATION_CODE||SUBOP_CODE||DESCRIPTION
+ when  '42Achievement' then OPERATION_ACTIVITIES
+   when  '52Achievement' then OPERATION_ACTIVITIES
+     when '62Achievement' then OPERATION_ACTIVITIES
+        when '71Achievement' then OPERATION_ACTIVITIES
+      else '' end OPERATION_ACTIVITIES,
+SUBOP_CODE,
+case SUBOP_CODE||DESCRIPTION
+ when  '1Achievement' then SUBOP_ACTIVITIES
+   when  '2Achievement' then SUBOP_ACTIVITIES
+     when '3Achievement' then SUBOP_ACTIVITIES
+      else '' end SUBOP_ACTIVITIES,
+DESCRIPTION,
+nvl(DHAKA_NORTH_100DS  ,0)DHAKA_NORTH_100DS,
+nvl(DHAKA_NORTH_ANNUAL , 0)DHAKA_NORTH_ANNUAL,
+nvl(DHAKA_SOUTH_100DS  , 0)DHAKA_SOUTH_100DS,
+nvl(DHAKA_SOUTH_ANNUAL , 0)DHAKA_SOUTH_ANNUAL,
+nvl(CHATTOGRAM_100DS   , 0)CHATTOGRAM_100DS,
+nvl(CHATTOGRAM_ANNUAL  , 0)CHATTOGRAM_ANNUAL,
+nvl(KHULNA_100DS       , 0)KHULNA_100DS,
+nvl(KHULNA_ANNUAL      , 0)KHULNA_ANNUAL,
+nvl(RAJSHAHI_100DS     , 0)RAJSHAHI_100DS,
+nvl(RAJSHAHI_ANNUAL    , 0)RAJSHAHI_ANNUAL,
+nvl(SYLHET_100DS       , 0)SYLHET_100DS,
+nvl(SYLHET_ANNUAL      , 0)SYLHET_ANNUAL,
+nvl(BARISAL_100DS      , 0)BARISAL_100DS,
+nvl(BARISAL_ANNUAL     , 0)BARISAL_ANNUAL,
+nvl(RANGPUR_100DS      , 0)RANGPUR_100DS,
+nvl(RANGPUR_ANNUAL     , 0)RANGPUR_ANNUAL,
+nvl(MYMENSING_100DS    , 0)MYMENSING_100DS,
+nvl(MYMENSING_ANNUAL   , 0)MYMENSING_ANNUAL,
+nvl(FARIDPUR_100DS     , 0)FARIDPUR_100DS,
+nvl(FARIDPUR_ANNUAL    , 0)FARIDPUR_ANNUAL, TOTAL_100DAYS  ,     TOTAL_ANNUAL  FROM table (pkg_mis_rpt.fn_summary_mis_others)order by OPERATION_CODE  ,
+SUBOP_CODE  ,decode(DESCRIPTION,'Achievement',2,'Achievement(%)',3,1)]]>
+	</queryString>
+	<field name="OPERATION_CODE" class="java.math.BigDecimal"/>
+	<field name="OPERATION_ACTIVITIES" class="java.lang.String"/>
+	<field name="SUBOP_CODE" class="java.math.BigDecimal"/>
+	<field name="SUBOP_ACTIVITIES" class="java.lang.String"/>
+	<field name="DESCRIPTION" class="java.lang.String"/>
+	<field name="DHAKA_NORTH_100DS" class="java.math.BigDecimal"/>
+	<field name="DHAKA_NORTH_ANNUAL" class="java.math.BigDecimal"/>
+	<field name="DHAKA_SOUTH_100DS" class="java.math.BigDecimal"/>
+	<field name="DHAKA_SOUTH_ANNUAL" class="java.math.BigDecimal"/>
+	<field name="CHATTOGRAM_100DS" class="java.math.BigDecimal"/>
+	<field name="CHATTOGRAM_ANNUAL" class="java.math.BigDecimal"/>
+	<field name="KHULNA_100DS" class="java.math.BigDecimal"/>
+	<field name="KHULNA_ANNUAL" class="java.math.BigDecimal"/>
+	<field name="RAJSHAHI_100DS" class="java.math.BigDecimal"/>
+	<field name="RAJSHAHI_ANNUAL" class="java.math.BigDecimal"/>
+	<field name="SYLHET_100DS" class="java.math.BigDecimal"/>
+	<field name="SYLHET_ANNUAL" class="java.math.BigDecimal"/>
+	<field name="BARISAL_100DS" class="java.math.BigDecimal"/>
+	<field name="BARISAL_ANNUAL" class="java.math.BigDecimal"/>
+	<field name="RANGPUR_100DS" class="java.math.BigDecimal"/>
+	<field name="RANGPUR_ANNUAL" class="java.math.BigDecimal"/>
+	<field name="MYMENSING_100DS" class="java.math.BigDecimal"/>
+	<field name="MYMENSING_ANNUAL" class="java.math.BigDecimal"/>
+	<field name="FARIDPUR_100DS" class="java.math.BigDecimal"/>
+	<field name="FARIDPUR_ANNUAL" class="java.math.BigDecimal"/>
+	<field name="TOTAL_100DAYS" class="java.math.BigDecimal"/>
+	<field name="TOTAL_ANNUAL" class="java.math.BigDecimal"/>
+	<group name="operationGroup" keepTogether="true">
+		<groupExpression><![CDATA[$F{OPERATION_CODE}]]></groupExpression>
+		<groupHeader>
+			<band/>
+		</groupHeader>
+		<groupFooter>
+			<band height="1">
+				<line>
+					<reportElement x="0" y="0" width="1242" height="1" uuid="5dfcbe44-1b89-4aac-90ac-4673552f8ec8"/>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="subopcode">
+		<groupExpression><![CDATA[$F{SUBOP_CODE}]]></groupExpression>
+		<groupHeader>
+			<band/>
+		</groupHeader>
+		<groupFooter>
+			<band height="1">
+				<line>
+					<reportElement x="78" y="0" width="90" height="1" uuid="03f94259-8182-4d6f-846a-a6eb49d84ce1"/>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="62" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="1242" height="53" uuid="4cb0c890-8f5c-4d7a-b1eb-bc90ae2177b7"/>
+				<subreportParameter name="BRANCH_NAME">
+					<subreportParameterExpression><![CDATA[$P{BRANCH_NAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="P_BRANCH">
+					<subreportParameterExpression><![CDATA[$P{P_BRANCH}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="M_LOGO">
+					<subreportParameterExpression><![CDATA[$P{M_LOGO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="BRANCH_ADDRESS">
+					<subreportParameterExpression><![CDATA[$P{BRANCH_ADDRESS}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LOGO_PATH">
+					<subreportParameterExpression><![CDATA[$P{LOGO_PATH}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Header_Landscape_summary.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="24" splitType="Stretch">
+			<staticText>
+				<reportElement x="92" y="2" width="1014" height="20" uuid="0ee2bfb4-c2e8-4e3b-87c5-b43f51cc85ee"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Summarized Information regarding target and Achievement of 100 days special program and FY 2020-2021 ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1118" y="2" width="100" height="20" uuid="2017e23a-03f2-4e5f-8de8-182409f2b613"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Zone Wise]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="33" splitType="Stretch">
+			<staticText>
+				<reportElement x="249" y="3" width="90" height="15" uuid="b8bb0bae-a0c9-4686-a83d-25edaf73e1e3"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dhaka North]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="249" y="18" width="45" height="15" uuid="df93328e-9597-4703-a1aa-9bb24906e1af"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[100 days]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="294" y="18" width="45" height="15" uuid="80aa13b1-0339-4c8f-84e7-578c95460211"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[FY-20-21]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="3" width="248" height="30" uuid="3c0dd7ca-9c72-43cd-926a-34803ede97dc"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Operation Activities]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="339" y="18" width="46" height="15" uuid="d25a5ae5-0789-445c-85ce-bc740afd2a13"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[100 days]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="339" y="3" width="91" height="15" uuid="212f2926-d690-4e81-ab78-f0e300f112a9"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dhaka South]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="385" y="18" width="45" height="15" uuid="99609368-1034-42b2-b7f8-7eaf89a50210"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[FY-20-21]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="430" y="18" width="45" height="15" uuid="358eb5e3-3735-43cd-b84f-c899eea3e482"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[100 days]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="430" y="3" width="90" height="15" uuid="9e6472e2-fc8d-4d50-b193-d7f5aa41fcc9"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Chattogram]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="475" y="18" width="45" height="15" uuid="0d36743e-2c83-4f6d-909a-b7cc08b4941a"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[FY-20-21]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="520" y="3" width="90" height="15" uuid="4e735438-de68-43f4-bf2a-440ce53cf8f9"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Khulna]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="565" y="18" width="45" height="15" uuid="f6fea097-0664-423f-8521-c6d01d7438b8"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[FY-20-21]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="520" y="18" width="45" height="15" uuid="4995ea9a-d3da-4552-a3af-ab27748eb5b2"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[100 days]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="610" y="3" width="90" height="15" uuid="e7c58d5f-a0b5-4456-bfd6-e590c988636c"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Rajshahi]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="655" y="18" width="45" height="15" uuid="b8f47f77-a73a-4b83-9e58-670c3562d98a"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[FY-20-21]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="610" y="18" width="45" height="15" uuid="9417ee1d-8716-4af6-addd-98c1dc10be76"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[100 days]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="700" y="3" width="90" height="15" uuid="6f9d1662-098a-4936-997b-a2b691e83da1"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sylhet]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="745" y="18" width="45" height="15" uuid="b3f6db6f-1d9f-4cae-94d4-7dea72921c8c"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[FY-20-21]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="700" y="18" width="45" height="15" uuid="f5b199b0-1fa6-4b10-8207-7ce7da35598d"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[100 days]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="790" y="18" width="45" height="15" uuid="fe914740-336e-4595-9b15-1a31f06c2e40"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[100 days]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="790" y="3" width="90" height="15" uuid="e6454f07-07c3-4d89-9b16-015999a91b3a"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Barishal]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="835" y="18" width="45" height="15" uuid="6ec01107-85cf-4dd1-9597-e5af46866a2d"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[FY-20-21]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="880" y="18" width="45" height="15" uuid="e2cbe741-9ea7-47fb-8a34-883c730ec497"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[100 days]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="880" y="3" width="90" height="15" uuid="6f4de0e4-253f-4e98-ba20-a1961529aac0"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Rangpur]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="925" y="18" width="45" height="15" uuid="459efa95-3f70-4439-8676-764b1b250c7d"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[FY-20-21]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="970" y="18" width="45" height="15" uuid="551a5525-714b-4ef5-a997-2d6779274abe"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[100 days]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="970" y="3" width="90" height="15" uuid="5eb8fe91-bac9-456a-b095-a1975d2aafd9"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Mymensingh]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1015" y="18" width="45" height="15" uuid="20ce506e-5bf7-4cc7-bb2a-6a21d24c09a5"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[FY-20-21]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1060" y="3" width="91" height="15" uuid="2c4af2eb-e4ec-47dc-98f6-70d987bed4d7"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Faridpur]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1060" y="18" width="46" height="15" uuid="919178da-d56f-4ea6-b9c9-4ded9511f3f0"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[100 days]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1106" y="18" width="45" height="15" uuid="014fe2ac-6a3a-4e98-ab54-a4fbca9b1e5e"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[FY-20-21]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1197" y="18" width="45" height="15" uuid="b7474735-680e-4ccb-9ee9-0cdd27cf3328"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[FY-20-21]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1151" y="18" width="46" height="15" uuid="02143230-22e3-4a69-816f-de04c355e5b7"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[100 days]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1151" y="3" width="91" height="15" uuid="d2c97d50-5838-475a-bdda-a3a39e6b873e"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="17" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="79" y="0" width="90" height="17" printWhenGroupChanges="operationGroup" uuid="13e58ee6-70aa-495d-804e-58a0427ac5d3"/>
+				<box leftPadding="3">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{SUBOP_ACTIVITIES}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" x="169" y="0" width="80" height="17" uuid="5ed4641e-d3ce-4c5d-ad15-778de67f9f3f"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DESCRIPTION}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="249" y="0" width="45" height="17" forecolor="#009900" uuid="60feb25c-ec17-4b34-9bc2-c32bc62b0fc9"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DHAKA_NORTH_100DS}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="294" y="0" width="45" height="17" uuid="40f4dec1-94a3-45b8-b39b-9f674920fad5"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DHAKA_NORTH_ANNUAL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="339" y="0" width="46" height="17" forecolor="#009900" uuid="d3e6a954-0d9c-4d90-8779-78ee75da4ce3"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DHAKA_SOUTH_100DS}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="385" y="0" width="45" height="17" uuid="d5ae1955-cf39-4a39-8d0d-7c8fd075029a"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{DHAKA_SOUTH_ANNUAL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="430" y="0" width="45" height="17" forecolor="#009900" uuid="a332ca7f-163d-4112-8c04-eb899249fe6d"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{CHATTOGRAM_100DS}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="475" y="0" width="45" height="17" uuid="35274008-e41c-44b7-9697-6b66dd2586a8"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{CHATTOGRAM_ANNUAL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="520" y="0" width="45" height="17" forecolor="#009900" uuid="cd9db188-58f8-4e62-83b3-8e99c4af7fa5"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{KHULNA_100DS}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="565" y="0" width="45" height="17" uuid="bdd040e0-159d-4c1e-95e4-58d240867da9"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{KHULNA_ANNUAL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="610" y="0" width="45" height="17" forecolor="#009900" uuid="4b561658-5f5b-433a-a9e9-240a36bdc677"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{RAJSHAHI_100DS}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="655" y="0" width="45" height="17" uuid="70e2d737-a68e-49f6-bea6-09f2b20f8653"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{RAJSHAHI_ANNUAL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="700" y="0" width="45" height="17" forecolor="#009900" uuid="07def1b4-59e6-4f79-a4a5-1d1faef46612"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{SYLHET_100DS}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="745" y="0" width="45" height="17" uuid="86c565ca-be64-4777-a75c-43a49b14ea45"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{SYLHET_ANNUAL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="790" y="0" width="45" height="17" forecolor="#006600" uuid="4e216913-7550-4ebb-ba4f-576f85f370be"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{BARISAL_100DS}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="835" y="0" width="45" height="17" uuid="a0e96b20-752c-4e80-a6d8-d3cd23ca21f9"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{BARISAL_ANNUAL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="880" y="0" width="45" height="17" forecolor="#006600" uuid="ee7000a7-ef96-47b0-a83d-aa25245c489c"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{RANGPUR_100DS}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="925" y="0" width="45" height="17" uuid="eca81fca-88f8-4bd2-a648-6e0156ca21bf"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{RANGPUR_ANNUAL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="970" y="0" width="45" height="17" forecolor="#006600" uuid="28f0bfe8-bcf8-4f09-b682-3f80763e8ed4"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{MYMENSING_100DS}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1015" y="0" width="45" height="17" uuid="ce67836d-723e-473c-97ce-3fc25c666ed4"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{MYMENSING_ANNUAL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1060" y="0" width="46" height="17" forecolor="#006600" uuid="fec2e1c4-e9c1-4a44-990c-7ef917284bcc"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{FARIDPUR_100DS}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1106" y="0" width="45" height="17" uuid="4061c051-4b1c-4824-a723-f3724609e6b4"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{FARIDPUR_ANNUAL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="">
+				<reportElement stretchType="RelativeToTallestObject" x="1151" y="0" width="46" height="17" uuid="d711a2c2-1d60-40a9-a33e-135ea2ffd7e5"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TOTAL_100DAYS}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="">
+				<reportElement stretchType="RelativeToTallestObject" x="1197" y="0" width="45" height="17" uuid="15f2409d-084d-4284-a0cf-d0314172869f"/>
+				<box rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TOTAL_ANNUAL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1" y="0" width="78" height="17" printWhenGroupChanges="operationGroup" uuid="168d0058-e15a-4121-bb99-f752ab7e185b"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{OPERATION_ACTIVITIES}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="32" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="79" y="10" width="100" height="20" uuid="5e31052f-1055-4e8b-b04c-56aa60d26060"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="10" width="79" height="20" uuid="8687f816-d948-46b3-9ec9-6f3ff09e6706"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Print Date :]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="GL Code List" language="groovy" pageWidth="640" pageHeight="842" columnWidth="600" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d46ded91-5598-4848-8e01-801c95fb9693">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="49"/>
+	<style name="rowcoloring" forecolor="#000000" backcolor="#CCFFCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{SerialNo}%2==1]]></conditionExpression>
+			<style backcolor="#CCCC00"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="BRANCH_NAME" class="java.lang.String"/>
+	<parameter name="BRANCH_ADDRESS" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["D:\\iReport\\PRMS\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="LOGO_PATH" class="java.lang.String"/>
+	<parameter name="M_LOGO" class="java.lang.String"/>
+	<parameter name="P_ENTITY_NUM" class="java.lang.String">
+		<defaultValueExpression><![CDATA["1"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_BRANCH" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+ GL_GROUP,
+ HL_GRP_NAME,
+ GLCODE,
+ DECODE(SUB_GL, '0', 'Main GL', '1', 'Sub GL') SUB_GL,
+ DECODE(tran_gl, 'Y', 'Yes', 'N', 'No')tran_gl,
+ tran_gl type,
+ GLNAME
+ FROM TABLE(PKG_PARAM.fn_GLCODE('9999'))
+ ORDER BY GL_GROUP, GLCODE]]>
+	</queryString>
+	<field name="GL_GROUP" class="java.lang.String"/>
+	<field name="HL_GRP_NAME" class="java.lang.String"/>
+	<field name="GLCODE" class="java.lang.String"/>
+	<field name="SUB_GL" class="java.lang.String"/>
+	<field name="TRAN_GL" class="java.lang.String"/>
+	<field name="TYPE" class="java.lang.String"/>
+	<field name="GLNAME" class="java.lang.String"/>
+	<variable name="SerialNo" class="java.lang.Number" resetType="Group" resetGroup="GL_GROUP">
+		<variableExpression><![CDATA[$V{SerialNo}+1]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<group name="GL_GROUP" isReprintHeaderOnEachPage="true">
+		<groupExpression><![CDATA[$F{GL_GROUP}]]></groupExpression>
+		<groupHeader>
+			<band height="64">
+				<staticText>
+					<reportElement x="69" y="44" width="95" height="20" forecolor="#990033" uuid="1a924733-fe2e-43c1-891f-2600ec9db927"/>
+					<box leftPadding="5">
+						<topPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[GL  Code]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="154" y="9" width="446" height="20" forecolor="#006600" backcolor="#339900" uuid="bcec9d28-3219-42c3-a824-28fad1d3b614"/>
+					<box leftPadding="2">
+						<topPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{HL_GRP_NAME}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="164" y="44" width="279" height="20" forecolor="#990033" uuid="9a1719a7-a861-4e96-8767-e9a5b94a4fad"/>
+					<box leftPadding="2">
+						<topPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[GL Name]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="2" y="9" width="82" height="20" forecolor="#006600" backcolor="#339900" uuid="5eefae7f-c75e-47db-88c7-aef0d565d2fa"/>
+					<box leftPadding="2">
+						<topPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Group     :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="44" width="70" height="20" forecolor="#990033" uuid="09f79cfb-aad5-40dc-9d4d-d2f8cd4f8f22"/>
+					<box leftPadding="2">
+						<topPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[GL Catagory]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="513" y="44" width="87" height="20" forecolor="#990033" uuid="6ab70eff-c754-4e92-85a0-b45893adb3b9"/>
+					<box leftPadding="2">
+						<topPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Transaction]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="84" y="9" width="70" height="20" forecolor="#006600" backcolor="#339900" uuid="866dc972-2b8b-4a2e-b76f-5ba88fdad6a8"/>
+					<box leftPadding="0" rightPadding="2">
+						<topPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{GL_GROUP}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="2" y="44" width="67" height="20" forecolor="#990033" uuid="1cf7b80a-97c7-4206-9ca2-29c48beb145a"/>
+					<box leftPadding="2">
+						<topPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Serial No]]></text>
+				</staticText>
+				<line>
+					<reportElement x="2" y="7" width="598" height="1" forecolor="#006600" uuid="9b0fb550-b6c9-41b5-89e4-45adc303c560"/>
+				</line>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="7"/>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="115" splitType="Stretch">
+			<staticText>
+				<reportElement x="2" y="95" width="468" height="20" uuid="e2f8fce9-1bd5-4b10-ac31-c26a24f277f6"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true" isItalic="true" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[General Accounting System: All GL Structure]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="526" y="95" width="74" height="20" uuid="246c0b38-9a34-49a7-ab14-3c1f4b384e29"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="0" y="10" width="600" height="75" uuid="984ea206-1774-4db2-8142-42ea09dc5711"/>
+				<subreportParameter name="BRANCH_NAME">
+					<subreportParameterExpression><![CDATA[$P{BRANCH_NAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="P_BRANCH">
+					<subreportParameterExpression><![CDATA[$P{P_BRANCH}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="M_LOGO">
+					<subreportParameterExpression><![CDATA[$P{M_LOGO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="BRANCH_ADDRESS">
+					<subreportParameterExpression><![CDATA[$P{BRANCH_ADDRESS}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LOGO_PATH">
+					<subreportParameterExpression><![CDATA[$P{LOGO_PATH}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Header_Portrait.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="33" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Prevent">
+			<textField isStretchWithOverflow="true">
+				<reportElement style="rowcoloring" stretchType="RelativeToTallestObject" x="69" y="0" width="95" height="20" isPrintWhenDetailOverflows="true" forecolor="#000099" uuid="042a88b5-0d1d-41e4-957f-15001e9c378b"/>
+				<box leftPadding="3">
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{GLCODE}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="rowcoloring" stretchType="RelativeToTallestObject" x="164" y="0" width="279" height="20" isPrintWhenDetailOverflows="true" forecolor="#000099" uuid="b70e3166-477c-4cac-9da5-c45dd40cf149"/>
+				<box leftPadding="3">
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{GLNAME}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="rowcoloring" stretchType="RelativeToTallestObject" x="443" y="0" width="70" height="20" isPrintWhenDetailOverflows="true" forecolor="#000099" uuid="ee918aa3-baf3-4d1f-a5a0-c52b25d5f270"/>
+				<box leftPadding="3">
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{SUB_GL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="rowcoloring" stretchType="RelativeToTallestObject" x="513" y="0" width="87" height="20" isPrintWhenDetailOverflows="true" forecolor="#000099" uuid="24fae4a6-0525-4e3a-8057-a559a18b10b7"/>
+				<box leftPadding="3">
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{TRAN_GL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="rowcoloring" stretchType="RelativeToTallestObject" x="2" y="0" width="67" height="20" isPrintWhenDetailOverflows="true" forecolor="#000099" uuid="bd527674-cc63-419b-8e1b-38e026537929"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$V{SerialNo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="39">
+			<textField>
+				<reportElement x="210" y="19" width="80" height="20" uuid="c3da3840-18ba-47b4-a981-a31ae861d187"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="290" y="19" width="40" height="20" uuid="d30d995e-4f89-437f-85b0-bd48c6c766c9"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="2" y="0" width="598" height="1" forecolor="#006600" uuid="409f35db-d85c-42c1-a332-7900b37fa29b"/>
+			</line>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="50"/>
+	</summary>
+</jasperReport>
