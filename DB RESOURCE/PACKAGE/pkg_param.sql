@@ -74,10 +74,51 @@ create or replace package pkg_param is
                                p_DataObject   varchar2,
                                p_ErrorCode    in number,
                                p_ErrorMessage in varchar2);
+     procedure sp_DaySetUp(p_user_id in varchar2,
+                        p_date    in date,
+                        p_postType   in varchar2,
+                        p_remarks    in varchar2,
+                        p_error   out varchar2);
+  procedure sp_off_day_check(p_date    in date ,
+                             P_postType    out varchar2);                                                 
 end pkg_param;
 /
 create or replace package body pkg_param is
-
+  procedure sp_off_day_check(p_date    in date ,
+                             P_postType    out varchar2)is 
+  begin
+    
+     select a.transactionpost into P_postType from as_working_days a where a.transactiondate=p_date;
+     
+  exception when others then 
+    P_postType:='N';
+  end sp_off_day_check;                          
+    
+  procedure sp_DaySetUp(p_user_id in varchar2,
+                        p_date    in date,
+                        p_postType   in varchar2,
+                        p_remarks    in varchar2,
+                        p_error   out varchar2) is 
+   v_exist number := 0;  
+   v_error varchar2(100):='';                    
+  begin
+   select count(*)
+      into v_exist
+      from as_working_days a
+     where a.transactiondate = p_date;
+  
+  if v_exist<>0 then
+    update as_working_days k set k.transactionpost=p_postType,
+                           k.remarks=p_remarks
+          where k.transactiondate= p_date;                
+  else
+    insert into as_working_days (transactiondate,transactionpost,remarks,entry_by,entry_on)
+            values(p_date,p_postType,p_remarks,p_user_id,trunc(sysdate));
+            
+     pkg_param.sp_day_begin(p_user_id,p_date,v_error);             
+  end if;
+  end  sp_DaySetUp;                     
+ 
   procedure sp_day_begin(p_user_id in varchar2,
                          p_date    in date,
                          p_error   out varchar2) is

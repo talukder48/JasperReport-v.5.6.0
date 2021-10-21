@@ -905,7 +905,13 @@ create or replace package body pkg_gas is
                               p_error       out varchar2) is
   
     v_batch_no number := 0;
+    p_postType varchar2(4):='';
   begin
+    
+   pkg_param.sp_off_day_check(p_date,p_postType);
+  
+  if p_postType='Y' then
+  
     select max(s.batch_sl) + 1 batch_no
       into v_batch_no
       from as_batch_sl s
@@ -1007,6 +1013,10 @@ create or replace package body pkg_gas is
       
       end loop;
       p_batch := v_batch_no;
+    end if;
+    
+    else
+      p_error:='This is is Holiday !! Transaction is open only for On Day';   
     end if;
   
   Exception

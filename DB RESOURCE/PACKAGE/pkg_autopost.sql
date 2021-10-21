@@ -13,7 +13,7 @@ create or replace package pkg_autopost is
                             p_reference       out varchar2,
                             p_balance         out number,
                             p_sms             out varchar2,
-                            p_error_message   out varchar2) ;
+                            p_error_message   out varchar2);
   procedure sp_autopost_prms(p_branch    in varchar2,
                              p_tran_date in date,
                              p_advice    in varchar2,
@@ -63,11 +63,9 @@ create or replace package body pkg_autopost is
                   from as_batch_sl b
                  where b.branch_code = p_branch_code
                    and b.tran_date = p_txn_date) loop
-      v_batch_number := idx.batch_sl + 1;
-    
+      v_batch_number := idx.batch_sl + 1;   
     end loop;
-    return v_batch_number;
-  
+    return v_batch_number;  
   end fn_get_batch_SL;
 
   procedure sp_autopost_api(p_branch_code     in varchar2,
@@ -245,7 +243,7 @@ create or replace package body pkg_autopost is
              p_txn_date,
              v_ho_batch_sl,
              'V',
-             v_Remarks,
+             v_Remarks || ' for ' || idx.purpose_desc,
              p_txn_amount + p_vat_amount,
              p_txn_amount + p_vat_amount,
              'API',
@@ -365,8 +363,10 @@ create or replace package body pkg_autopost is
                                  p_txn_receiver,
                                  v_dbType,
                                  v_error);
-           p_balance:=fn_get_loan_Balance(p_branch_code,p_loan_code,v_dbType)-p_txn_amount;
-                                 
+              p_balance := fn_get_loan_Balance(p_branch_code,
+                                               p_loan_code,
+                                               v_dbType) - p_txn_amount;
+            
             else
               sp_autopost_to_DEF(p_branch_code,
                                  p_loan_code,
@@ -375,19 +375,25 @@ create or replace package body pkg_autopost is
                                  p_txn_date,
                                  p_txn_receiver,
                                  v_dbType,
-                                 v_error);  
-             p_balance:=fn_get_loan_Balance_old(p_branch_code,p_loan_code,v_dbType)-p_txn_amount;
-                     
+                                 v_error);
+              p_balance := fn_get_loan_Balance_old(p_branch_code,
+                                                   p_loan_code,
+                                                   v_dbType) - p_txn_amount;
+            
             end if;
-            
-            
-            p_sms:='BDT '||p_txn_amount ||' has credited to A/C('||substr(p_loan_code,1,2)||'***'||substr(p_loan_code,10,4)||')'
-                  ||'dated on '||p_txn_date||'.Txn id:'||p_transaction_id||'.Current Balance is BDT '||p_balance ||'.';
+          
+            p_sms := 'BDT ' || p_txn_amount || ' has credited to A/C(' ||
+                     substr(p_loan_code, 1, 2) || '***' ||
+                     substr(p_loan_code, 10, 4) || ')' || 'dated on ' ||
+                     p_txn_date || '.Txn id:' || p_transaction_id ||
+                     '.Current Balance is BDT ' || p_balance || '.';
           end if;
         else
-            p_sms:='BDT '||p_txn_amount ||' has credited to A/C('||substr(p_loan_code,1,2)||'***'||substr(p_loan_code,10,4)||')'
-                  ||'dated on '||p_txn_date||'.Txn id:'||p_transaction_id||'.' ;
-         
+          p_sms := 'BDT ' || p_txn_amount || ' has credited to A/C(' ||
+                   substr(p_loan_code, 1, 2) || '***' ||
+                   substr(p_loan_code, 10, 4) || ')' || 'dated on ' ||
+                   p_txn_date || '.Txn id:' || p_transaction_id || '.';
+        
         end if;
       end loop;
     else
