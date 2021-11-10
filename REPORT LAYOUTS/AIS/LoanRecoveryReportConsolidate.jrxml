@@ -29,7 +29,7 @@
        sum(CL_RECOVERY) CL_RECOVERY,
        sum(UC_RECOVERY) UC_RECOVERY,
        sum(CL_RECOVERY + UC_RECOVERY) Total_Recovery
-  from table(pkg_Report_LMS.fn_loan_recovery_data('2020-2021', '%'))
+  from table(pkg_Report_LMS.fn_loan_recovery_data($P{P_FinYear}, '%'))
  group by LOC_CODE, LOC_NAME
  order by LOC_CODE, LOC_NAME]]>
 	</queryString>
