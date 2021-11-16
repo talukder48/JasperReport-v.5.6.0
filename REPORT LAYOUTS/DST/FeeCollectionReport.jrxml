@@ -360,7 +360,7 @@
 				<textElement textAlignment="Center">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[ Collection Report By Sonali Bank Ltd (API)]]></text>
+				<text><![CDATA[ Collection Details By Sonali Bank Ltd (API)]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="0" y="103" width="701" height="20" uuid="33abcea9-b9b6-4068-b78e-c572a14b681d"/>
