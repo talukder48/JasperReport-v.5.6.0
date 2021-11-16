@@ -136,11 +136,11 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Header_Landscape.jasper"]]></subreportExpression>
 			</subreport>
 			<textField>
-				<reportElement x="3" y="72" width="1057" height="20" uuid="e257dff5-209c-4c9f-b29b-231a7ddba07a"/>
+				<reportElement x="3" y="70" width="1057" height="20" uuid="e5972fa5-8e62-42b6-af0a-02fa63f7fa01"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Consolidated Loan Summary Report for Fin. Year : "+ $P{P_FinYear}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Loan Classification Wise Loan Summary Report for Fin. Year : "+ $P{P_FinYear}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>
