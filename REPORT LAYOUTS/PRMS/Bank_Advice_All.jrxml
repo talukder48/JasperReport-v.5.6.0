@@ -57,15 +57,15 @@
 	<field name="BANK_ACC" class="java.lang.String"/>
 	<field name="NET_PAY_AMT" class="java.math.BigDecimal"/>
 	<field name="EMP_TYPE" class="java.lang.String"/>
-	<variable name="SUB_TOTAL" class="java.math.BigDecimal" resetType="Group" resetGroup="Employee_Category" calculation="Sum">
+	<variable name="SUB_TOTAL" class="java.lang.Double" resetType="Group" resetGroup="Employee_Category" calculation="Sum">
 		<variableExpression><![CDATA[$F{NET_PAY_AMT}]]></variableExpression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="GRAND_TOTAL" class="java.math.BigDecimal" calculation="Sum">
+	<variable name="GRAND_TOTAL" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{NET_PAY_AMT}]]></variableExpression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="SERIAL_NO" class="java.math.BigDecimal" resetType="Group" resetGroup="Employee_Category" calculation="Count">
+	<variable name="SERIAL_NO" class="java.lang.Double" resetType="Group" resetGroup="Employee_Category" calculation="Count">
 		<variableExpression><![CDATA[$F{EMP_ID}]]></variableExpression>
 		<initialValueExpression><![CDATA[1]]></initialValueExpression>
 	</variable>
