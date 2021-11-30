@@ -27,7 +27,8 @@
        GROSS_AMOUNT,
        TOTAL_DEDUCTION,
        NET_PAYMENT,
-medical,basic,
+       medical,
+       basic,
        YEAR,
        MONTH_CODE,
        decode(MONTH_CODE,
@@ -53,18 +54,46 @@ medical,basic,
               'OCT',
               11,
               'NOV',
-              'DEC') || '-' || YEAR SAL_MONTH
+              'DEC') || '-' || YEAR SAL_MONTH,
+              nvl(EIDFIT,0)EIDFIT,
+              nvl(EIDADHA,0)EIDADHA,
+              nvl(Durgapuja,0)Durgapuja,
+              nvl(NEWYR,0)NEWYR
   FROM (SELECT d.nothi_no,
                d.emp_name,
                d.designation,
                d.sucessor_name,
-               d.pension_basic+d.pension_arrear basic,
-               d.pen_medical_arear+d.pen_medical_alw medical,
+               d.pension_basic + d.pension_arrear basic,
+               d.pen_medical_arear + d.pen_medical_alw medical,
                d.gross_amount,
                d.total_deduction,
                d.net_payment,
                year,
-               month_code
+               month_code,
+               (select sum(k.netbonus)
+                  from pen_bonus_transaction k
+                 where k.nothi_no = d.nothi_no
+                   and k.bonustype = 'EIDFIT'
+                   and k.year = d.year
+                   and k.monthcode = d.month_code) EIDFIT,
+              (select sum(k.netbonus)
+                  from pen_bonus_transaction k
+                 where k.nothi_no = d.nothi_no
+                   and k.bonustype = 'DURGAPUJA'
+                   and k.year = d.year
+                   and k.monthcode = d.month_code) Durgapuja ,
+              (select sum(k.netbonus)
+                  from pen_bonus_transaction k
+                 where k.nothi_no = d.nothi_no
+                   and k.bonustype = 'EIDADHA'
+                   and k.year = d.year
+                   and k.monthcode = d.month_code) EIDADHA ,
+             (select sum(k.netbonus)
+                  from pen_bonus_transaction k
+                 where k.nothi_no = d.nothi_no
+                   and k.bonustype = 'NEWYR'
+                   and k.year = d.year
+                   and k.monthcode = d.month_code) NEWYR
           FROM pen_transation_details d
          where d.year = $P{P_FIN_YEAR}
            and d.month_code > 6
@@ -73,20 +102,43 @@ medical,basic,
                d.emp_name,
                d.designation,
                d.sucessor_name,
-                d.pension_basic+d.pension_arrear  basic,
-               d.pen_medical_arear+d.pen_medical_alw medical,
+               d.pension_basic + d.pension_arrear basic,
+               d.pen_medical_arear + d.pen_medical_alw medical,
                d.gross_amount,
                d.total_deduction,
                d.net_payment,
                year,
-               month_code
+               month_code,
+                (select sum(k.netbonus)
+                  from pen_bonus_transaction k
+                 where k.nothi_no = d.nothi_no
+                   and k.bonustype = 'EIDFIT'
+                   and k.year = d.year
+                   and k.monthcode = d.month_code) EIDFIT,
+              (select sum(k.netbonus)
+                  from pen_bonus_transaction k
+                 where k.nothi_no = d.nothi_no
+                   and k.bonustype = 'DURGAPUJA'
+                   and k.year = d.year
+                   and k.monthcode = d.month_code) Durgapuja ,
+              (select sum(k.netbonus)
+                  from pen_bonus_transaction k
+                 where k.nothi_no = d.nothi_no
+                   and k.bonustype = 'EIDADHA'
+                   and k.year = d.year
+                   and k.monthcode = d.month_code) EIDADHA ,
+                   (select sum(k.netbonus)
+                  from pen_bonus_transaction k
+                 where k.nothi_no = d.nothi_no
+                   and k.bonustype = 'NEWYR'
+                   and k.year = d.year
+                   and k.monthcode = d.month_code) NEWYR
           FROM pen_transation_details d
 
          where d.year = $P{P_FIN_YEAR2}
            and d.month_code < 7)
  WHERE (nothi_no = $P{P_NOTHI} OR $P{P_NOTHI} IS NULL)
- order by to_number(substr(NOTHI_NO, 1, 3)), year, month_code
-]]>
+ order by to_number(substr(NOTHI_NO, 1, 3)), year, month_code]]>
 	</queryString>
 	<field name="NOTHI_NO" class="java.lang.String"/>
 	<field name="EMP_NAME" class="java.lang.String"/>
@@ -100,6 +152,10 @@ medical,basic,
 	<field name="YEAR" class="java.math.BigDecimal"/>
 	<field name="MONTH_CODE" class="java.math.BigDecimal"/>
 	<field name="SAL_MONTH" class="java.lang.String"/>
+	<field name="EIDFIT" class="java.math.BigDecimal"/>
+	<field name="EIDADHA" class="java.math.BigDecimal"/>
+	<field name="DURGAPUJA" class="java.math.BigDecimal"/>
+	<field name="NEWYR" class="java.math.BigDecimal"/>
 	<variable name="v_serial" class="java.lang.Number" resetType="Group" resetGroup="NothiGroup">
 		<variableExpression><![CDATA[$V{v_serial}+1]]></variableExpression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
@@ -116,18 +172,34 @@ medical,basic,
 		<variableExpression><![CDATA[$F{NET_PAYMENT}]]></variableExpression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="v_Basic" class="java.lang.Double" calculation="Sum">
+	<variable name="v_Basic" class="java.lang.Double" resetType="Group" resetGroup="NothiGroup" calculation="Sum">
 		<variableExpression><![CDATA[$F{BASIC}]]></variableExpression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="v_Medical" class="java.lang.Double" calculation="Sum">
+	<variable name="v_Medical" class="java.lang.Double" resetType="Group" resetGroup="NothiGroup" calculation="Sum">
 		<variableExpression><![CDATA[$F{MEDICAL}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="EID_FIT" class="java.lang.Double" resetType="Group" resetGroup="NothiGroup" calculation="Sum">
+		<variableExpression><![CDATA[$F{EIDFIT}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="EID_ADHA" class="java.lang.Double" resetType="Group" resetGroup="NothiGroup" calculation="Sum">
+		<variableExpression><![CDATA[$F{EIDADHA}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="NEW_YEAR" class="java.lang.Double" resetType="Group" resetGroup="NothiGroup" calculation="Sum">
+		<variableExpression><![CDATA[$F{NEWYR}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="DURGA" class="java.lang.Double" resetType="Group" resetGroup="NothiGroup" calculation="Sum">
+		<variableExpression><![CDATA[$F{DURGAPUJA}]]></variableExpression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
 	<group name="NothiGroup" isStartNewPage="true" keepTogether="true">
 		<groupExpression><![CDATA[$F{NOTHI_NO}]]></groupExpression>
 		<groupHeader>
-			<band height="171" splitType="Prevent">
+			<band height="154" splitType="Prevent">
 				<staticText>
 					<reportElement x="1" y="89" width="44" height="20" uuid="9910b8c8-a00a-4936-9bde-d272a1baa9c0"/>
 					<box>
@@ -171,7 +243,7 @@ medical,basic,
 					<text><![CDATA[Designation]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="354" y="151" width="76" height="20" uuid="f3f0761d-62de-4e94-af4e-c6b90fb18580"/>
+					<reportElement x="354" y="134" width="76" height="20" uuid="f3f0761d-62de-4e94-af4e-c6b90fb18580"/>
 					<box rightPadding="3">
 						<pen lineWidth="1.0"/>
 						<topPen lineWidth="1.0"/>
@@ -185,7 +257,7 @@ medical,basic,
 					<text><![CDATA[Total Pension ]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="430" y="151" width="75" height="20" uuid="c8736780-2622-4bb7-915d-2324762b9b82"/>
+					<reportElement x="430" y="134" width="75" height="20" uuid="c8736780-2622-4bb7-915d-2324762b9b82"/>
 					<box rightPadding="3">
 						<pen lineWidth="1.0"/>
 						<topPen lineWidth="1.0"/>
@@ -199,7 +271,7 @@ medical,basic,
 					<text><![CDATA[Total Ded.]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="505" y="151" width="85" height="20" uuid="6fb48fb5-2134-4e57-9faf-da1986484566"/>
+					<reportElement x="505" y="134" width="85" height="20" uuid="6fb48fb5-2134-4e57-9faf-da1986484566"/>
 					<box rightPadding="4">
 						<pen lineWidth="1.0"/>
 						<topPen lineWidth="1.0"/>
@@ -311,7 +383,7 @@ medical,basic,
 					<text><![CDATA[:]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="54" y="151" width="122" height="20" uuid="c3a921d2-0793-4ab1-aab4-92283dae0e1a"/>
+					<reportElement x="54" y="134" width="122" height="20" uuid="c3a921d2-0793-4ab1-aab4-92283dae0e1a"/>
 					<box>
 						<pen lineWidth="1.0"/>
 						<topPen lineWidth="1.0"/>
@@ -325,7 +397,7 @@ medical,basic,
 					<text><![CDATA[Month & Year]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="0" y="151" width="54" height="20" uuid="7fc7ad0a-754f-43fc-9319-3a9fd9989809"/>
+					<reportElement x="0" y="134" width="54" height="20" uuid="7fc7ad0a-754f-43fc-9319-3a9fd9989809"/>
 					<box>
 						<pen lineWidth="1.0"/>
 						<topPen lineWidth="1.0"/>
@@ -369,7 +441,7 @@ medical,basic,
 					<textFieldExpression><![CDATA["Pension Statement for FY : " + $P{P_FIN_YEAR}+"-"+$P{P_FIN_YEAR2}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="265" y="151" width="89" height="20" uuid="28c4a12e-e493-4811-a627-0af92c9e9017"/>
+					<reportElement x="265" y="134" width="89" height="20" uuid="28c4a12e-e493-4811-a627-0af92c9e9017"/>
 					<box>
 						<topPen lineWidth="1.0"/>
 						<bottomPen lineWidth="1.0"/>
@@ -380,7 +452,7 @@ medical,basic,
 					<text><![CDATA[Medical Amt]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="176" y="151" width="89" height="20" uuid="1cccf6ee-feff-4ec4-baee-1c268d7dc307"/>
+					<reportElement x="176" y="134" width="89" height="20" uuid="1cccf6ee-feff-4ec4-baee-1c268d7dc307"/>
 					<box>
 						<topPen lineWidth="1.0"/>
 						<bottomPen lineWidth="1.0"/>
@@ -393,9 +465,9 @@ medical,basic,
 			</band>
 		</groupHeader>
 		<groupFooter>
-			<band height="24">
+			<band height="100">
 				<textField pattern="#,##0.00">
-					<reportElement x="354" y="4" width="76" height="20" uuid="df103257-ce8a-4e2a-8ecb-bcd83a2ccede"/>
+					<reportElement x="354" y="0" width="76" height="20" uuid="df103257-ce8a-4e2a-8ecb-bcd83a2ccede"/>
 					<box rightPadding="5">
 						<topPen lineWidth="1.0"/>
 						<bottomPen lineWidth="1.0"/>
@@ -406,7 +478,7 @@ medical,basic,
 					<textFieldExpression><![CDATA[$V{v_total_pension}]]></textFieldExpression>
 				</textField>
 				<textField pattern="#,##0.00">
-					<reportElement x="430" y="4" width="75" height="20" uuid="dae804ac-aba1-4fd6-80b5-115428d16b75"/>
+					<reportElement x="430" y="0" width="75" height="20" uuid="dae804ac-aba1-4fd6-80b5-115428d16b75"/>
 					<box rightPadding="5">
 						<topPen lineWidth="1.0"/>
 						<bottomPen lineWidth="1.0"/>
@@ -417,7 +489,7 @@ medical,basic,
 					<textFieldExpression><![CDATA[$V{v_total_ded}]]></textFieldExpression>
 				</textField>
 				<textField pattern="#,##0.00">
-					<reportElement x="505" y="4" width="85" height="20" uuid="f8125707-68f6-4bf6-8605-a514100775bd"/>
+					<reportElement x="505" y="0" width="85" height="20" uuid="f8125707-68f6-4bf6-8605-a514100775bd"/>
 					<box rightPadding="5">
 						<topPen lineWidth="1.0"/>
 						<bottomPen lineWidth="1.0"/>
@@ -428,7 +500,7 @@ medical,basic,
 					<textFieldExpression><![CDATA[$V{v_net_pension}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="1" y="4" width="175" height="20" uuid="9a70cc26-6cd3-47d3-9185-6db4c36fa714"/>
+					<reportElement x="1" y="0" width="175" height="20" uuid="9a70cc26-6cd3-47d3-9185-6db4c36fa714"/>
 					<box rightPadding="6">
 						<pen lineWidth="1.0"/>
 						<topPen lineWidth="1.0"/>
@@ -442,7 +514,7 @@ medical,basic,
 					<text><![CDATA[Total:]]></text>
 				</staticText>
 				<textField pattern="#,##0.00">
-					<reportElement x="176" y="4" width="89" height="20" uuid="a0962129-869e-4885-81dd-65dba16ad7b2"/>
+					<reportElement x="176" y="0" width="89" height="20" uuid="a0962129-869e-4885-81dd-65dba16ad7b2"/>
 					<box rightPadding="3">
 						<topPen lineWidth="1.0"/>
 						<bottomPen lineWidth="1.0"/>
@@ -453,7 +525,7 @@ medical,basic,
 					<textFieldExpression><![CDATA[$V{v_Basic}]]></textFieldExpression>
 				</textField>
 				<textField pattern="#,##0.00">
-					<reportElement x="265" y="4" width="89" height="20" uuid="695b324a-c3c2-4d75-a1c7-be8a59f0aef7"/>
+					<reportElement x="265" y="0" width="89" height="20" uuid="695b324a-c3c2-4d75-a1c7-be8a59f0aef7"/>
 					<box rightPadding="3">
 						<topPen lineWidth="1.0"/>
 						<bottomPen lineWidth="1.0"/>
@@ -463,6 +535,100 @@ medical,basic,
 					</textElement>
 					<textFieldExpression><![CDATA[$V{v_Medical}]]></textFieldExpression>
 				</textField>
+				<textField pattern="#,##0.00;-#,##0.00">
+					<reportElement x="165" y="27" width="100" height="17" uuid="7004e72a-5a04-4956-ad67-4142a2735090"/>
+					<box rightPadding="4">
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$V{EID_FIT}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00;-#,##0.00">
+					<reportElement x="165" y="44" width="100" height="18" uuid="a8929a32-f7fc-4186-912c-07c8ef44837a"/>
+					<box rightPadding="4">
+						<leftPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$V{EID_ADHA}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00;-#,##0.00">
+					<reportElement x="165" y="61" width="100" height="17" uuid="46e8b223-b5a3-4321-9d46-28a8d441d9af"/>
+					<box rightPadding="4">
+						<leftPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$V{NEW_YEAR}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00;-#,##0.00">
+					<reportElement x="165" y="78" width="100" height="17" uuid="0eb92ef0-1d73-4434-a2e1-074a4e1fed5d"/>
+					<box rightPadding="4">
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$V{DURGA}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="1" y="27" width="164" height="18" uuid="dbd341ba-bbc4-4956-9f94-598c51bedfcc"/>
+					<box leftPadding="10">
+						<pen lineWidth="0.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Eid-UL-Fitor]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="44" width="164" height="18" uuid="90a2bba9-3bfd-4f25-9bad-3e7c938b7b71"/>
+					<box leftPadding="10">
+						<pen lineWidth="0.0"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Eid -UL-Adha]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="61" width="164" height="18" uuid="becc2bbb-9ae3-44b3-9227-dd8fb2f3e0fe"/>
+					<box leftPadding="10">
+						<pen lineWidth="0.0"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="0.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Noboborsho]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="78" width="164" height="17" uuid="71640718-517d-4b50-9c14-f4a608268aed"/>
+					<box leftPadding="10">
+						<pen lineWidth="0.0"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Durgapuja]]></text>
+				</staticText>
 			</band>
 		</groupFooter>
 	</group>
