@@ -55,7 +55,7 @@
   from api_transaction_data d
  where d.branch_code like  $P{P_branch_code}
    and to_date(d.txn_date) between $P{p_fromDate} and $P{p_toDate}
- order by d.branch_code, to_date(d.txn_date)]]>
+ order by d.branch_code, to_date(d.txn_date),TRANSACTION_ID]]>
 	</queryString>
 	<field name="RECEIVE_ID" class="java.math.BigDecimal"/>
 	<field name="BRANCH_CODE" class="java.lang.String"/>
