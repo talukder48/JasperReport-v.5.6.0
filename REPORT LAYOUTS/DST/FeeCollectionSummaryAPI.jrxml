@@ -14,11 +14,35 @@
 	<parameter name="BRANCH_NAME" class="java.lang.String"/>
 	<parameter name="M_LOGO" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[select d.branch_code,( select m.brn_name from prms_mbranch m where m.brn_code=d.branch_code)branch_name,count(*)No_of_transaction,sum(d.txn_amount)TransactionAmount,sum(d.vat_amount) VAT from api_transaction_data d
-where to_date(d.txn_date) between $P{p_fromDate} and $P{p_toDate}
-and d.branch_code like $P{P_branch_code}
-group by d.branch_code
-order by d.branch_code]]>
+		<![CDATA[select d.branch_code,
+       (select m.brn_name
+          from prms_mbranch m
+         where m.brn_code = d.branch_code) branch_name,
+       count(*) No_of_transaction,
+       sum(d.txn_amount) TransactionAmount,
+       sum(d.vat_amount) VAT
+  from (select d.branch_code,
+               case substr(d.transaction_id, 1, 1)
+                 when 'R' then
+                  d.txn_amount * -1
+                 else
+                  d.txn_amount
+               end txn_amount,
+
+               case substr(d.transaction_id, 1, 1)
+                 when 'R' then
+                  d.vat_amount * -1
+                 else
+                  d.vat_amount
+               end vat_amount
+
+          from api_transaction_data d
+         where to_date(d.txn_date) between $P{p_fromDate} and $P{p_toDate}
+           and d.branch_code like $P{P_branch_code}
+           ) d
+ group by d.branch_code
+ order by d.branch_code
+]]>
 	</queryString>
 	<field name="BRANCH_CODE" class="java.lang.String"/>
 	<field name="BRANCH_NAME" class="java.lang.String"/>
