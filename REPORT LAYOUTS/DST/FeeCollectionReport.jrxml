@@ -24,14 +24,38 @@
 	<parameter name="p_fromDate" class="java.lang.String"/>
 	<parameter name="p_toDate" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[select d.*, (select m.brn_name from prms_mbranch m where m.brn_code=d.branch_code)branch_name, (select a.borrower_name from loan_account a where a.loc_code=d.branch_code and a.loan_code=d.loan_code) borrowerName,
+		<![CDATA[select RECEIVE_ID,
+       BRANCH_CODE,
+       CUSTOMER_MOBILE,
+       LOAN_CODE,
+       MEMO_NO,
+       PROSSING_DATE_TIME,
+       PURPOSE_CODE,
+       TRANSACTION_ID,
+       case substr(TRANSACTION_ID,1,1) when
+         'R' then TXN_AMOUNT*-1 else
+         TXN_AMOUNT end TXN_AMOUNT,
+       TXN_DATE,
+       TXN_RECEIVER,
+       case substr(TRANSACTION_ID,1,1) when
+         'R' then VAT_AMOUNT*-1 else
+         VAT_AMOUNT end VAT_AMOUNT,
+
+       REFERENCE_NUMBER,
+       (select m.brn_name
+          from prms_mbranch m
+         where m.brn_code = d.branch_code) branch_name,
+       (select a.borrower_name
+          from loan_account a
+         where a.loc_code = d.branch_code
+           and a.loan_code = d.loan_code) borrowerName,
        (select p.purpose_desc
           from as_purpose_param p
          where p.purpose_code = d.purpose_code) Purpose_desc
   from api_transaction_data d
- where d.branch_code like $P{P_branch_code}
- and to_date(d.txn_date) between $P{p_fromDate} and $P{p_toDate}
- order by d.branch_code,to_date(d.txn_date)]]>
+ where d.branch_code like  $P{P_branch_code}
+   and to_date(d.txn_date) between $P{p_fromDate} and $P{p_toDate}
+ order by d.branch_code, to_date(d.txn_date)]]>
 	</queryString>
 	<field name="RECEIVE_ID" class="java.math.BigDecimal"/>
 	<field name="BRANCH_CODE" class="java.lang.String"/>
@@ -46,8 +70,6 @@
 	<field name="TXN_RECEIVER" class="java.lang.String"/>
 	<field name="VAT_AMOUNT" class="java.math.BigDecimal"/>
 	<field name="REFERENCE_NUMBER" class="java.lang.String"/>
-	<field name="LOAN_BAL" class="java.math.BigDecimal"/>
-	<field name="SMS_BODY" class="java.lang.String"/>
 	<field name="BRANCH_NAME" class="java.lang.String"/>
 	<field name="BORROWERNAME" class="java.lang.String"/>
 	<field name="PURPOSE_DESC" class="java.lang.String"/>
