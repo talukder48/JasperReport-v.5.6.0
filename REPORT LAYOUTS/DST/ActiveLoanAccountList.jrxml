@@ -12,8 +12,7 @@
 	</parameter>
 	<parameter name="p_BranchCode" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[
-select PRODUCT_NATURE,
+		<![CDATA[select PRODUCT_NATURE,
        LOC_CODE,
        LOC_NAME,
        LOAN_CODE,
@@ -23,13 +22,13 @@ select PRODUCT_NATURE,
        INT_RATE,
        REPAY_DATE,
        LOAN_PERIOD,
-       LN_CRITERIA,
+       Recovery,
+decode(LN_CRITERIA,'UC','UN-CLASSIFIED (UC)','SS' ,'Sub Standared (SS)','DF','Doubtfull (DF)','BD','Bad(BD)')LN_CRITERIA,
        BALANCE,
        OVERDUE,
        ADD_MONTHS(REPAY_DATE, LOAN_PERIOD) Expiry_date
   from table(pkg_report_lms.fn_activeLoan_data('2020-2021',$P{p_BranchCode} ))
- order by PRODUCT_NATURE,LN_CRITERIA, LOC_CODE, LOAN_CODE
-]]>
+ order by LN_CRITERIA,PRODUCT_NATURE, LOC_CODE, LOAN_CODE]]>
 	</queryString>
 	<field name="PRODUCT_NATURE" class="java.lang.String"/>
 	<field name="LOC_CODE" class="java.lang.String"/>
@@ -41,6 +40,7 @@ select PRODUCT_NATURE,
 	<field name="INT_RATE" class="java.math.BigDecimal"/>
 	<field name="REPAY_DATE" class="java.sql.Timestamp"/>
 	<field name="LOAN_PERIOD" class="java.math.BigDecimal"/>
+	<field name="RECOVERY" class="java.math.BigDecimal"/>
 	<field name="LN_CRITERIA" class="java.lang.String"/>
 	<field name="BALANCE" class="java.math.BigDecimal"/>
 	<field name="OVERDUE" class="java.math.BigDecimal"/>
@@ -49,8 +49,20 @@ select PRODUCT_NATURE,
 		<variableExpression><![CDATA[$V{v_Serial}+1]]></variableExpression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
+	<variable name="v_Overdue" class="java.lang.Double" resetType="Group" resetGroup="ProductNature" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVERDUE}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="v_balance" class="java.lang.Double" resetType="Group" resetGroup="ProductNature" calculation="Sum">
+		<variableExpression><![CDATA[$F{BALANCE}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="v_Recovery" class="java.lang.Double" resetType="Group" resetGroup="ProductNature" calculation="Sum">
+		<variableExpression><![CDATA[$F{RECOVERY}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
 	<group name="ProductNature" isReprintHeaderOnEachPage="true" keepTogether="true">
-		<groupExpression><![CDATA[$F{PRODUCT_NATURE}]]></groupExpression>
+		<groupExpression><![CDATA[$F{LN_CRITERIA}]]></groupExpression>
 		<groupHeader>
 			<band height="30">
 				<staticText>
@@ -96,20 +108,6 @@ select PRODUCT_NATURE,
 					<text><![CDATA[Sanc. Amt.]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="429" y="15" width="51" height="15" uuid="fe8d4ad2-17a8-488f-80ad-d348ffe101c3"/>
-					<box leftPadding="4">
-						<pen lineWidth="1.0"/>
-						<topPen lineWidth="1.0"/>
-						<leftPen lineWidth="1.0"/>
-						<bottomPen lineWidth="1.0"/>
-						<rightPen lineWidth="1.0"/>
-					</box>
-					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font isBold="true"/>
-					</textElement>
-					<text><![CDATA[Int. Rate]]></text>
-				</staticText>
-				<staticText>
 					<reportElement x="262" y="15" width="38" height="15" uuid="cbc3f7b5-f3bf-48bb-ba67-833e0f878e1c"/>
 					<box leftPadding="4">
 						<pen lineWidth="1.0"/>
@@ -121,10 +119,10 @@ select PRODUCT_NATURE,
 					<textElement verticalAlignment="Middle">
 						<font isBold="true"/>
 					</textElement>
-					<text><![CDATA[Class]]></text>
+					<text><![CDATA[Nature]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="262" y="0" width="448" height="15" uuid="df7bb6af-5821-4eaa-b478-c4e90fd5d558"/>
+					<reportElement x="262" y="0" width="448" height="15" forecolor="#000099" uuid="df7bb6af-5821-4eaa-b478-c4e90fd5d558"/>
 					<box leftPadding="4">
 						<pen lineWidth="1.0"/>
 						<topPen lineWidth="1.0"/>
@@ -135,10 +133,10 @@ select PRODUCT_NATURE,
 					<textElement verticalAlignment="Middle">
 						<font isBold="true"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{PRODUCT_NATURE}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{LN_CRITERIA}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="0" y="0" width="262" height="15" uuid="e1d48107-4fd2-4ff5-962c-9861db06e8b8"/>
+					<reportElement x="0" y="0" width="262" height="15" forecolor="#000099" uuid="e1d48107-4fd2-4ff5-962c-9861db06e8b8"/>
 					<box leftPadding="4" rightPadding="4">
 						<pen lineWidth="1.0"/>
 						<topPen lineWidth="1.0"/>
@@ -149,7 +147,7 @@ select PRODUCT_NATURE,
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font isBold="true"/>
 					</textElement>
-					<text><![CDATA[Product Nature:-]]></text>
+					<text><![CDATA[Classification Type:]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="0" y="15" width="32" height="15" uuid="90da6147-b00d-47a0-8dc6-4eab47b6061a"/>
@@ -180,21 +178,7 @@ select PRODUCT_NATURE,
 					<text><![CDATA[Repay. Date]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="480" y="15" width="59" height="15" uuid="7e3e6c2b-1ad6-44f5-85d5-39cc403367f8"/>
-					<box leftPadding="4">
-						<pen lineWidth="1.0"/>
-						<topPen lineWidth="1.0"/>
-						<leftPen lineWidth="1.0"/>
-						<bottomPen lineWidth="1.0"/>
-						<rightPen lineWidth="1.0"/>
-					</box>
-					<textElement textAlignment="Center">
-						<font isBold="true"/>
-					</textElement>
-					<text><![CDATA[Exp. Date]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="539" y="15" width="75" height="15" uuid="17c26e0c-5494-4372-85de-e6878e970425"/>
+					<reportElement x="524" y="15" width="90" height="15" uuid="17c26e0c-5494-4372-85de-e6878e970425"/>
 					<box rightPadding="6">
 						<pen lineWidth="1.0"/>
 						<topPen lineWidth="1.0"/>
@@ -221,10 +205,89 @@ select PRODUCT_NATURE,
 					</textElement>
 					<text><![CDATA[Balance]]></text>
 				</staticText>
+				<staticText>
+					<reportElement x="429" y="15" width="95" height="15" uuid="c5b58060-947a-4091-a9db-4e2c96d6a207"/>
+					<box rightPadding="5">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Recovery]]></text>
+				</staticText>
 			</band>
 		</groupHeader>
 		<groupFooter>
-			<band/>
+			<band height="26">
+				<textField pattern="###0.00;-###0.00">
+					<reportElement x="614" y="0" width="96" height="16" forecolor="#000099" uuid="9aa6e916-f103-4291-bc6d-3941c4b68560"/>
+					<box rightPadding="4">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$V{v_balance}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00;-###0.00">
+					<reportElement x="524" y="0" width="90" height="16" forecolor="#000099" uuid="673da316-ca05-4d10-9527-2e1ec3057792"/>
+					<box rightPadding="4">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$V{v_Overdue}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="0" width="274" height="16" forecolor="#000099" uuid="16aa853f-6e3c-4b3a-bee7-5f25d642620f"/>
+					<box rightPadding="2">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total Amount for]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="274" y="0" width="155" height="16" forecolor="#000099" uuid="1ef8868a-f46a-40a2-8228-5fcbaa49497b"/>
+					<box leftPadding="4">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{LN_CRITERIA}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00;-#,##0.00">
+					<reportElement x="429" y="0" width="95" height="16" forecolor="#000099" uuid="b334e7f1-3f17-4519-8a3a-9438a267361f"/>
+					<box rightPadding="4">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$V{v_Recovery}]]></textFieldExpression>
+				</textField>
+			</band>
 		</groupFooter>
 	</group>
 	<background>
@@ -237,11 +300,11 @@ select PRODUCT_NATURE,
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="250" y="73" width="216" height="20" uuid="ffdc1204-8f84-40c9-9108-e4f4e2784aab"/>
+				<reportElement x="206" y="73" width="297" height="20" uuid="ffdc1204-8f84-40c9-9108-e4f4e2784aab"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[Branch Wise Active Loan Account List]]></text>
+				<text><![CDATA[Account wise classification report(Active Loan List)]]></text>
 			</staticText>
 			<subreport>
 				<reportElement x="32" y="0" width="640" height="68" uuid="231d081f-0a9c-4c1c-a30c-7779659a7e10"/>
@@ -303,18 +366,6 @@ select PRODUCT_NATURE,
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{SANC_AMT}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00;-#,##0.00">
-				<reportElement x="429" y="0" width="51" height="16" uuid="c105ccea-40bf-46ea-a6c8-82497b280c71"/>
-				<box leftPadding="4">
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="1.0"/>
-					<leftPen lineWidth="1.0"/>
-					<bottomPen lineWidth="1.0"/>
-					<rightPen lineWidth="1.0"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{INT_RATE}]]></textFieldExpression>
-			</textField>
 			<textField pattern="" isBlankWhenNull="false">
 				<reportElement x="262" y="0" width="38" height="16" uuid="d8d36d6f-9ff6-43b5-8101-a19506d0c54f"/>
 				<box leftPadding="4">
@@ -325,7 +376,7 @@ select PRODUCT_NATURE,
 					<rightPen lineWidth="1.0"/>
 				</box>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{LN_CRITERIA}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{PRODUCT_NATURE}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="32" height="16" uuid="a2d3fbe1-e76e-451e-8e8b-623c4eddc94a"/>
@@ -351,20 +402,8 @@ select PRODUCT_NATURE,
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{SANC_DATE}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
-				<reportElement x="480" y="0" width="59" height="16" uuid="8c68eef0-0bef-454e-bc0f-e55e965a6258"/>
-				<box leftPadding="3">
-					<pen lineWidth="1.0"/>
-					<topPen lineWidth="1.0"/>
-					<leftPen lineWidth="1.0"/>
-					<bottomPen lineWidth="1.0"/>
-					<rightPen lineWidth="1.0"/>
-				</box>
-				<textElement textAlignment="Center"/>
-				<textFieldExpression><![CDATA[$F{EXPIRY_DATE}]]></textFieldExpression>
-			</textField>
 			<textField>
-				<reportElement x="539" y="0" width="75" height="16" uuid="0087f823-457c-4df6-b66f-d9bb586ae694"/>
+				<reportElement x="524" y="0" width="90" height="16" uuid="0087f823-457c-4df6-b66f-d9bb586ae694"/>
 				<box rightPadding="6">
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -386,6 +425,18 @@ select PRODUCT_NATURE,
 				</box>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA[$F{BALANCE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00;-#,##0.00">
+				<reportElement x="429" y="0" width="95" height="16" uuid="e17159d4-22c1-4f4a-ac97-287de2cd9d4d"/>
+				<box rightPadding="5">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{RECOVERY}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
