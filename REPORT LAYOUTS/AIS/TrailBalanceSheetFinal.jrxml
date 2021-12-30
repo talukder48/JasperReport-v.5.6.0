@@ -19,11 +19,12 @@
 	<parameter name="P_fin_year" class="java.lang.String"/>
 	<parameter name="p_adjust_type" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT  GL_CODE,
+		<![CDATA[SELECT  adjustment,GL_CODE,
        (select l.glname from as_glcodelist l where l.glcode = GL_CODE) gl_name,
        DR_AMOUNT,fin_year,
        CR_AMOUNT FROM table(pkg_gas_report.fn_get_trail_balance($P{P_BRANCH},$P{P_fin_year},$P{p_adjust_type}))  order by gl_code]]>
 	</queryString>
+	<field name="ADJUSTMENT" class="java.lang.String"/>
 	<field name="GL_CODE" class="java.lang.String"/>
 	<field name="GL_NAME" class="java.lang.String"/>
 	<field name="DR_AMOUNT" class="java.math.BigDecimal"/>
@@ -86,7 +87,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true" isItalic="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[ "Financial Year: "+$F{FIN_YEAR}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Financial Year: "+$F{FIN_YEAR}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
 				<reportElement x="516" y="109" width="83" height="15" uuid="246c0b38-9a34-49a7-ab14-3c1f4b384e29"/>
@@ -105,6 +106,16 @@
 				</textElement>
 				<text><![CDATA[Print Date:]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="233" y="109" width="151" height="15" uuid="cbf95ebe-bdb7-4534-8064-541070fde093"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ADJUSTMENT}]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 	<columnHeader>
