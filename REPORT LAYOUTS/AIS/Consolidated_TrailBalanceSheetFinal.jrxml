@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ConsolidatedTB" language="groovy" pageWidth="650" pageHeight="842" columnWidth="610" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d46ded91-5598-4848-8e01-801c95fb9693">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TrailBalance" language="groovy" pageWidth="650" pageHeight="842" columnWidth="610" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d46ded91-5598-4848-8e01-801c95fb9693">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -16,17 +16,20 @@
 	<parameter name="P_BRANCH" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
-	<parameter name="P_Trandate" class="java.lang.String"/>
 	<parameter name="P_fin_year" class="java.lang.String"/>
+	<parameter name="p_adjust_type" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT gl_code,fin_year,(SELECT l.glname FROM as_glcodelist l where l.glcode=gl_code)gl_name,nvl(-1*decode(sign(balance),-1,balance),0)dr_amount ,nvl(decode(sign(balance),1,balance),0)cr_amount FROM (
-SELECT gl_code,fin_year,sum(-1*dr_amount+cr_amount) balance FROM table (pkg_gas_report.fn_get_tb_consolidated($P{P_BRANCH},$P{P_fin_year}))  group by fin_year,gl_code)
-order by gl_code]]>
+		<![CDATA[SELECT  adjustment,GL_CODE,
+       (select l.glname from as_glcodelist l where l.glcode = GL_CODE) gl_name,
+       DR_AMOUNT,fin_year,
+       CR_AMOUNT FROM table(pkg_gas_report.fn_get_tb_consolidated_final($P{p_adjust_type},$P{P_fin_year}))
+       where DR_AMOUNT+CR_AMOUNT<>0  order by gl_code]]>
 	</queryString>
+	<field name="ADJUSTMENT" class="java.lang.String"/>
 	<field name="GL_CODE" class="java.lang.String"/>
-	<field name="FIN_YEAR" class="java.lang.String"/>
 	<field name="GL_NAME" class="java.lang.String"/>
 	<field name="DR_AMOUNT" class="java.math.BigDecimal"/>
+	<field name="FIN_YEAR" class="java.lang.String"/>
 	<field name="CR_AMOUNT" class="java.math.BigDecimal"/>
 	<variable name="SerialNo" class="java.lang.Number">
 		<variableExpression><![CDATA[$V{SerialNo}+1]]></variableExpression>
@@ -40,19 +43,11 @@ order by gl_code]]>
 		<variableExpression><![CDATA[$F{CR_AMOUNT}]]></variableExpression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
-	<variable name="V_debit_br" class="java.lang.Double" resetType="None" calculation="Sum">
-		<variableExpression><![CDATA[$F{DR_AMOUNT}]]></variableExpression>
-		<initialValueExpression><![CDATA[0]]></initialValueExpression>
-	</variable>
-	<variable name="v_credit_br" class="java.lang.Double" resetType="None" calculation="Sum">
-		<variableExpression><![CDATA[$F{CR_AMOUNT}]]></variableExpression>
-		<initialValueExpression><![CDATA[0]]></initialValueExpression>
-	</variable>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="80" splitType="Stretch">
+		<band height="126" splitType="Stretch">
 			<subreport>
 				<reportElement x="2" y="0" width="597" height="75" uuid="b150a093-60cc-42e9-b075-fad8c9081b05"/>
 				<subreportParameter name="BRANCH_NAME">
@@ -76,12 +71,8 @@ order by gl_code]]>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Header_Portrait.jasper"]]></subreportExpression>
 			</subreport>
-		</band>
-	</title>
-	<columnHeader>
-		<band height="43" splitType="Stretch">
 			<staticText>
-				<reportElement x="2" y="0" width="597" height="20" forecolor="#006666" uuid="e2f8fce9-1bd5-4b10-ac31-c26a24f277f6"/>
+				<reportElement x="2" y="75" width="597" height="20" uuid="e2f8fce9-1bd5-4b10-ac31-c26a24f277f6"/>
 				<box leftPadding="3">
 					<topPen lineWidth="0.0"/>
 					<bottomPen lineWidth="1.0"/>
@@ -89,38 +80,108 @@ order by gl_code]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[Trial Balance (Consolidated) ]]></text>
-			</staticText>
-			<textField pattern="dd/MM/yyyy">
-				<reportElement x="516" y="20" width="83" height="20" uuid="246c0b38-9a34-49a7-ab14-3c1f4b384e29"/>
-				<box>
-					<bottomPen lineWidth="0.0"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font isBold="true" isItalic="false"/>
-				</textElement>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="416" y="20" width="100" height="20" uuid="6aecfbd1-1508-46de-a41b-4876a4daa8df"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font isBold="true" isItalic="false"/>
-				</textElement>
-				<text><![CDATA[Print Date:]]></text>
+				<text><![CDATA[Trial Balance (Consolidated)]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="232" y="20" width="169" height="20" uuid="e1b37026-0546-4d13-a16e-6094de4e4651"/>
+				<reportElement x="2" y="95" width="597" height="13" forecolor="#000066" uuid="4b794792-c8cb-4d27-a823-075db2534bc3"/>
+				<box leftPadding="2"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true" isItalic="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Financial Year: "+$F{FIN_YEAR}]]></textFieldExpression>
 			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="516" y="109" width="83" height="15" uuid="246c0b38-9a34-49a7-ab14-3c1f4b384e29"/>
+				<box>
+					<bottomPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="416" y="109" width="100" height="15" uuid="6aecfbd1-1508-46de-a41b-4876a4daa8df"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Print Date:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="233" y="109" width="151" height="15" uuid="cbf95ebe-bdb7-4534-8064-541070fde093"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ADJUSTMENT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement x="72" y="0" width="97" height="14" uuid="cf6622b5-3d6c-4014-b01d-434830518ea2"/>
+				<box leftPadding="3">
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[GL Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="169" y="0" width="184" height="14" uuid="5c6f9e1e-7cd2-437c-9f4b-9ec3a0bf4357"/>
+				<box leftPadding="5">
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Particulars]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="0" width="70" height="14" uuid="8993d680-cc01-4d22-aadb-f9f3a1f5023f"/>
+				<box leftPadding="3">
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[SL No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="475" y="0" width="124" height="14" uuid="c3a6deed-0730-43d9-a570-02b080a37540"/>
+				<box leftPadding="5" rightPadding="5">
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Credit]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="353" y="0" width="124" height="14" uuid="d40d982b-3106-45b2-8764-c2fce6d8fe7e"/>
+				<box leftPadding="5" rightPadding="4">
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Debit]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="20" splitType="Stretch">
-			<textField>
-				<reportElement x="72" y="0" width="97" height="20" uuid="9521d998-6d1c-4de8-8a95-6272e3f1678c"/>
+		<band height="14" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" x="72" y="0" width="97" height="14" uuid="9521d998-6d1c-4de8-8a95-6272e3f1678c"/>
 				<box leftPadding="3">
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
@@ -128,8 +189,8 @@ order by gl_code]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{GL_CODE}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="169" y="0" width="184" height="20" uuid="5c61700c-92ef-45b8-98eb-4917071020fd"/>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" x="169" y="0" width="184" height="14" uuid="5c61700c-92ef-45b8-98eb-4917071020fd"/>
 				<box leftPadding="5">
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
@@ -137,8 +198,8 @@ order by gl_code]]>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{GL_NAME}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="2" y="0" width="70" height="20" uuid="61836a65-6661-41e4-b9e7-9bd029c89ec3"/>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" x="2" y="0" width="70" height="14" uuid="61836a65-6661-41e4-b9e7-9bd029c89ec3"/>
 				<box>
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
@@ -146,8 +207,8 @@ order by gl_code]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$V{SerialNo}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00;-#,##0.00">
-				<reportElement x="475" y="0" width="124" height="20" uuid="1d8838ec-8652-4f28-b40d-759ddfb517e7"/>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00;-#,##0.00">
+				<reportElement stretchType="RelativeToTallestObject" x="475" y="0" width="124" height="14" uuid="1d8838ec-8652-4f28-b40d-759ddfb517e7"/>
 				<box leftPadding="5" rightPadding="5">
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
@@ -155,8 +216,8 @@ order by gl_code]]>
 				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{CR_AMOUNT}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00;-#,##0.00">
-				<reportElement x="353" y="0" width="124" height="20" uuid="391f1f32-83e3-4dbb-82c5-d5010090bc44"/>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00;-#,##0.00">
+				<reportElement stretchType="RelativeToTallestObject" x="353" y="0" width="124" height="14" uuid="391f1f32-83e3-4dbb-82c5-d5010090bc44"/>
 				<box leftPadding="5" rightPadding="4">
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
@@ -167,25 +228,22 @@ order by gl_code]]>
 		</band>
 	</detail>
 	<pageFooter>
-		<band height="22">
+		<band height="17">
 			<textField>
-				<reportElement x="262" y="2" width="80" height="20" uuid="c3da3840-18ba-47b4-a981-a31ae861d187"/>
+				<reportElement x="273" y="2" width="80" height="13" uuid="c3da3840-18ba-47b4-a981-a31ae861d187"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement x="342" y="2" width="40" height="20" uuid="d30d995e-4f89-437f-85b0-bd48c6c766c9"/>
+				<reportElement x="353" y="2" width="40" height="13" uuid="d30d995e-4f89-437f-85b0-bd48c6c766c9"/>
 				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement x="2" y="2" width="597" height="1" uuid="1e3adfb4-73c2-4590-9d03-fb932622d2ad"/>
-			</line>
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="50">
+		<band height="22">
 			<textField pattern="#,##0.00;-#,##0.00">
-				<reportElement x="476" y="0" width="123" height="20" uuid="d73c89f8-825d-493e-99dc-1cc379981fde"/>
+				<reportElement x="476" y="0" width="123" height="15" uuid="d73c89f8-825d-493e-99dc-1cc379981fde"/>
 				<box rightPadding="4">
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
@@ -196,7 +254,7 @@ order by gl_code]]>
 				<textFieldExpression><![CDATA[$V{V_credit_amt}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="2" y="0" width="351" height="20" uuid="a0c7e247-95e6-466e-aeda-750fe76d1094"/>
+				<reportElement x="2" y="0" width="351" height="15" uuid="a0c7e247-95e6-466e-aeda-750fe76d1094"/>
 				<box>
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>
@@ -204,10 +262,10 @@ order by gl_code]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[Grand Total                                                                                   : ]]></text>
+				<text><![CDATA[Grand Total                                                                                     :]]></text>
 			</staticText>
 			<textField pattern="#,##0.00;-#,##0.00">
-				<reportElement x="353" y="0" width="124" height="20" uuid="975bb6bb-65ac-4417-bb04-eed779bdb985"/>
+				<reportElement x="353" y="0" width="124" height="15" uuid="975bb6bb-65ac-4417-bb04-eed779bdb985"/>
 				<box rightPadding="4">
 					<topPen lineWidth="1.0"/>
 					<bottomPen lineWidth="1.0"/>

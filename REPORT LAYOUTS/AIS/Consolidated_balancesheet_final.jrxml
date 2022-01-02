@@ -39,7 +39,7 @@
           Sum_Balance
        end Sum_Balance
 
-  from table(pkg_gas_report.fn_get_balancesheet_final($P{P_BRANCH},$P{P_fin_year},$P{p_adjust_type}))
+  from table(pkg_gas_report.fn_Consolidated_bs_final($P{P_fin_year},$P{p_adjust_type}))
  where VISIBILITY = 'Y'
    AND BALANCE <> 0
  order by group_type, group_code, particular_code]]>
@@ -169,10 +169,10 @@
 			<staticText>
 				<reportElement x="0" y="77" width="610" height="13" uuid="7a9910ca-c095-4482-85b0-9360e1f08aef"/>
 				<box>
-					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font isBold="true"/>
+					<font isBold="true" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Statement of Financial Position]]></text>
 			</staticText>
