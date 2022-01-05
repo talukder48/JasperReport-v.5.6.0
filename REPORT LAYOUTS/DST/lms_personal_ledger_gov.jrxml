@@ -11,7 +11,7 @@
 	<queryString>
 		<![CDATA[select
 SERIAL,
-       LOAN_CODE,
+       LOAN_CODE||decode(substr(LOAN_CODE,1,1),'1','(Single)','2','(Group)','3','(Flat)')LOAN_CODE ,
        LOAN_RESC,
        decode(LEGAL_ACT,'N','No','Y','Yes','N/A')LEGAL_ACT,
        LOC_CODE,
@@ -530,7 +530,7 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 					</textElement>
 					<text><![CDATA[Expiry Date]]></text>
 				</staticText>
-				<textField pattern="###0.00;-###0.00">
+				<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
 					<reportElement x="348" y="15" width="100" height="13" uuid="287a2b9b-1972-47fe-8363-9b4a3fce1274"/>
 					<box rightPadding="5"/>
 					<textElement textAlignment="Right"/>
