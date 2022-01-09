@@ -17,10 +17,11 @@
 	<parameter name="P_BRANCH" class="java.lang.String"/>
 	<parameter name="p_adjust_type" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[select decode (k.type,'I','A.  INCOME','E','B.  EXPENDITURE ')GroupDesc , decode (k.type,'I',1,'E',2)Ordering,k.type, k.group_code ,(select y.group_description from as_profitloss_param y where y.group_code=k.group_code)particulars ,
+		<![CDATA[select decode (k.type,'I','A.  INCOME','E','B.  EXPENDITURE ','C. Cost of Fund')GroupDesc , decode (k.type,'I',1,'E',2)Ordering,k.type, k.group_code ,(select y.group_description from as_profitloss_param y where y.group_code=k.group_code)particulars ,
 decode(b.tb_type,'B','Before Adjustment','After Adjustment') Adjustment,
 case k.type
   when 'E' then sum(b.cur_bal)*-1
+  when 'C' then sum(b.cur_bal)*-1
   else
     sum(b.cur_bal) end Balance,
     sum(b.cur_bal) sign_Ballance
@@ -88,13 +89,13 @@ and tb_type=$P{p_adjust_type}
 				</textField>
 				<staticText>
 					<reportElement x="34" y="0" width="366" height="13" forecolor="#003399" uuid="3fb30733-c05e-4fc8-aba6-3401b42e8d2c"/>
-					<box>
+					<box rightPadding="3">
 						<bottomPen lineWidth="1.0" lineStyle="Double"/>
 					</box>
-					<textElement>
+					<textElement textAlignment="Right">
 						<font isBold="true"/>
 					</textElement>
-					<text><![CDATA[Total Amount]]></text>
+					<text><![CDATA[Total Amount:]]></text>
 				</staticText>
 			</band>
 		</groupFooter>
@@ -269,7 +270,7 @@ and tb_type=$P{p_adjust_type}
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[Profit for the year(A-B)]]></text>
+				<text><![CDATA[Profit for the year [A-(B+C)]]]></text>
 			</staticText>
 		</band>
 	</summary>

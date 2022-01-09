@@ -17,7 +17,7 @@
 	<parameter name="P_BRANCH" class="java.lang.String"/>
 	<parameter name="p_adjust_type" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[select decode(k.type, 'I', 'A.  INCOME', 'E', 'B.  EXPENDITURE ') GroupDesc,
+		<![CDATA[select decode(k.type, 'I', 'A.  INCOME', 'E', 'B.  EXPENDITURE ','C. Cost of Fund') GroupDesc,
        decode(k.type, 'I', 1, 'E', 2) Ordering,
        (select y.group_description
           from as_profitloss_param y
@@ -25,8 +25,8 @@
        k.type,
        k.group_code,
        case k.type
-         when 'E' then
-          sum(k.cur_bal) * -1
+         when 'E' then sum(k.cur_bal) * -1
+        when 'C' then sum(k.cur_bal)*-1
          else
           sum(k.cur_bal)
        end Balance,
@@ -298,7 +298,7 @@
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[Profit for the year(A-B)]]></text>
+				<text><![CDATA[Profit for the year [A-(B+C)]]]></text>
 			</staticText>
 		</band>
 	</summary>

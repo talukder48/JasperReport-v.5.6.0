@@ -3,6 +3,20 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<style name="rowColoring">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{CALCULATIONTYPE}=='V']]></conditionExpression>
+			<style forecolor="#000099" backcolor="#CCFF66" pdfFontName="Courier-Bold">
+				<box>
+					<pen lineWidth="1.0" lineColor="#009900"/>
+					<topPen lineWidth="1.0" lineColor="#009900"/>
+					<leftPen lineWidth="1.0" lineColor="#009900"/>
+					<bottomPen lineWidth="1.0" lineColor="#009900"/>
+					<rightPen lineWidth="1.0" lineColor="#009900"/>
+				</box>
+			</style>
+		</conditionalStyle>
+	</style>
 	<parameter name="P_fin_year" class="java.lang.String"/>
 	<parameter name="M_LOGO" class="java.lang.String"/>
 	<parameter name="LOGO_PATH" class="java.lang.String"/>
@@ -37,8 +51,8 @@
           Sum_Balance * (-1)
          else
           Sum_Balance
-       end Sum_Balance
-
+       end Sum_Balance,
+Obsi_name,Obsi_Balance
   from table(pkg_gas_report.fn_Consolidated_bs_final($P{P_fin_year},$P{p_adjust_type}))
  where VISIBILITY = 'Y'
    AND BALANCE <> 0
@@ -56,6 +70,8 @@
 	<field name="CALCULATIONTYPE" class="java.lang.String"/>
 	<field name="BALANCE" class="java.math.BigDecimal"/>
 	<field name="SUM_BALANCE" class="java.math.BigDecimal"/>
+	<field name="OBSI_NAME" class="java.lang.String"/>
+	<field name="OBSI_BALANCE" class="java.math.BigDecimal"/>
 	<variable name="V_Total" class="java.lang.Double" resetType="Group" resetGroup="GROUP_TYPE" incrementType="Group" incrementGroup="GROUP_TYPE" calculation="Sum">
 		<variableExpression><![CDATA[$F{SUM_BALANCE}]]></variableExpression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
@@ -75,7 +91,7 @@
 	<group name="GROUP_TYPE">
 		<groupExpression><![CDATA[$F{GROUP_TYPE}]]></groupExpression>
 		<groupHeader>
-			<band height="18">
+			<band height="14">
 				<textField>
 					<reportElement x="61" y="0" width="484" height="13" forecolor="#006666" uuid="789a5ba3-cac6-4756-a75d-f44a023674f0"/>
 					<box>
@@ -93,7 +109,7 @@
 			</band>
 		</groupHeader>
 		<groupFooter>
-			<band height="27">
+			<band height="22">
 				<textField>
 					<reportElement x="141" y="3" width="306" height="14" forecolor="#006666" uuid="13210eae-16d3-43a0-acfd-945528d0ccaf"/>
 					<box>
@@ -139,14 +155,14 @@
 	<group name="GroupCode">
 		<groupExpression><![CDATA[$F{GROUP_CODE}]]></groupExpression>
 		<groupHeader>
-			<band height="1">
+			<band height="2">
 				<line>
 					<reportElement x="61" y="0" width="484" height="1" uuid="5cf5598b-f601-4f6f-8a60-307db7174c26"/>
 				</line>
 			</band>
 		</groupHeader>
 		<groupFooter>
-			<band height="15">
+			<band height="4">
 				<line>
 					<reportElement x="61" y="0" width="484" height="1" uuid="38e204da-2723-4f4d-8588-c207fd9fac81"/>
 				</line>
@@ -213,9 +229,9 @@
 		</band>
 	</title>
 	<detail>
-		<band height="16" splitType="Stretch">
+		<band height="14" splitType="Stretch">
 			<textField>
-				<reportElement x="61" y="0" width="386" height="16" uuid="a5d65b5b-794b-4088-93e3-f433c1683664"/>
+				<reportElement style="rowColoring" x="61" y="0" width="386" height="13" uuid="a5d65b5b-794b-4088-93e3-f433c1683664"/>
 				<box leftPadding="4">
 					<topPen lineWidth="0.25" lineStyle="Solid"/>
 					<leftPen lineWidth="1.0"/>
@@ -228,7 +244,7 @@
 				<textFieldExpression><![CDATA[$F{PARTICULAR_NAME}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00;-#,##0.00">
-				<reportElement x="447" y="0" width="98" height="16" uuid="c4912ccb-f0f5-4948-9dfa-11574a2b600a"/>
+				<reportElement style="rowColoring" x="447" y="0" width="98" height="13" uuid="c4912ccb-f0f5-4948-9dfa-11574a2b600a"/>
 				<box rightPadding="3">
 					<topPen lineWidth="0.25"/>
 					<leftPen lineWidth="0.25"/>
@@ -243,16 +259,43 @@
 		</band>
 	</detail>
 	<pageFooter>
-		<band height="23" splitType="Stretch">
+		<band height="15" splitType="Stretch">
 			<textField>
-				<reportElement x="232" y="3" width="80" height="20" uuid="ae8f1962-9dfb-4b4d-9cd3-12d7adc4a1ec"/>
+				<reportElement x="232" y="2" width="80" height="13" uuid="ae8f1962-9dfb-4b4d-9cd3-12d7adc4a1ec"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement x="312" y="3" width="40" height="20" uuid="7362efe5-bb3a-4fc2-b2ef-cd24e25b995c"/>
+				<reportElement x="312" y="2" width="40" height="13" uuid="7362efe5-bb3a-4fc2-b2ef-cd24e25b995c"/>
 				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>
+	<summary>
+		<band height="14">
+			<textField>
+				<reportElement x="61" y="1" width="386" height="13" uuid="fc30c4bf-f0f6-4b06-acf1-be675bb6e00f"/>
+				<box leftPadding="3">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{OBSI_NAME}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
+				<reportElement x="447" y="1" width="100" height="13" uuid="a114b56d-6227-4473-abe0-d2d92c43c0e4"/>
+				<box rightPadding="5">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{OBSI_BALANCE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
 </jasperReport>
