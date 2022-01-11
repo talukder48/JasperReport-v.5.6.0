@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="hr_employeeList" language="groovy" pageWidth="1130" pageHeight="842" orientation="Landscape" columnWidth="1090" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="7fe5b705-0168-4b94-84d9-01e91b2037bb">
 	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="703"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="P_DEPT_CODE" class="java.lang.String"/>
 	<parameter name="P_DESINGATION_CODE" class="java.lang.String"/>
@@ -392,7 +392,7 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Header_Landscape.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement x="0" y="62" width="1081" height="13" forecolor="#339900" uuid="a0a780cf-3991-49af-ac53-790ac8ab1b62"/>
+				<reportElement x="0" y="75" width="1081" height="13" forecolor="#339900" uuid="a0a780cf-3991-49af-ac53-790ac8ab1b62"/>
 				<box>
 					<bottomPen lineWidth="1.0"/>
 				</box>

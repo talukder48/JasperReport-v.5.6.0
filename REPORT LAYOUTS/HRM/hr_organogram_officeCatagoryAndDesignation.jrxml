@@ -17,14 +17,20 @@
 	<parameter name="P_BRANCH" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="p_Category" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[select DESIG_CODE,
        DESIG_NAME,
        sum(ALLOCATED_PERSON) ALLOCATED_PERSON,
        sum(CURRENT_PERSON) CURRENT_PERSON,
-       (select decode(p.start_amount-p.end_amount,0,p.start_amount||'/-(Fixed)',p.start_amount||'-'||p.end_amount||'/-') from prms_designation d join hrm_payscale p
-on(d.payscale_code=p.grade_code)
-where d.designation_code=DESIG_CODE) Scale,
+       (select decode(p.start_amount - p.end_amount,
+                      0,
+                      p.start_amount || '/-(Fixed)',
+                      p.start_amount || '-' || p.end_amount || '/-')
+          from prms_designation d
+          join hrm_payscale p
+            on (d.payscale_code = p.grade_code)
+         where d.designation_code = DESIG_CODE) Scale,
        decode((select k.desig_class
                 from prms_designation k
                where k.designation_code = DESIG_CODE),
@@ -35,15 +41,16 @@ where d.designation_code=DESIG_CODE) Scale,
               '3',
               'Class -3',
               'Class -4') class
-  from table(pkg_hrm_report.fn_get_organogram($P{P_BRANCH}))
-  where dept_code like $P{P_DEPT_CODE}
- and DESIG_CODE <> 0
+  from table(pkg_hrm_report.fn_get_organogram('%'))
+
+ where DESIG_CODE <> 0 and office_catagory=$P{p_Category}
  group by DESIG_CODE, DESIG_NAME
  order by (select k.desig_class
              from prms_designation k
             where k.designation_code = DESIG_CODE),
           DESIG_CODE,
-          DESIG_NAME]]>
+          DESIG_NAME
+]]>
 	</queryString>
 	<field name="DESIG_CODE" class="java.math.BigDecimal"/>
 	<field name="DESIG_NAME" class="java.lang.String"/>
@@ -213,23 +220,13 @@ where d.designation_code=DESIG_CODE) Scale,
 	</background>
 	<title>
 		<band height="99" splitType="Stretch">
-			<textField pattern="dd/MM/yyyy">
+			<textField pattern="dd/MM/yyyy h.mm a">
 				<reportElement x="502" y="77" width="100" height="13" uuid="c84e132f-b826-41aa-b485-a85ab6d05860"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement x="15" y="77" width="587" height="13" forecolor="#000099" uuid="3e568532-74ba-46b4-86cc-1f021c52dc96"/>
-				<box>
-					<bottomPen lineWidth="1.0"/>
-				</box>
-				<textElement textAlignment="Center">
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[Designation Wise Organogram Summary Report]]></text>
-			</staticText>
 			<subreport>
 				<reportElement x="15" y="2" width="587" height="75" uuid="e4a7c5dc-45be-49ee-b103-f6b46c402809"/>
 				<subreportParameter name="SUBREPORT_DIR">
@@ -258,6 +255,24 @@ where d.designation_code=DESIG_CODE) Scale,
 				</textElement>
 				<text><![CDATA[Print. Date:]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="15" y="77" width="587" height="13" forecolor="#006600" uuid="e9ecfa68-80c2-467e-b41b-eabdc1224972"/>
+				<box>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{p_Category}.equals("A")?" Organogram Summary of A Category Report":(
+    $P{p_Category}.equals("B")?" Organogram Summary of B Category Report":(
+    $P{p_Category}.equals("C")?" Organogram Summary of C Category Report":(
+        $P{p_Category}.equals("Z")?" Organogram Summary of Zonal Offices":(
+        $P{p_Category}.equals("R")?" Organogram Summary of Regional Offices":"Organogram Summary of Head Office"
+    )
+    )
+   )
+)]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 	<detail>

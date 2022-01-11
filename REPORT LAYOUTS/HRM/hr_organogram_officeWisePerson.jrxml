@@ -3,6 +3,16 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<parameter name="LOGO_PATH" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["D:\\iReport\\PRMS\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="BRANCH_ADDRESS" class="java.lang.String"/>
+	<parameter name="BRANCH_NAME" class="java.lang.String"/>
+	<parameter name="P_ENTITY_NUM" class="java.lang.String">
+		<defaultValueExpression><![CDATA["1"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="M_LOGO" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT OFFICE_CODE,
        OFFICE_NAME,
@@ -13,8 +23,7 @@
        sum(CURRENT_PERSON) difference
   FROM TABLE(PKG_HRM_REPORT.fn_get_organogram('%'))
  group  BY OFFICE_CODE, OFFICE_NAME, OFFICE_CATAGORY
- order by OFFICE_CATAGORY,OFFICE_CODE
-]]>
+ order by OFFICE_CATAGORY,OFFICE_CODE]]>
 	</queryString>
 	<field name="OFFICE_CODE" class="java.lang.String"/>
 	<field name="OFFICE_NAME" class="java.lang.String"/>
@@ -42,7 +51,53 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="82" splitType="Stretch"/>
+		<band height="95" splitType="Stretch">
+			<subreport>
+				<reportElement x="11" y="0" width="587" height="75" uuid="c5749205-fbea-416d-ba92-fd11ca456cc3"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="BRANCH_NAME">
+					<subreportParameterExpression><![CDATA[$P{BRANCH_NAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="M_LOGO">
+					<subreportParameterExpression><![CDATA[$P{M_LOGO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="BRANCH_ADDRESS">
+					<subreportParameterExpression><![CDATA[$P{BRANCH_ADDRESS}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LOGO_PATH">
+					<subreportParameterExpression><![CDATA[$P{LOGO_PATH}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Header_Portrait.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="11" y="75" width="587" height="13" forecolor="#000099" uuid="5a5ec79a-8666-4e5e-a070-ecab2a321774"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Organogram Summary]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="437" y="75" width="61" height="13" uuid="818c7a52-800e-4e37-a1fa-34c722a559ad"/>
+				<box leftPadding="2"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Print. Date:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="498" y="75" width="100" height="13" uuid="50a0ecb5-27da-43e1-912d-6ca0dfdef730"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
 	</title>
 	<columnHeader>
 		<band height="33" splitType="Stretch">
