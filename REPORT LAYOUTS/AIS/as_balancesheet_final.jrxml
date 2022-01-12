@@ -245,7 +245,7 @@ Obsi_name,Obsi_Balance
 				</textElement>
 				<textFieldExpression><![CDATA[$F{PARTICULAR_NAME}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00;-#,##0.00">
+			<textField pattern="#,##0.00;(#,##0.00)">
 				<reportElement style="rowColoring" x="447" y="0" width="98" height="13" uuid="c4912ccb-f0f5-4948-9dfa-11574a2b600a"/>
 				<box rightPadding="3">
 					<topPen lineWidth="0.25"/>
