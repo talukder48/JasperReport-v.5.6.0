@@ -72,7 +72,7 @@ create or replace package pkg_gas is
     BATCH_NO  number(4),
     transl    number(4),
     gl_code   varchar2(15),
-    gl_name   varchar2(100),
+    gl_name   varchar2(120),
     dr_amount number(18, 2),
     cr_amount number(18, 2),
     cqnumber  varchar2(100),
@@ -134,7 +134,8 @@ create or replace package pkg_gas is
     pipelined;
 
   function fn_get_ledger_satement(p_branch_code in varchar2,
-                                  p_gl_code     in varchar2)
+                                  p_gl_code     in varchar2,
+                                  p_fin_year    in varchar2)
     return V_ledger_statement
     pipelined;
   function fn_get_tb_consolidated_old(p_branch_code in varchar2)
@@ -1036,6 +1037,7 @@ create or replace package body pkg_gas is
                  where b.branch = p_branch_code
                    and b.glcode = l.glcode
                    AND L.TB_YN = 'Y'
+                   and cur_bal<>0
                 -- AND L.GLCODE NOT LIKE '161%'
                 ) loop
     
@@ -1136,6 +1138,7 @@ create or replace package body pkg_gas is
   begin
     for in1 in (SELECT b.glcode,
                        l.glname,
+                       b.fin_year,
                        b.cur_bal,
                        L.TRAN_YN,
                        l.lvlcode5,
@@ -1152,7 +1155,7 @@ create or replace package body pkg_gas is
                    and b.cur_bal <> 0) loop
       w_glregister.gl_code  := in1.glcode;
       w_glregister.TranHead := '0';
-      w_glregister.fin_year := '2020-2021';
+      w_glregister.fin_year := in1.fin_year;
       w_glregister.lvlcode0 := p_gl_code;
       w_glregister.lvlcode1 := in1.lvlcode1;
       w_glregister.lvlcode2 := in1.lvlcode2;
@@ -1396,7 +1399,7 @@ create or replace package body pkg_gas is
                   FROM as_glbalance b, as_glcodelist l
                  where b.glcode = l.glcode
                    and l.tb_yn = 'Y'
-                --  and b.cur_bal <> 0
+                  and b.cur_bal <> 0
                 
                 ) loop
       w_tbalance.branch   := in1.branch;
@@ -1831,20 +1834,25 @@ create or replace package body pkg_gas is
   end sp_Opening_Balance_new;*/
 
   function fn_get_ledger_satement(p_branch_code in varchar2,
-                                  p_gl_code     in varchar2)
+                                  p_gl_code     in varchar2,
+                                  p_fin_year    in varchar2)
     return V_ledger_statement
     pipelined is
     w_ledger_statement ledger_statement;
     v_balance          number(18, 2) := 0;
     v_ck_balance       number(18, 2) := 0;
+    p_from_date        date;
+    p_to_date          date;
   begin
     begin
-      select to_date('30-jun-2020'),
+      select a.start_date,a.end_date into p_from_date ,p_to_date from as_finyear a where a.fin_year=p_fin_year;
+       
+      select to_date('30-jun-'||substr(p_fin_year,1,4)),
              '',
              b.glcode,
              0 /*to_number(decode(sign(b.cur_bal), -1, b.cur_bal * -1, 0))*/ Dr_amount,
              0 /*to_number(decode(sign(b.cur_bal), 1, b.cur_bal, 0))*/ CR_Amount,
-             'BF',
+             'B.F.',
              b.branch,
              '' CQ_no,
              '' CQ_date,
@@ -1863,28 +1871,31 @@ create or replace package body pkg_gas is
              w_ledger_statement.cq_ref,
              w_ledger_statement.gl_name,
              v_ck_balance
-        from as_Glbalance_hist b
+        from as_final_glbalance b
        where b.branch = p_branch_code
+         and b.fin_year=SUBSTR(p_fin_year, 1, 4) - 1 || '-' || SUBSTR(p_fin_year, 1, 4)
+         and b.tb_type='A'
          and b.glcode = p_gl_code;
-    
+      
     exception
       when others then
         v_ck_balance                 := 0;
-        w_ledger_statement.TRAN_DATE := to_date('30-jun-2020');
+        w_ledger_statement.TRAN_DATE := to_date('30-jun-'||substr(p_fin_year,1,4));
         w_ledger_statement.BATCH_NO  := '';
         w_ledger_statement.gl_code   := p_gl_code;
         w_ledger_statement.dr_amount := 0;
         w_ledger_statement.cr_amount := 0;
-        w_ledger_statement.narration := '';
+        w_ledger_statement.narration := 'B.F.';
         w_ledger_statement.branch    := p_branch_code;
         w_ledger_statement.cqnumber  := '';
         w_ledger_statement.cq_date   := '';
         w_ledger_statement.cq_ref    := '';
+       
         select l.glname
           into w_ledger_statement.gl_name
           from as_glcodelist l
-         where l.glcode = p_branch_code;
-      
+         where l.glcode = p_gl_code;
+       
     end;
     if (v_ck_balance > 0) then
       w_ledger_statement.Balance := v_ck_balance;
@@ -1923,6 +1934,7 @@ create or replace package body pkg_gas is
                        t.tran_date = k.tran_date and
                        t.batch_no = k.batch_no)
                  where t.branch = p_branch_code
+                     and k.tran_date between p_from_date and p_to_date
                    and k.auth_on is not null
                    and t.glcode = p_gl_code
                  order by t.tran_date, t.batch_no, t.tran_sl) loop

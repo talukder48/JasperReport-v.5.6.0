@@ -78,20 +78,37 @@ create or replace package body PKG_API is
       if v_transaction_exist_check = 0 then
       
         begin
-          pkg_autopost.sp_autopost_api(p_branch_code,
-                                       p_customer_mobile,
-                                       p_loan_code,
-                                       p_memo_no,
-                                       p_purpose_code,
-                                       p_transaction_id,
-                                       p_txn_amount,
-                                       p_txn_date,
-                                       p_txn_receiver,
-                                       p_vat_amount,
-                                       v_reference,
-                                       v_balance,
-                                       v_SMS,
-                                       v_Error_check);
+          if p_transaction_id like 'R%' then
+            pkg_autopost.sp_autopost_reverse_api(p_branch_code,
+                                                 p_customer_mobile,
+                                                 p_loan_code,
+                                                 p_memo_no,
+                                                 p_purpose_code,
+                                                 p_transaction_id,
+                                                 p_txn_amount,
+                                                 p_txn_date,
+                                                 p_txn_receiver,
+                                                 p_vat_amount,
+                                                 v_reference,
+                                                 v_balance,
+                                                 v_SMS,
+                                                 v_Error_check);
+          else
+            pkg_autopost.sp_autopost_api(p_branch_code,
+                                         p_customer_mobile,
+                                         p_loan_code,
+                                         p_memo_no,
+                                         p_purpose_code,
+                                         p_transaction_id,
+                                         p_txn_amount,
+                                         p_txn_date,
+                                         p_txn_receiver,
+                                         p_vat_amount,
+                                         v_reference,
+                                         v_balance,
+                                         v_SMS,
+                                         v_Error_check);
+          end if;
         
         exception
           when others then
@@ -147,8 +164,8 @@ create or replace package body PKG_API is
           raise v_Transaction_error;
         end if;
       else
-        select a.sms_body,a.reference_number,a.loan_bal
-          into p_rspSms, p_ref    ,  p_balance
+        select a.sms_body, a.reference_number, a.loan_bal
+          into p_rspSms, p_ref, p_balance
           from API_TRANSACTION_DATA a
          where a.transaction_id = p_transaction_id;
         /*To do here*/
@@ -167,11 +184,11 @@ create or replace package body PKG_API is
     
     when v_Transaction_error then
       p_status_code    := '203';
-      p_status_message := 'Transaction Fail!!' || sqlerrm;
+      p_status_message := 'Transaction Fail!!' || v_Error_check;
     
     when others then
       p_status_code    := '203';
-      p_status_message := 'Transaction Fail!!' || sqlerrm;
+      p_status_message := 'Transaction Fail!!' || sqlerrm || v_Error_check;
     
   end sp_transaction_post;
 
@@ -195,8 +212,8 @@ create or replace package body PKG_API is
       into v_exist
       from loan_account a
      where a.loc_code = p_office_code
-       and a.loan_code = p_loan_code
-       and a.product_nature = p_product_nature;
+       and a.loan_code = p_loan_code;
+    --   and a.product_nature = p_product_nature;
   
     if v_exist > 0 then
       update loan_account a
@@ -208,10 +225,11 @@ create or replace package body PKG_API is
              nid              = p_NID,
              tin              = p_TIN,
              mail_id          = p_MailAddress,
-             mobile_no        = p_PhoneNumber
+             mobile_no        = p_PhoneNumber,
+             product_nature   = p_product_nature
        where a.loc_code = p_office_code
-         and a.loan_code = p_loan_code
-         and a.product_nature = p_product_nature;
+         and a.loan_code = p_loan_code;
+      --   and a.product_nature = p_product_nature;
     else
       insert into loan_account
         (loc_code,

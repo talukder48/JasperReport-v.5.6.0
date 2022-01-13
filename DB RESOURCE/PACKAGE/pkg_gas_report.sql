@@ -1,23 +1,25 @@
 create or replace package pkg_gas_report is
 
   type branchIErecord is record(
-    HEARDER_LINE    varchar2(200),
-    FIN_YEAR    varchar2(10),
-    BRANCH      varchar2(50),
-    BRANCH_NAME varchar2(80),
-    GLCODE      varchar2(14),
-    GLNAME      varchar2(100),
-    CUR_BAL     number(18, 2));
+    HEARDER_LINE varchar2(200),
+    FIN_YEAR     varchar2(10),
+    BRANCH       varchar2(50),
+    BRANCH_NAME  varchar2(80),
+    GLCODE       varchar2(14),
+    GLNAME       varchar2(100),
+    CUR_BAL      number(18, 2));
   type V_branchIErecord is table of branchIErecord;
-  function fn_branchwise_getIncome_Exp(p_finyear in varchar2,p_glprefix in varchar2)
+  function fn_branchwise_getIncome_Exp(p_finyear  in varchar2,
+                                       p_glprefix in varchar2)
     return V_branchIErecord
     pipelined;
   type tbalance is record(
-    branch    varchar2(10),
-    gl_code   varchar2(15),
-    dr_amount number(18, 2),
-    cr_amount number(18, 2),
-    fin_year  varchar2(20));
+    adjustment varchar2(100),
+    branch     varchar2(10),
+    gl_code    varchar2(15),
+    dr_amount  number(18, 2),
+    cr_amount  number(18, 2),
+    fin_year   varchar2(20));
   type V_tbalance is table of tbalance;
   type pl_data is record(
     branch      varchar2(10),
@@ -119,6 +121,38 @@ create or replace package pkg_gas_report is
     return v_CapitalExpenditureRecord
     pipelined;
 
+  type balancesheet is record(
+    adjustment          varchar2(100),
+    Group_type          varchar2(5),
+    GROUP_CODE          as_balancesheetFormat.Group_Code%type,
+    PARTICULAR_CODE     as_balancesheetFormat.Particular_Code%type,
+    PARTICULAR_NAME     as_balancesheetFormat.Particular_Name%type,
+    PAR_PARTICULAR_CODE as_balancesheetFormat.Parent_Particular_Code%type,
+    VISIBILITY          as_balancesheetFormat.VISIBILITY%type,
+    CalculationType     as_balancesheetformat.calculation%type,
+    Balance             number(18, 2),
+    Sum_Balance         number(18, 2),
+    Obsi_name           as_balancesheetFormat.Particular_Name%type,
+    Obsi_Balance        number(18, 2));
+  type v_balancesheet is table of balancesheet;
+
+  function fn_get_balancesheet(p_branch_code in varchar2,
+                               p_fin_year    in varchar2)
+    return v_balancesheet
+    pipelined;
+  function fn_get_balancesheet_final(p_branch_code     in varchar2,
+                                     p_fin_year        in varchar2,
+                                     p_adjustment_type in varchar2)
+    return v_balancesheet
+    pipelined;
+  function fn_get_tb_consolidated_final(p_adjustment_type in varchar2,
+                                        p_finyear         in varchar2)
+    return V_tbalance
+    pipelined;
+  function fn_Consolidated_bs_final(p_fin_year        in varchar2,
+                                    p_adjustment_type in varchar2)
+    return v_balancesheet
+    pipelined;
 end pkg_gas_report;
 /
 create or replace package body pkg_gas_report is
@@ -128,7 +162,6 @@ create or replace package body pkg_gas_report is
     return v_InterOfficeMatrix
     pipelined is
     v_glcode            varchar2(15) := '';
-    v_branch            varchar2(10) := '';
     v_balance           number := 0;
     v_br_balance        number(18, 2) := 0;
     w_InterOfficeMatrix InterOfficeMatrix;
@@ -345,11 +378,17 @@ create or replace package body pkg_gas_report is
     w_tbalance tbalance;
   
   begin
+    if p_tb_type = 'B' then
+      w_tbalance.adjustment := 'Before Adjustment';
+    else
+      w_tbalance.adjustment := 'After Adjustment';
+    end if;
+  
     for in1 in (SELECT b.*
                   FROM AS_Final_GLBALANCE b, as_glcodelist l
                  where b.glcode = l.glcode
                    and l.tb_yn = 'Y'
-                      --  and b.cur_bal <> 0
+                   and b.cur_bal <> 0
                    and b.fin_year = p_fin_year
                    and b.tb_type = p_tb_type
                    and b.branch = p_branch_code) loop
@@ -589,6 +628,40 @@ create or replace package body pkg_gas_report is
     end if;
   
   end fn_get_ledger_report;
+  function fn_get_tb_consolidated_final(p_adjustment_type in varchar2,
+                                        p_finyear         in varchar2)
+    return V_tbalance
+    pipelined is
+  
+    w_tbalance tbalance;
+  begin
+  
+    if p_adjustment_type = 'B' then
+      w_tbalance.adjustment := 'Before Adjustment';
+    else
+      w_tbalance.adjustment := 'After Adjustment';
+    end if;
+    for in1 in (SELECT b.glcode, b.fin_year, sum(b.cur_bal) cur_bal
+                  FROM as_final_glbalance b, as_glcodelist l
+                 where b.glcode = l.glcode
+                   and l.tb_yn = 'Y'
+                   and b.tb_type = p_adjustment_type
+                   and b.fin_year = p_finyear
+                 group by b.glcode, b.fin_year) loop
+      w_tbalance.gl_code  := in1.glcode;
+      w_tbalance.fin_year := in1.fin_year;
+      if in1.cur_bal >= 0 then
+        w_tbalance.cr_amount := in1.cur_bal;
+        w_tbalance.dr_amount := 0;
+      else
+        w_tbalance.cr_amount := 0;
+        w_tbalance.dr_amount := -1 * in1.cur_bal;
+      end if;
+    
+      pipe row(w_tbalance);
+    end loop;
+  
+  end fn_get_tb_consolidated_final;
 
   function fn_get_tb_consolidated(p_branch_code in varchar2,
                                   p_finyear     in varchar2)
@@ -596,54 +669,27 @@ create or replace package body pkg_gas_report is
     pipelined is
   
     w_tbalance tbalance;
-    v_act_type varchar2(10) := '';
   begin
   
-    SELECT f.activatation
-      into v_act_type
-      FROM as_finyear f
-     where f.entity_num = 1
-       and f.fin_year = p_finyear;
-  
-    if v_act_type = 'Y' then
-      for in1 in (SELECT b.*
-                    FROM as_glbalance b, as_glcodelist l
-                   where b.glcode = l.glcode
-                     and l.tb_yn = 'Y') loop
-        w_tbalance.branch   := in1.branch;
-        w_tbalance.gl_code  := in1.glcode;
-        w_tbalance.fin_year := in1.fin_year;
-        if in1.cur_bal >= 0 then
-          w_tbalance.cr_amount := in1.cur_bal;
-          w_tbalance.dr_amount := 0;
-        else
-          w_tbalance.cr_amount := 0;
-          w_tbalance.dr_amount := -1 * in1.cur_bal;
-        end if;
-      
-        pipe row(w_tbalance);
-      end loop;
-    else
-      for in1 in (SELECT b.*
-                    FROM as_final_glbalance b, as_glcodelist l
-                   where b.glcode = l.glcode
-                     and l.tb_yn = 'Y'
-                     and b.tb_type = 'A'
-                     and b.fin_year = p_finyear) loop
-        w_tbalance.branch   := in1.branch;
-        w_tbalance.gl_code  := in1.glcode;
-        w_tbalance.fin_year := in1.fin_year;
-        if in1.cur_bal >= 0 then
-          w_tbalance.cr_amount := in1.cur_bal;
-          w_tbalance.dr_amount := 0;
-        else
-          w_tbalance.cr_amount := 0;
-          w_tbalance.dr_amount := -1 * in1.cur_bal;
-        end if;
-      
-        pipe row(w_tbalance);
-      end loop;
-    end if;
+    for in1 in (SELECT b.*
+                  FROM as_glbalance b, as_glcodelist l
+                 where b.glcode = l.glcode
+                   and l.tb_yn = 'Y'
+                      
+                   and b.fin_year = p_finyear) loop
+      w_tbalance.branch   := in1.branch;
+      w_tbalance.gl_code  := in1.glcode;
+      w_tbalance.fin_year := in1.fin_year;
+      if in1.cur_bal >= 0 then
+        w_tbalance.cr_amount := in1.cur_bal;
+        w_tbalance.dr_amount := 0;
+      else
+        w_tbalance.cr_amount := 0;
+        w_tbalance.dr_amount := -1 * in1.cur_bal;
+      end if;
+    
+      pipe row(w_tbalance);
+    end loop;
   
   end fn_get_tb_consolidated;
 
@@ -658,6 +704,8 @@ create or replace package body pkg_gas_report is
       FROM as_finyear f
      where f.entity_num = 1
        and f.fin_year = p_finyear;
+  
+    v_act_type := 'N';
     for idx in (SELECT *
                   FROM as_glcodelist l
                  where l.mainhead = '160000000'
@@ -739,7 +787,6 @@ create or replace package body pkg_gas_report is
     end loop;
   
   end fn_get_income;
-
   function fn_get_expenditure(p_finyear in varchar2)
     return v_ExpenditiureRecord
     pipelined is
@@ -752,6 +799,7 @@ create or replace package body pkg_gas_report is
       FROM as_finyear f
      where f.entity_num = 1
        and f.fin_year = p_finyear;
+    v_act_type                    := 'N';
     w_ExpenditiureRecord.fin_year := p_finyear;
     for idx in (SELECT *
                   FROM as_glcodelist l
@@ -941,19 +989,19 @@ create or replace package body pkg_gas_report is
     end loop;
   end fn_get_capital_expenditure;
 
-  function fn_branchwise_getIncome_Exp(p_finyear in varchar2,p_glprefix in varchar2)
+  function fn_branchwise_getIncome_Exp(p_finyear  in varchar2,
+                                       p_glprefix in varchar2)
     return V_branchIErecord
     pipelined is
     w_branchIErecord branchIErecord;
     v_act_type       varchar2(10) := '';
   begin
   
-  
-  if p_glprefix='160' then
-    w_branchIErecord.HEARDER_LINE:='Report on Branch Wise Income Statement';
-  elsif p_glprefix='171' then  
-      w_branchIErecord.HEARDER_LINE:='Report on Branch Wise Expenditure Statement';
-  end if;
+    if p_glprefix = '160' then
+      w_branchIErecord.HEARDER_LINE := 'Report on Branch Wise Income Statement';
+    elsif p_glprefix = '171' then
+      w_branchIErecord.HEARDER_LINE := 'Report on Branch Wise Expenditure Statement';
+    end if;
   
     SELECT f.activatation
       into v_act_type
@@ -974,15 +1022,15 @@ create or replace package body pkg_gas_report is
                       on (b.glcode = l.glcode)
                    where b.cur_bal <> 0
                      and l.tran_yn = 'Y'
-                     and l.glcode like p_glprefix||'%'
+                     and l.glcode like p_glprefix || '%'
                    order by b.branch, l.glcode) loop
-      w_branchIErecord.FIN_YEAR:=p_finyear;
-      w_branchIErecord.BRANCH:=idx.branch;
-      w_branchIErecord.BRANCH_NAME:=idx.branch_name;
-      w_branchIErecord.GLCODE:=idx.glcode;
-      w_branchIErecord.GLNAME:=idx.glname;
-      w_branchIErecord.CUR_BAL:=idx.cur_bal;
-      pipe row(w_branchIErecord);
+        w_branchIErecord.FIN_YEAR    := p_finyear;
+        w_branchIErecord.BRANCH      := idx.branch;
+        w_branchIErecord.BRANCH_NAME := idx.branch_name;
+        w_branchIErecord.GLCODE      := idx.glcode;
+        w_branchIErecord.GLNAME      := idx.glname;
+        w_branchIErecord.CUR_BAL     := idx.cur_bal;
+        pipe row(w_branchIErecord);
       end loop;
     else
       for idx in (select b.fin_year,
@@ -998,21 +1046,893 @@ create or replace package body pkg_gas_report is
                       on (b.glcode = l.glcode)
                    where b.cur_bal <> 0
                      and l.tran_yn = 'Y'
-                     and b.fin_year=p_finyear
-                     and b.tb_type='B'
-                     and l.glcode like p_glprefix||'%'
+                     and b.fin_year = p_finyear
+                     and b.tb_type = 'B'
+                     and l.glcode like p_glprefix || '%'
                    order by b.branch, l.glcode) loop
-      w_branchIErecord.FIN_YEAR:=p_finyear;
-      w_branchIErecord.BRANCH:=idx.branch;
-      w_branchIErecord.BRANCH_NAME:=idx.branch_name;
-      w_branchIErecord.GLCODE:=idx.glcode;
-      w_branchIErecord.GLNAME:=idx.glname;
-      w_branchIErecord.CUR_BAL:=idx.cur_bal;
-       pipe row(w_branchIErecord);
+        w_branchIErecord.FIN_YEAR    := p_finyear;
+        w_branchIErecord.BRANCH      := idx.branch;
+        w_branchIErecord.BRANCH_NAME := idx.branch_name;
+        w_branchIErecord.GLCODE      := idx.glcode;
+        w_branchIErecord.GLNAME      := idx.glname;
+        w_branchIErecord.CUR_BAL     := idx.cur_bal;
+        pipe row(w_branchIErecord);
       end loop;
     end if;
   
   end fn_branchwise_getIncome_Exp;
+
+  function fn_get_balancesheet(p_branch_code in varchar2,
+                               p_fin_year    in varchar2)
+    return v_balancesheet
+    pipelined is
+    w_balancesheet                 balancesheet;
+    V_balance                      number(18, 2) := 0;
+    v_Classified_balance           number(18, 2) := 0;
+    V_abandon_Property_balance     number(18, 2) := 0;
+    V_offbalancesheet_item_balance number(18, 2) := 0;
+    V_loanAndAdvance_balance       number(18, 2) := 0;
+  
+  begin
+  
+    select ((select nvl(sum(cum_prin_bal + cum_int_bal), 0)
+               from tmp_rpt_bal@olddb
+              where fin_year = p_fin_year
+                and loc_code = p_branch_code
+                and ln_criteria <> 'UC') +
+           (select nvl(sum(cum_prin_bal + cum_int_bal), 0)
+               from tmp_rpt_bal@emidb
+              where fin_year = p_fin_year
+                and ln_criteria <> 'UC'
+                and loc_code = p_branch_code) +
+           (select nvl(sum(cum_prin_bal + cum_int_bal), 0)
+               from tmp_rpt_bal@ocrdb
+              where fin_year = p_fin_year
+                and ln_criteria <> 'UC'
+                and loc_code = p_branch_code) +
+           (select nvl(sum(cum_prin_bal + cum_int_bal), 0)
+               from tmp_rpt_bal@isfdb
+              where fin_year = p_fin_year
+                and ln_criteria <> 'UC'
+                and loc_code = p_branch_code) +
+           (select nvl(sum(cum_prin_bal + cum_int_bal), 0)
+               from tmp_rpt_bal@govdb
+              where fin_year = p_fin_year
+                and ln_criteria <> 'UC'
+                and loc_code = p_branch_code)) * -1 CL_balance
+    
+      into v_Classified_balance
+      from dual;
+  
+    select b.cur_bal
+      into V_offbalancesheet_item_balance
+      from as_glbalance b
+     where b.branch = p_branch_code
+       and b.glcode = '300000000';
+    w_balancesheet.Obsi_name    := 'Off-Balance Sheet Item: Deferred Interest on Unclassified Loan';
+    w_balancesheet.Obsi_Balance := V_offbalancesheet_item_balance;
+    select b.cur_bal
+      into V_loanAndAdvance_balance
+      from as_glbalance b
+     where b.branch = p_branch_code
+       and b.glcode = '110000000';
+  
+    select b.cur_bal
+      into V_abandon_Property_balance
+      from as_glbalance b
+     where b.branch = p_branch_code
+       and b.glcode = '330000000';
+  
+    for idx in (select *
+                  from as_balancesheetFormat x
+                 where x.calculation = 'F') loop
+    
+      w_balancesheet.GROUP_CODE          := idx.group_code;
+      w_balancesheet.PARTICULAR_CODE     := idx.particular_code;
+      w_balancesheet.PARTICULAR_NAME     := idx.particular_name;
+      w_balancesheet.PAR_PARTICULAR_CODE := idx.particular_code;
+      w_balancesheet.VISIBILITY          := idx.visibility;
+      w_balancesheet.CalculationType     := idx.calculation;
+    
+      if idx.particular_code = '10' then
+        w_balancesheet.Balance     := V_loanAndAdvance_balance +
+                                      V_abandon_Property_balance +
+                                      V_offbalancesheet_item_balance;
+        w_balancesheet.Sum_Balance := V_loanAndAdvance_balance +
+                                      V_abandon_Property_balance +
+                                      V_offbalancesheet_item_balance;
+      elsif idx.particular_code = '11' then
+        w_balancesheet.Balance     := (V_loanAndAdvance_balance +
+                                      V_abandon_Property_balance -
+                                      V_abandon_Property_balance -
+                                      v_Classified_balance);
+        w_balancesheet.Sum_Balance := 0;
+      elsif idx.particular_code = '12' then
+        w_balancesheet.Balance     := -1 * V_offbalancesheet_item_balance;
+        w_balancesheet.Sum_Balance := 0;
+      elsif idx.particular_code = '13' then
+        w_balancesheet.Balance     := V_loanAndAdvance_balance +
+                                      V_abandon_Property_balance -
+                                      (v_Classified_balance +
+                                      V_abandon_Property_balance) +
+                                      V_offbalancesheet_item_balance;
+        w_balancesheet.Sum_Balance := 0;
+      elsif idx.particular_code = '14' then
+        w_balancesheet.Balance     := (V_abandon_Property_balance +
+                                      v_Classified_balance);
+        w_balancesheet.Sum_Balance := 0;
+      else
+        w_balancesheet.Balance     := 0;
+        w_balancesheet.Sum_Balance := 0;
+      end if;
+    
+      if w_balancesheet.Balance < 0 then
+        w_balancesheet.Group_type := 'A';
+        if idx.group_code in ('H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P') then
+          w_balancesheet.GROUP_CODE := 'F';
+        end if;
+      else
+        if idx.group_code in ('A', 'B', 'C', 'D', 'E', 'F') then
+          w_balancesheet.GROUP_CODE := 'P';
+        end if;
+        w_balancesheet.Group_type := 'L';
+      end if;
+    
+      pipe row(w_balancesheet);
+    end loop;
+  
+    for idx in (select *
+                  from as_balancesheetFormat x
+                 where x.calculation = 'K') loop
+    
+      w_balancesheet.GROUP_CODE          := idx.group_code;
+      w_balancesheet.PARTICULAR_CODE     := idx.particular_code;
+      w_balancesheet.PARTICULAR_NAME     := idx.particular_name;
+      w_balancesheet.PAR_PARTICULAR_CODE := idx.particular_code;
+      w_balancesheet.VISIBILITY          := idx.visibility;
+      w_balancesheet.CalculationType     := idx.calculation;
+      BEGIN
+        select b.cur_bal, b.cur_bal
+          into w_balancesheet.Balance, w_balancesheet.Sum_Balance
+          from as_glbalance b
+         where b.branch = p_branch_code
+           and b.glcode = idx.gl_code;
+      EXCEPTION
+        WHEN OTHERS THEN
+          w_balancesheet.Balance     := 0;
+          w_balancesheet.Sum_Balance := 0;
+      END;
+    
+      if w_balancesheet.Balance < 0 then
+        w_balancesheet.Group_type := 'A';
+        if idx.group_code in ('H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P') then
+          w_balancesheet.GROUP_CODE := 'F';
+        end if;
+      else
+        if idx.group_code in ('A', 'B', 'C', 'D', 'E', 'F') then
+          w_balancesheet.GROUP_CODE := 'P';
+        end if;
+        w_balancesheet.Group_type := 'L';
+      end if;
+    
+      pipe row(w_balancesheet);
+    end loop;
+  
+    for idx in (select *
+                  from as_balancesheetFormat x
+                 where x.calculation = 'C') loop
+    
+      w_balancesheet.GROUP_CODE          := idx.group_code;
+      w_balancesheet.PARTICULAR_CODE     := idx.particular_code;
+      w_balancesheet.PARTICULAR_NAME     := idx.particular_name;
+      w_balancesheet.PAR_PARTICULAR_CODE := idx.particular_code;
+      w_balancesheet.VISIBILITY          := idx.visibility;
+      w_balancesheet.CalculationType     := idx.calculation;
+      BEGIN
+        select nvl(sum(b.cur_bal), 0), nvl(sum(b.cur_bal), 0)
+          into w_balancesheet.Balance, w_balancesheet.Sum_Balance
+          from as_glbalance b
+         where b.branch = p_branch_code
+           and b.glcode in
+               (select x.gl_code
+                  from as_balancesheetFormat x
+                 where x.sub_particular_code = idx.particular_code);
+      EXCEPTION
+        WHEN OTHERS THEN
+          w_balancesheet.Balance     := 0;
+          w_balancesheet.Sum_Balance := 0;
+      END;
+    
+      if w_balancesheet.Balance < 0 then
+        w_balancesheet.Group_type := 'A';
+        if idx.group_code in ('H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P') then
+          w_balancesheet.GROUP_CODE := 'F';
+        end if;
+      else
+        if idx.group_code in ('A', 'B', 'C', 'D', 'E', 'F') then
+          w_balancesheet.GROUP_CODE := 'P';
+        end if;
+        w_balancesheet.Group_type := 'L';
+      end if;
+    
+      pipe row(w_balancesheet);
+    end loop;
+  
+    for idx in (select *
+                  from as_balancesheetFormat x
+                 where x.calculation = 'V') loop
+    
+      w_balancesheet.GROUP_CODE          := idx.group_code;
+      w_balancesheet.PARTICULAR_CODE     := idx.particular_code;
+      w_balancesheet.PARTICULAR_NAME     := idx.particular_name;
+      w_balancesheet.PAR_PARTICULAR_CODE := idx.particular_code;
+      w_balancesheet.VISIBILITY          := idx.visibility;
+      w_balancesheet.CalculationType     := idx.calculation;
+      BEGIN
+        select b.cur_bal, 0
+          into w_balancesheet.Balance, w_balancesheet.Sum_Balance
+          from as_glbalance b
+         where b.branch = p_branch_code
+           and b.glcode = idx.gl_code;
+      EXCEPTION
+        WHEN OTHERS THEN
+          w_balancesheet.Balance     := 0;
+          w_balancesheet.Sum_Balance := 0;
+      END;
+      if w_balancesheet.Balance < 0 then
+        w_balancesheet.Group_type := 'A';
+        if idx.group_code in ('H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P') then
+          w_balancesheet.GROUP_CODE := 'F';
+        end if;
+      else
+        if idx.group_code in ('A', 'B', 'C', 'D', 'E', 'F') then
+          w_balancesheet.GROUP_CODE := 'P';
+        end if;
+        w_balancesheet.Group_type := 'L';
+      end if;
+    
+      pipe row(w_balancesheet);
+    end loop;
+  
+    for idx in (select *
+                  from as_balancesheetFormat x
+                 where x.calculation = 'Q') loop
+      w_balancesheet.CalculationType     := idx.calculation;
+      w_balancesheet.GROUP_CODE          := idx.group_code;
+      w_balancesheet.PARTICULAR_CODE     := idx.particular_code;
+      w_balancesheet.PARTICULAR_NAME     := idx.particular_name;
+      w_balancesheet.PAR_PARTICULAR_CODE := idx.particular_code;
+      w_balancesheet.VISIBILITY          := idx.visibility;
+    
+      BEGIN
+        select SUM(b.cur_bal), SUM(b.cur_bal)
+          into w_balancesheet.Balance, w_balancesheet.Sum_Balance
+          from as_glbalance b
+         where b.branch = p_branch_code
+           and b.glcode IN ('160000000',
+                            '161000000',
+                            '170000000',
+                            '470000000',
+                            '175000000');
+      EXCEPTION
+        WHEN OTHERS THEN
+          w_balancesheet.Balance     := 0;
+          w_balancesheet.Sum_Balance := 0;
+      END;
+      
+      w_balancesheet.Group_type := 'L';
+       w_balancesheet.GROUP_CODE := 'P';
+       
+      /*if w_balancesheet.Balance < 0 then
+        w_balancesheet.Group_type := 'A';
+        if idx.group_code in ('H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P') then
+          w_balancesheet.GROUP_CODE := 'F';
+        end if;
+      else
+        if idx.group_code in ('A', 'B', 'C', 'D', 'E', 'F') then
+          w_balancesheet.GROUP_CODE := 'P';
+        end if;
+        w_balancesheet.Group_type := 'L';
+      end if;*/
+    
+      pipe row(w_balancesheet);
+    end loop;
+  
+  end fn_get_balancesheet;
+  function fn_Consolidated_bs_final(p_fin_year        in varchar2,
+                                    p_adjustment_type in varchar2)
+    return v_balancesheet
+    pipelined is
+    w_balancesheet                 balancesheet;
+    V_balance                      number(18, 2) := 0;
+    v_Classified_balance           number(18, 2) := 0;
+    V_abandon_Property_balance     number(18, 2) := 0;
+    V_offbalancesheet_item_balance number(18, 2) := 0;
+    V_loanAndAdvance_balance       number(18, 2) := 0;
+  
+  begin
+  
+    if p_adjustment_type = 'B' then
+      w_balancesheet.adjustment := 'Before Adjustment';
+    else
+      w_balancesheet.adjustment := 'After Adjustment';
+    end if;
+  
+    select ((select nvl(sum(cum_prin_bal + cum_int_bal), 0)
+               from yr_end_bal@olddb
+              where fin_year = p_fin_year
+                   -- and loc_code = p_branch_code
+                and ln_criteria <> 'UC') +
+           (select nvl(sum(cum_prin_bal + cum_int_bal), 0)
+               from yr_end_bal@emidb
+              where fin_year = p_fin_year
+                and ln_criteria <> 'UC'
+             -- and loc_code = p_branch_code
+             ) + (select nvl(sum(cum_prin_bal + cum_int_bal), 0)
+                     from yr_end_bal@ocrdb
+                    where fin_year = p_fin_year
+                      and ln_criteria <> 'UC'
+                   -- and loc_code = p_branch_code
+                   ) + (select nvl(sum(cum_prin_bal + cum_int_bal), 0)
+                           from yr_end_bal@isfdb
+                          where fin_year = p_fin_year
+                            and ln_criteria <> 'UC'
+                         --  and loc_code = p_branch_code
+                         ) + (select nvl(sum(cum_prin_bal + cum_int_bal), 0)
+                                 from yr_end_bal@govdb
+                                where fin_year = p_fin_year
+                                  and ln_criteria <> 'UC'
+                               -- and loc_code = p_branch_code
+                               )) * -1 CL_balance
+    
+      into v_Classified_balance
+      from dual;
+  
+    select sum(b.cur_bal)
+      into V_offbalancesheet_item_balance
+      from AS_Final_GLBALANCE b
+     where b.fin_year = p_fin_year
+       and b.tb_type = p_adjustment_type
+       and b.glcode = '300000000';
+    w_balancesheet.Obsi_name    := 'Off-Balance Sheet Item: Deferred Interest on Unclassified Loan';
+    w_balancesheet.Obsi_Balance := V_offbalancesheet_item_balance;
+    select sum(b.cur_bal)
+      into V_loanAndAdvance_balance
+      from AS_Final_GLBALANCE b
+     where b.fin_year = p_fin_year
+       and b.tb_type = p_adjustment_type
+       and b.glcode = '110000000';
+  
+    select sum(b.cur_bal)
+      into V_abandon_Property_balance
+      from AS_Final_GLBALANCE b
+     where b.fin_year = p_fin_year
+       and b.tb_type = p_adjustment_type
+       and b.glcode = '330000000';
+  
+    for idx in (select *
+                  from as_balancesheetFormat x
+                 where x.calculation = 'F') loop
+    
+      w_balancesheet.GROUP_CODE          := idx.group_code;
+      w_balancesheet.PARTICULAR_CODE     := idx.particular_code;
+      w_balancesheet.PARTICULAR_NAME     := idx.particular_name;
+      w_balancesheet.PAR_PARTICULAR_CODE := idx.particular_code;
+      w_balancesheet.VISIBILITY          := idx.visibility;
+      w_balancesheet.CalculationType     := idx.calculation;
+    
+      if idx.particular_code = '10' then
+        w_balancesheet.Balance     := V_loanAndAdvance_balance +
+                                      V_abandon_Property_balance +
+                                      V_offbalancesheet_item_balance;
+        w_balancesheet.Sum_Balance := V_loanAndAdvance_balance +
+                                      V_abandon_Property_balance +
+                                      V_offbalancesheet_item_balance;
+      elsif idx.particular_code = '11' then
+        w_balancesheet.Balance     := (V_loanAndAdvance_balance +
+                                      V_abandon_Property_balance -
+                                      V_abandon_Property_balance -
+                                      v_Classified_balance);
+        w_balancesheet.Sum_Balance := 0;
+      elsif idx.particular_code = '12' then
+        w_balancesheet.Balance     := -1 * V_offbalancesheet_item_balance;
+        w_balancesheet.Sum_Balance := 0;
+      elsif idx.particular_code = '13' then
+        w_balancesheet.Balance     := V_loanAndAdvance_balance +
+                                      V_abandon_Property_balance -
+                                      (v_Classified_balance +
+                                      V_abandon_Property_balance) +
+                                      V_offbalancesheet_item_balance;
+        w_balancesheet.Sum_Balance := 0;
+      elsif idx.particular_code = '14' then
+        w_balancesheet.Balance     := (V_abandon_Property_balance +
+                                      v_Classified_balance);
+        w_balancesheet.Sum_Balance := 0;
+      else
+        w_balancesheet.Balance     := 0;
+        w_balancesheet.Sum_Balance := 0;
+      end if;
+    
+      if w_balancesheet.Balance < 0 then
+        w_balancesheet.Group_type := 'A';
+        if idx.group_code in ('H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P') then
+          w_balancesheet.GROUP_CODE := 'F';
+        end if;
+      else
+        if idx.group_code in ('A', 'B', 'C', 'D', 'E', 'F') then
+          w_balancesheet.GROUP_CODE := 'P';
+        end if;
+        w_balancesheet.Group_type := 'L';
+      end if;
+    
+      pipe row(w_balancesheet);
+    end loop;
+  
+    for idx in (select *
+                  from as_balancesheetFormat x
+                 where x.calculation = 'K') loop
+    
+      w_balancesheet.GROUP_CODE          := idx.group_code;
+      w_balancesheet.PARTICULAR_CODE     := idx.particular_code;
+      w_balancesheet.PARTICULAR_NAME     := idx.particular_name;
+      w_balancesheet.PAR_PARTICULAR_CODE := idx.particular_code;
+      w_balancesheet.VISIBILITY          := idx.visibility;
+      w_balancesheet.CalculationType     := idx.calculation;
+    
+      BEGIN
+        select sum(b.cur_bal), sum(b.cur_bal)
+          into w_balancesheet.Balance, w_balancesheet.Sum_Balance
+          from AS_Final_GLBALANCE b
+         where b.fin_year = p_fin_year
+           and b.tb_type = p_adjustment_type
+           and b.glcode = idx.gl_code;
+      EXCEPTION
+        WHEN OTHERS THEN
+          w_balancesheet.Balance     := 0;
+          w_balancesheet.Sum_Balance := 0;
+      END;
+    
+      if w_balancesheet.Balance < 0 then
+        w_balancesheet.Group_type := 'A';
+        if idx.group_code in ('H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P') then
+          w_balancesheet.GROUP_CODE := 'F';
+        end if;
+      else
+        if idx.group_code in ('A', 'B', 'C', 'D', 'E', 'F') then
+          w_balancesheet.GROUP_CODE := 'P';
+        end if;
+        w_balancesheet.Group_type := 'L';
+      end if;
+    
+      pipe row(w_balancesheet);
+    end loop;
+  
+    for idx in (select *
+                  from as_balancesheetFormat x
+                 where x.calculation = 'C') loop
+    
+      w_balancesheet.GROUP_CODE          := idx.group_code;
+      w_balancesheet.PARTICULAR_CODE     := idx.particular_code;
+      w_balancesheet.PARTICULAR_NAME     := idx.particular_name;
+      w_balancesheet.PAR_PARTICULAR_CODE := idx.particular_code;
+      w_balancesheet.VISIBILITY          := idx.visibility;
+      w_balancesheet.CalculationType     := idx.calculation;
+      BEGIN
+        select nvl(sum(b.cur_bal), 0), nvl(sum(b.cur_bal), 0)
+          into w_balancesheet.Balance, w_balancesheet.Sum_Balance
+          from AS_Final_GLBALANCE b
+         where b.fin_year = p_fin_year
+           and b.tb_type = p_adjustment_type
+           and b.glcode in
+               (select x.gl_code
+                  from as_balancesheetFormat x
+                 where x.sub_particular_code = idx.particular_code);
+      EXCEPTION
+        WHEN OTHERS THEN
+          w_balancesheet.Balance     := 0;
+          w_balancesheet.Sum_Balance := 0;
+      END;
+    
+      if w_balancesheet.Balance < 0 then
+        w_balancesheet.Group_type := 'A';
+        if idx.group_code in ('H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P') then
+          w_balancesheet.GROUP_CODE := 'F';
+        end if;
+      else
+        if idx.group_code in ('A', 'B', 'C', 'D', 'E', 'F') then
+          w_balancesheet.GROUP_CODE := 'P';
+        end if;
+        w_balancesheet.Group_type := 'L';
+      end if;
+    
+      pipe row(w_balancesheet);
+    end loop;
+  
+    for idx in (select *
+                  from as_balancesheetFormat x
+                 where x.calculation = 'V') loop
+    
+      w_balancesheet.GROUP_CODE          := idx.group_code;
+      w_balancesheet.PARTICULAR_CODE     := idx.particular_code;
+      w_balancesheet.PARTICULAR_NAME     := idx.particular_name;
+      w_balancesheet.PAR_PARTICULAR_CODE := idx.particular_code;
+      w_balancesheet.VISIBILITY          := idx.visibility;
+      w_balancesheet.CalculationType     := idx.calculation;
+      BEGIN
+        select sum(b.cur_bal), 0
+          into w_balancesheet.Balance, w_balancesheet.Sum_Balance
+          from AS_Final_GLBALANCE b
+         where b.fin_year = p_fin_year
+           and b.tb_type = p_adjustment_type
+           and b.glcode = idx.gl_code;
+      EXCEPTION
+        WHEN OTHERS THEN
+          w_balancesheet.Balance     := 0;
+          w_balancesheet.Sum_Balance := 0;
+      END;
+      if w_balancesheet.Balance < 0 then
+        w_balancesheet.Group_type := 'A';
+        if idx.group_code in ('H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P') then
+          w_balancesheet.GROUP_CODE := 'F';
+        end if;
+      else
+        if idx.group_code in ('A', 'B', 'C', 'D', 'E', 'F') then
+          w_balancesheet.GROUP_CODE := 'P';
+        end if;
+        w_balancesheet.Group_type := 'L';
+      end if;
+    
+      pipe row(w_balancesheet);
+    end loop;
+  
+    for idx in (select *
+                  from as_balancesheetFormat x
+                 where x.calculation = 'Q') loop
+      w_balancesheet.CalculationType     := idx.calculation;
+      w_balancesheet.GROUP_CODE          := idx.group_code;
+      w_balancesheet.PARTICULAR_CODE     := idx.particular_code;
+      w_balancesheet.PARTICULAR_NAME     := idx.particular_name;
+      w_balancesheet.PAR_PARTICULAR_CODE := idx.particular_code;
+      w_balancesheet.VISIBILITY          := idx.visibility;
+    
+      BEGIN
+        select SUM(b.cur_bal), SUM(b.cur_bal)
+          into w_balancesheet.Balance, w_balancesheet.Sum_Balance
+          from AS_Final_GLBALANCE b
+         where b.fin_year = p_fin_year
+           and b.tb_type = p_adjustment_type
+           and b.glcode IN ('160000000',
+                            '161000000',
+                            '170000000',
+                            '470000000',
+                            '175000000');
+      EXCEPTION
+        WHEN OTHERS THEN
+          w_balancesheet.Balance     := 0;
+          w_balancesheet.Sum_Balance := 0;
+      END;
+    
+      
+       w_balancesheet.Group_type := 'L';
+       w_balancesheet.GROUP_CODE := 'P';
+       
+      /*if w_balancesheet.Balance < 0 then
+        w_balancesheet.Group_type := 'A';
+        if idx.group_code in ('H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P') then
+          w_balancesheet.GROUP_CODE := 'F';
+        end if;
+      else
+        if idx.group_code in ('A', 'B', 'C', 'D', 'E', 'F') then
+          w_balancesheet.GROUP_CODE := 'P';
+        end if;
+        w_balancesheet.Group_type := 'L';
+      end if;*/
+    
+      pipe row(w_balancesheet);
+    end loop;
+  
+  end fn_Consolidated_bs_final;
+
+  function fn_get_balancesheet_final(p_branch_code     in varchar2,
+                                     p_fin_year        in varchar2,
+                                     p_adjustment_type in varchar2)
+    return v_balancesheet
+    pipelined is
+    w_balancesheet                 balancesheet;
+    V_balance                      number(18, 2) := 0;
+    v_Classified_balance           number(18, 2) := 0;
+    V_abandon_Property_balance     number(18, 2) := 0;
+    V_offbalancesheet_item_balance number(18, 2) := 0;
+    V_loanAndAdvance_balance       number(18, 2) := 0;
+  
+  begin
+  
+    if p_adjustment_type = 'B' then
+      w_balancesheet.adjustment := 'Before Adjustment';
+    else
+      w_balancesheet.adjustment := 'After Adjustment';
+    end if;
+  
+    select ((select nvl(sum(cum_prin_bal + cum_int_bal), 0)
+               from yr_end_bal@olddb
+              where fin_year = p_fin_year
+                and loc_code = p_branch_code
+                and ln_criteria <> 'UC') +
+           (select nvl(sum(cum_prin_bal + cum_int_bal), 0)
+               from yr_end_bal@emidb
+              where fin_year = p_fin_year
+                and ln_criteria <> 'UC'
+                and loc_code = p_branch_code) +
+           (select nvl(sum(cum_prin_bal + cum_int_bal), 0)
+               from yr_end_bal@ocrdb
+              where fin_year = p_fin_year
+                and ln_criteria <> 'UC'
+                and loc_code = p_branch_code) +
+           (select nvl(sum(cum_prin_bal + cum_int_bal), 0)
+               from yr_end_bal@isfdb
+              where fin_year = p_fin_year
+                and ln_criteria <> 'UC'
+                and loc_code = p_branch_code) +
+           (select nvl(sum(cum_prin_bal + cum_int_bal), 0)
+               from yr_end_bal@govdb
+              where fin_year = p_fin_year
+                and ln_criteria <> 'UC'
+                and loc_code = p_branch_code)) * -1 CL_balance
+    
+      into v_Classified_balance
+      from dual;
+  
+    select b.cur_bal
+      into V_offbalancesheet_item_balance
+      from AS_Final_GLBALANCE b
+     where b.branch = p_branch_code
+       and b.fin_year = p_fin_year
+       and b.tb_type = p_adjustment_type
+       and b.glcode = '300000000';
+    w_balancesheet.Obsi_name    := 'Off-Balance Sheet Item: Deferred Interest on Unclassified Loan';
+    w_balancesheet.Obsi_Balance := V_offbalancesheet_item_balance;
+    select b.cur_bal
+      into V_loanAndAdvance_balance
+      from AS_Final_GLBALANCE b
+     where b.branch = p_branch_code
+       and b.fin_year = p_fin_year
+       and b.tb_type = p_adjustment_type
+       and b.glcode = '110000000';
+  
+    select b.cur_bal
+      into V_abandon_Property_balance
+      from AS_Final_GLBALANCE b
+     where b.branch = p_branch_code
+       and b.fin_year = p_fin_year
+       and b.tb_type = p_adjustment_type
+       and b.glcode = '330000000';
+  
+    for idx in (select *
+                  from as_balancesheetFormat x
+                 where x.calculation = 'F') loop
+    
+      w_balancesheet.GROUP_CODE          := idx.group_code;
+      w_balancesheet.PARTICULAR_CODE     := idx.particular_code;
+      w_balancesheet.PARTICULAR_NAME     := idx.particular_name;
+      w_balancesheet.PAR_PARTICULAR_CODE := idx.particular_code;
+      w_balancesheet.VISIBILITY          := idx.visibility;
+      w_balancesheet.CalculationType     := idx.calculation;
+    
+      if idx.particular_code = '10' then
+        w_balancesheet.Balance     := V_loanAndAdvance_balance +
+                                      V_abandon_Property_balance +
+                                      V_offbalancesheet_item_balance;
+        w_balancesheet.Sum_Balance := V_loanAndAdvance_balance +
+                                      V_abandon_Property_balance +
+                                      V_offbalancesheet_item_balance;
+      elsif idx.particular_code = '11' then
+        w_balancesheet.Balance     := (V_loanAndAdvance_balance +
+                                      V_abandon_Property_balance -
+                                      V_abandon_Property_balance -
+                                      v_Classified_balance);
+        w_balancesheet.Sum_Balance := 0;
+      elsif idx.particular_code = '12' then
+        w_balancesheet.Balance     := -1 * V_offbalancesheet_item_balance;
+        w_balancesheet.Sum_Balance := 0;
+      elsif idx.particular_code = '13' then
+        w_balancesheet.Balance     := V_loanAndAdvance_balance +
+                                      V_abandon_Property_balance -
+                                      (v_Classified_balance +
+                                      V_abandon_Property_balance) +
+                                      V_offbalancesheet_item_balance;
+        w_balancesheet.Sum_Balance := 0;
+      elsif idx.particular_code = '14' then
+        w_balancesheet.Balance     := (V_abandon_Property_balance +
+                                      v_Classified_balance);
+        w_balancesheet.Sum_Balance := 0;
+      else
+        w_balancesheet.Balance     := 0;
+        w_balancesheet.Sum_Balance := 0;
+      end if;
+    
+      if w_balancesheet.Balance < 0 then
+        w_balancesheet.Group_type := 'A';
+        if idx.group_code in ('H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P') then
+          w_balancesheet.GROUP_CODE := 'F';
+        end if;
+      else
+        if idx.group_code in ('A', 'B', 'C', 'D', 'E', 'F') then
+          w_balancesheet.GROUP_CODE := 'P';
+        end if;
+        w_balancesheet.Group_type := 'L';
+      end if;
+    
+      pipe row(w_balancesheet);
+    end loop;
+  
+    for idx in (select *
+                  from as_balancesheetFormat x
+                 where x.calculation = 'K') loop
+    
+      w_balancesheet.GROUP_CODE          := idx.group_code;
+      w_balancesheet.PARTICULAR_CODE     := idx.particular_code;
+      w_balancesheet.PARTICULAR_NAME     := idx.particular_name;
+      w_balancesheet.PAR_PARTICULAR_CODE := idx.particular_code;
+      w_balancesheet.VISIBILITY          := idx.visibility;
+      w_balancesheet.CalculationType     := idx.calculation;
+    
+      BEGIN
+        select b.cur_bal, b.cur_bal
+          into w_balancesheet.Balance, w_balancesheet.Sum_Balance
+          from AS_Final_GLBALANCE b
+         where b.branch = p_branch_code
+           and b.fin_year = p_fin_year
+           and b.tb_type = p_adjustment_type
+           and b.glcode = idx.gl_code;
+      EXCEPTION
+        WHEN OTHERS THEN
+          w_balancesheet.Balance     := 0;
+          w_balancesheet.Sum_Balance := 0;
+      END;
+    
+      if w_balancesheet.Balance < 0 then
+        w_balancesheet.Group_type := 'A';
+        if idx.group_code in ('H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P') then
+          w_balancesheet.GROUP_CODE := 'F';
+        end if;
+      else
+        if idx.group_code in ('A', 'B', 'C', 'D', 'E', 'F') then
+          w_balancesheet.GROUP_CODE := 'P';
+        end if;
+        w_balancesheet.Group_type := 'L';
+      end if;
+    
+      pipe row(w_balancesheet);
+    end loop;
+  
+    for idx in (select *
+                  from as_balancesheetFormat x
+                 where x.calculation = 'C') loop
+    
+      w_balancesheet.GROUP_CODE          := idx.group_code;
+      w_balancesheet.PARTICULAR_CODE     := idx.particular_code;
+      w_balancesheet.PARTICULAR_NAME     := idx.particular_name;
+      w_balancesheet.PAR_PARTICULAR_CODE := idx.particular_code;
+      w_balancesheet.VISIBILITY          := idx.visibility;
+      w_balancesheet.CalculationType     := idx.calculation;
+      BEGIN
+        select nvl(sum(b.cur_bal), 0), nvl(sum(b.cur_bal), 0)
+          into w_balancesheet.Balance, w_balancesheet.Sum_Balance
+          from AS_Final_GLBALANCE b
+         where b.branch = p_branch_code
+           and b.fin_year = p_fin_year
+           and b.tb_type = p_adjustment_type
+           and b.glcode in
+               (select x.gl_code
+                  from as_balancesheetFormat x
+                 where x.sub_particular_code = idx.particular_code);
+      EXCEPTION
+        WHEN OTHERS THEN
+          w_balancesheet.Balance     := 0;
+          w_balancesheet.Sum_Balance := 0;
+      END;
+    
+      if w_balancesheet.Balance < 0 then
+        w_balancesheet.Group_type := 'A';
+        if idx.group_code in ('H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P') then
+          w_balancesheet.GROUP_CODE := 'F';
+        end if;
+      else
+        if idx.group_code in ('A', 'B', 'C', 'D', 'E', 'F') then
+          w_balancesheet.GROUP_CODE := 'P';
+        end if;
+        w_balancesheet.Group_type := 'L';
+      end if;
+    
+      pipe row(w_balancesheet);
+    end loop;
+  
+    for idx in (select *
+                  from as_balancesheetFormat x
+                 where x.calculation = 'V') loop
+    
+      w_balancesheet.GROUP_CODE          := idx.group_code;
+      w_balancesheet.PARTICULAR_CODE     := idx.particular_code;
+      w_balancesheet.PARTICULAR_NAME     := idx.particular_name;
+      w_balancesheet.PAR_PARTICULAR_CODE := idx.particular_code;
+      w_balancesheet.VISIBILITY          := idx.visibility;
+      w_balancesheet.CalculationType     := idx.calculation;
+      BEGIN
+        select b.cur_bal, 0
+          into w_balancesheet.Balance, w_balancesheet.Sum_Balance
+          from AS_Final_GLBALANCE b
+         where b.branch = p_branch_code
+           and b.fin_year = p_fin_year
+           and b.tb_type = p_adjustment_type
+           and b.glcode = idx.gl_code;
+      EXCEPTION
+        WHEN OTHERS THEN
+          w_balancesheet.Balance     := 0;
+          w_balancesheet.Sum_Balance := 0;
+      END;
+      if w_balancesheet.Balance < 0 then
+        w_balancesheet.Group_type := 'A';
+        if idx.group_code in ('H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P') then
+          w_balancesheet.GROUP_CODE := 'F';
+        end if;
+      else
+        if idx.group_code in ('A', 'B', 'C', 'D', 'E', 'F') then
+          w_balancesheet.GROUP_CODE := 'P';
+        end if;
+        w_balancesheet.Group_type := 'L';
+      end if;
+    
+      pipe row(w_balancesheet);
+    end loop;
+  
+    for idx in (select *
+                  from as_balancesheetFormat x
+                 where x.calculation = 'Q') loop
+      w_balancesheet.CalculationType     := idx.calculation;
+      w_balancesheet.GROUP_CODE          := idx.group_code;
+      w_balancesheet.PARTICULAR_CODE     := idx.particular_code;
+      w_balancesheet.PARTICULAR_NAME     := idx.particular_name;
+      w_balancesheet.PAR_PARTICULAR_CODE := idx.particular_code;
+      w_balancesheet.VISIBILITY          := idx.visibility;
+    
+      BEGIN
+        select SUM(b.cur_bal), SUM(b.cur_bal)
+          into w_balancesheet.Balance, w_balancesheet.Sum_Balance
+          from AS_Final_GLBALANCE b
+         where b.branch = p_branch_code
+           and b.fin_year = p_fin_year
+           and b.tb_type = p_adjustment_type
+           and b.glcode IN ('160000000',
+                            '161000000',
+                            '170000000',
+                            '470000000',
+                            '175000000');
+      EXCEPTION
+        WHEN OTHERS THEN
+          w_balancesheet.Balance     := 0;
+          w_balancesheet.Sum_Balance := 0;
+      END;
+    
+      
+      w_balancesheet.Group_type := 'L';
+       w_balancesheet.GROUP_CODE := 'P';
+       
+      /*if w_balancesheet.Balance < 0 then
+        w_balancesheet.Group_type := 'A';
+        if idx.group_code in ('H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P') then
+          w_balancesheet.GROUP_CODE := 'F';
+        end if;
+      else
+        if idx.group_code in ('A', 'B', 'C', 'D', 'E', 'F') then
+          w_balancesheet.GROUP_CODE := 'P';
+        end if;
+        w_balancesheet.Group_type := 'L';
+      end if;*/
+    
+      pipe row(w_balancesheet);
+    end loop;
+  
+  end fn_get_balancesheet_final;
 
 begin
   null;

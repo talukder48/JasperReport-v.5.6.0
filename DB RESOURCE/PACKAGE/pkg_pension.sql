@@ -935,7 +935,7 @@ create or replace package body pkg_pension is
   begin
     select extract(day from sysdate) into v_day_of_mon from dual;
     --v_day_of_mon := 1;
-    if (v_day_of_mon <= 15) then
+    if (v_day_of_mon <= 5) then
       update pen_calculation_data d
          set d.arr_dearness     = 0,
              d.pension_arear    = 0,
@@ -1217,7 +1217,7 @@ create or replace package body pkg_pension is
       values
         (1,
          p_year,
-         7,
+         9,
          p_bonus_type,
          id.nothi_no,
          id.benificiary,

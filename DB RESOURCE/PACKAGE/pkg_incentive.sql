@@ -35,7 +35,7 @@ create or replace package body pkg_incentive is
                                            p_error       out varchar2) is
     v_error varchar2(200) := '';
   begin
-    if trunc(sysdate) < '10-may-2021' then
+    if trunc(sysdate) <= '19-DEC-2021' then
       for id in (SELECT *
                    FROM prms_incentive_master m
                   where m.finyear = p_fin_year) loop
@@ -207,7 +207,7 @@ create or replace package body pkg_incentive is
     if v_exist <> 0 then
       update PRMS_INCENTIVE_DATA d
          set d.incentive_basic = p_incentive_basic,
-             d.incentive_pct   = p_incentive_pct
+             d.incentive_pct   = round(p_incentive_pct,4)
        where d.branch_code = p_branch
          and d.emp_id = p_empId
          and d.fin_year = p_finyear;
@@ -225,7 +225,7 @@ create or replace package body pkg_incentive is
          p_finyear,
          0,
          p_incentive_basic,
-         p_incentive_pct);
+         round(p_incentive_pct,4));
     end if;
   
   exception

@@ -26,7 +26,7 @@ create or replace package pkg_dashBoard is
     MAY         NUMBER(10),
     JUN         NUMBER(10));
   TYPE V_AIS_record IS TABLE OF AIS_record;
-  function fn_get_ais_voucher_details return V_AIS_record
+  function fn_get_ais_voucher_details(p_finYear in varchar2) return V_AIS_record
     pipelined;
 
 end pkg_dashBoard;
@@ -71,11 +71,16 @@ create or replace package body pkg_dashBoard is
   
   end fn_get_ais_voucher_summary;
 
-  function fn_get_ais_voucher_details return V_AIS_record
+  function fn_get_ais_voucher_details(p_finYear in varchar2) return V_AIS_record
     pipelined is
     w_AIS_record AIS_record;
+    v_year1 varchar2(4):='';
+    v_year2 varchar2(4):='';
   begin
-    null;
+   v_year1:=substr(p_finYear,1,4);
+   v_year2:=substr(p_finYear,6,4);
+   dbms_output.put_line(v_year1||'-'||v_year2);
+   
     for id in (SELECT *
                  FROM prms_mbranch b
                 where b.brn_code not in ('8888', '0401', '0405')
@@ -92,7 +97,7 @@ create or replace package body pkg_dashBoard is
        where t.entity_num = 1
          and k.rej_on is null
          and t.branch = id.brn_code
-         and t.tran_date between '01-jul-2020' and '31-jul-2020';
+         and t.tran_date between '01-jul-'||v_year1 and '31-jul-'||v_year1;
     
       select count(*)
         into w_AIS_record.AUG
@@ -103,7 +108,7 @@ create or replace package body pkg_dashBoard is
        where t.entity_num = 1
          and k.rej_on is null
          and t.branch = id.brn_code
-         and t.tran_date between '01-aug-2020' and '31-aug-2020';
+         and t.tran_date between '01-aug-'||v_year1 and '31-aug-'||v_year1;
     
       select count(*)
         into w_AIS_record.SEP
@@ -114,7 +119,7 @@ create or replace package body pkg_dashBoard is
        where t.entity_num = 1
          and k.rej_on is null
          and t.branch = id.brn_code
-         and t.tran_date between '01-sep-2020' and '30-sep-2020';
+         and t.tran_date between '01-sep-'||v_year1 and '30-sep-'||v_year1;
     
       select count(*)
         into w_AIS_record.OCT
@@ -125,7 +130,7 @@ create or replace package body pkg_dashBoard is
        where t.entity_num = 1
          and k.rej_on is null
          and t.branch = id.brn_code
-         and t.tran_date between '01-oct-2020' and '31-oct-2020';
+         and t.tran_date between '01-oct-'||v_year1 and '31-oct-'||v_year1;
     
       select count(*)
         into w_AIS_record.NOV
@@ -136,7 +141,7 @@ create or replace package body pkg_dashBoard is
        where t.entity_num = 1
          and k.rej_on is null
          and t.branch = id.brn_code
-         and t.tran_date between '01-nov-2020' and '30-nov-2020';
+         and t.tran_date between '01-nov-'||v_year1 and '30-nov-'||v_year1;
     
       select count(*)
         into w_AIS_record.DEC
@@ -147,7 +152,7 @@ create or replace package body pkg_dashBoard is
        where t.entity_num = 1
          and k.rej_on is null
          and t.branch = id.brn_code
-         and t.tran_date between '01-dec-2020' and '31-dec-2020';
+         and t.tran_date between '01-dec-'||v_year1 and '31-dec-'||v_year1;
     
       select count(*)
         into w_AIS_record.JAN
@@ -158,7 +163,7 @@ create or replace package body pkg_dashBoard is
        where t.entity_num = 1
          and k.rej_on is null
          and t.branch = id.brn_code
-         and t.tran_date between '01-jan-2021' and '31-jan-2021';
+         and t.tran_date between '01-jan-'||v_year2 and '31-jan-'||v_year2;
     
       select count(*)
         into w_AIS_record.FEB
@@ -169,7 +174,7 @@ create or replace package body pkg_dashBoard is
        where t.entity_num = 1
          and k.rej_on is null
          and t.branch = id.brn_code
-         and t.tran_date between '01-feb-2021' and '28-feb-2021';
+         and t.tran_date between '01-feb-'||v_year2 and '28-feb-'||v_year2;
     
       select count(*)
         into w_AIS_record.MAR
@@ -180,7 +185,7 @@ create or replace package body pkg_dashBoard is
        where t.entity_num = 1
          and k.rej_on is null
          and t.branch = id.brn_code
-         and t.tran_date between '01-mar-2021' and '31-mar-2021';
+         and t.tran_date between '01-mar-'||v_year2 and '31-mar-'||v_year2;
     
       select count(*)
         into w_AIS_record.APR
@@ -191,7 +196,7 @@ create or replace package body pkg_dashBoard is
        where t.entity_num = 1
          and k.rej_on is null
          and t.branch = id.brn_code
-         and t.tran_date between '01-apr-2021' and '30-apr-2021';
+         and t.tran_date between '01-apr-'||v_year2 and '30-apr-'||v_year2;
     
       select count(*)
         into w_AIS_record.MAY
@@ -202,7 +207,7 @@ create or replace package body pkg_dashBoard is
        where t.entity_num = 1
          and k.rej_on is null
          and t.branch = id.brn_code
-         and t.tran_date between '01-may-2021' and '31-may-2021';
+         and t.tran_date between '01-may-'||v_year2 and '31-may-'||v_year2;
     
       select count(*)
         into w_AIS_record.JUN
@@ -213,7 +218,7 @@ create or replace package body pkg_dashBoard is
        where t.entity_num = 1
          and k.rej_on is null
          and t.branch = id.brn_code
-         and t.tran_date between '01-jun-2021' and '30-jun-2021';
+         and t.tran_date between '01-jun-'||v_year2 and '30-jun-'||v_year2;
     
       pipe row(w_AIS_record);
     end loop;

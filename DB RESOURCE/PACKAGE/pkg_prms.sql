@@ -755,7 +755,7 @@ create or replace package body pkg_prms is
       P_ERROR_MSG := 'ERROR IN SP_SALARY_CALCULATION: ' || SQLERRM;
       ROLLBACK;
   END SP_SALARY_CALCULATION;*/
-  
+
   procedure sp_fraction_salary_calculation(p_entity_num in number,
                                            p_emp_id     in varchar2,
                                            p_days       in number,
@@ -785,11 +785,11 @@ create or replace package body pkg_prms is
     v_sal_month           varchar2(10) := '';
     v_care_fare           number(9, 2) := 0;
     v_others_alw          number(9, 2) := 0;
-    v_education           number(9,2)  := 0;
+    v_education           number(9, 2) := 0;
     v_others_alw_remarks  varchar2(200) := '';
     v_others_ded          number(9, 2) := 0;
     v_others_ded_remarks  varchar2(200) := '';
-    v_desig_catagory      char(1):= '';
+    v_desig_catagory      char(1) := '';
   begin
     v_days_count := p_days_month;
     select upper(to_char(sysdate, 'Month')) into v_sal_month from dual;
@@ -806,20 +806,20 @@ create or replace package body pkg_prms is
          and t.month_code = v_month_code
          and t.emp_id = p_emp_id;
     else
-      
-     delete from prms_transaction t
+    
+      delete from prms_transaction t
        where t.entity_number = p_entity_num
          and t.sal_year = v_sal_year
          and t.month_code = v_month_code
          and t.emp_id = p_emp_id;
       for idx in (select * from prms_emp_sal s where s.emp_id = p_emp_id) loop
-       
+      
         select welfare,
-               nvl(gen_insurance,0),
-               nvl(d.revenue,0),
-               nvl(d.income_tax,0),
-               nvl(d.car_fare,0),
-               nvl(d.other_deduc,0),
+               nvl(gen_insurance, 0),
+               nvl(d.revenue, 0),
+               nvl(d.income_tax, 0),
+               nvl(d.car_fare, 0),
+               nvl(d.other_deduc, 0),
                d.remarks
           into v_min_welfare_ded_amt,
                v_min_ins_ded_amt,
@@ -831,8 +831,10 @@ create or replace package body pkg_prms is
           from prms_deduc d
          where d.emp_id = idx.emp_id;
       
-        select nvl(d.other_allowance,0), d.remarks,nvl(d.edu_allowance,0)
-          into v_others_alw, v_others_alw_remarks,v_education
+        select nvl(d.other_allowance, 0),
+               d.remarks,
+               nvl(d.edu_allowance, 0)
+          into v_others_alw, v_others_alw_remarks, v_education
           from prms_allowance d
          where d.emp_id = idx.emp_id;
       
@@ -846,22 +848,22 @@ create or replace package body pkg_prms is
           v_min_welfare_ded_amt := v_min_welfare_ded_amt;
           v_min_ins_ded_amt     := v_min_ins_ded_amt;
         end if;
-        
-         select d.designation_category
-         into v_desig_catagory
-         from prms_designation d
+      
+        select d.designation_category
+          into v_desig_catagory
+          from prms_designation d
          where d.designation_code = idx.desig_code;
+      
+        if v_desig_catagory <> '1' then
+          v_min_ins_ded_amt := 0;
         
-        if v_desig_catagory <> '1' then         
-            v_min_ins_ded_amt     := 0;
-       
-       end if;
+        end if;
       
         select m.brn_type
           into v_bran_type
           from prms_mbranch m
          where m.brn_code = idx.emp_brn_code;
-         
+      
         v_fraction_basic   := round(idx.new_basic * (p_days / v_days_count),
                                     2);
         v_fraction_hr      := round(fn_get_hr_alwnc(v_bran_type,
@@ -875,30 +877,29 @@ create or replace package body pkg_prms is
       
         if idx.sq_residence = 'Y' then
           v_fraction_hr := 0;
-          
-        end if;
         
+        end if;
+      
         v_pf_deduction := round((v_fraction_basic * idx.pf_deduction_pct) / 100,
                                 2);
         v_pension_ded  := round((v_fraction_basic * idx.pen_pct) / 100, 2);
-        
+      
         v_fract_welfare_amt := round(v_min_welfare_ded_amt *
                                      (p_days / v_days_count),
                                      2);
         v_fract_ins_ded_amt := round(v_min_ins_ded_amt *
                                      (p_days / v_days_count),
                                      2);
-                                     
-        v_education:=  round(v_education *
-                                     (p_days / v_days_count),
-                                     2);                            
-        v_total_sal         := round(v_fraction_basic + v_fraction_hr +
-                                     v_fraction_medical + v_others_alw+v_education,
-                                     2);
-        v_gross_sal         := round(v_total_sal + v_pension_ded, 2);
+      
+        v_education := round(v_education * (p_days / v_days_count), 2);
+        v_total_sal := round(v_fraction_basic + v_fraction_hr +
+                             v_fraction_medical + v_others_alw +
+                             v_education,
+                             2);
+        v_gross_sal := round(v_total_sal + v_pension_ded, 2);
       
         V_total_ded := round(v_pf_deduction + v_fract_welfare_amt +
-                             nvl(v_care_fare,0) + nvl(v_others_ded,0) +
+                             nvl(v_care_fare, 0) + nvl(v_others_ded, 0) +
                              v_fract_ins_ded_amt + v_revinue + v_income_tax,
                              2);
         v_net_pay   := round(v_total_sal - V_total_ded, 2);
@@ -958,8 +959,9 @@ create or replace package body pkg_prms is
            actual_basic,
            deduction_remarks,
            allowance_remarks,
-           manual_sal,desig_code,
-desig_seniority_code)
+           manual_sal,
+           desig_code,
+           desig_seniority_code)
         values
           (p_entity_num,
            decode(idx.acc_no_active,
@@ -1026,7 +1028,9 @@ desig_seniority_code)
            v_fraction_basic,
            v_others_ded_remarks,
            v_others_alw_remarks,
-           'F',idx.desig_code,idx.desig_seniority_code);
+           'F',
+           idx.desig_code,
+           idx.desig_seniority_code);
       end loop;
     
     end if;
@@ -1036,7 +1040,7 @@ desig_seniority_code)
       p_error_msg := 'Error in sp_fraction_salary_calculation > ' ||
                      sqlerrm;
   end sp_fraction_salary_calculation;
-                                         
+
   procedure sp_salary_calculation_new(p_entity_num in number,
                                       p_user_id    in varchar2,
                                       p_salcode    in varchar2,
@@ -1071,7 +1075,7 @@ desig_seniority_code)
     v_other_allowance    number(9, 2) := 0;
     v_dreaness_allwnc    number(9, 2) := 0;
     v_hill_allwnc        number(9, 2) := 0;
-    
+  
     v_mcycle_deduc        number(9, 2) := 0;
     v_bicycle_deduc       number(9, 2) := 0;
     v_pfadv_deduc         number(9, 2) := 0;
@@ -1197,8 +1201,6 @@ desig_seniority_code)
           if v_sq_residence = 'Y' then
             v_hr_amt1 := 0;
           end if;
-        
-        
         
           if idx.pf_lien = 'N' then
             v_pf_ded_amt2 := 0;
@@ -1338,7 +1340,7 @@ desig_seniority_code)
                  join prms_mbranch b
                    on (s.emp_brn_code = b.brn_code)
                 where trim(s.acc_no_active) <> 'N'
-                    --  and s.emp_id <> '1396'
+                     --  and s.emp_id <> '1396'
                   and (select prms_employee.dob
                          from prms_employee
                         where prms_employee.emp_id = s.emp_id) is not null) loop
@@ -1354,9 +1356,9 @@ desig_seniority_code)
       elsif id.desig_code = '1' then
         v_min_welfare_ded_amt := 150;
         v_min_ins_ded_amt     := v_min_ins_ded_amt;
-       elsif id.desig_code = '2' then 
+      elsif id.desig_code = '2' then
         v_min_welfare_ded_amt := 150;
-        v_min_ins_ded_amt     := v_min_ins_ded_amt; 
+        v_min_ins_ded_amt     := v_min_ins_ded_amt;
       else
         v_min_welfare_ded_amt := v_min_welfare_ded_amt;
         v_min_ins_ded_amt     := v_min_ins_ded_amt;
@@ -1368,7 +1370,7 @@ desig_seniority_code)
          where emp_id = id.emp_id;
       exception
         when no_data_found then
-         t_lpr_date:='';
+          t_lpr_date := '';
       end;
     
       ---alwoance
@@ -1509,9 +1511,9 @@ desig_seniority_code)
         from prms_designation d
        where d.designation_code = id.desig_code;
     
-     /* v_welfare_ded_amt := get_min_amt(round(v_basic_amt * 0.01, 2),
-                                       v_min_welfare_ded_amt);*/
-      v_welfare_ded_amt:=v_min_welfare_ded_amt;
+      /* v_welfare_ded_amt := get_min_amt(round(v_basic_amt * 0.01, 2),
+      v_min_welfare_ded_amt);*/
+      v_welfare_ded_amt := v_min_welfare_ded_amt;
       if v_desig_catagory <> 1 then
         v_ins_ded_amt := 0;
       else
@@ -1625,8 +1627,9 @@ desig_seniority_code)
          actual_basic,
          deduction_remarks,
          allowance_remarks,
-         manual_sal,desig_code,
-desig_seniority_code)
+         manual_sal,
+         desig_code,
+         desig_seniority_code)
       values
         (p_entity_num,
          decode(id.acc_no_active,
@@ -1692,7 +1695,10 @@ desig_seniority_code)
          nvl(v_hill_allwnc, 0),
          v_basic_amt,
          v_remarks_deduction,
-         v_remarks_allowance,'P',id.desig_code,id.desig_seniority_code);
+         v_remarks_allowance,
+         'P',
+         id.desig_code,
+         id.desig_seniority_code);
       --exception when others
     
     end loop;
@@ -1708,9 +1714,9 @@ desig_seniority_code)
                               p_effect_date     in date,
                               p_attached_bran   in varchar2,
                               p_error           out varchar2) is
-    v_sl number := '';    
+    v_sl number := '';
   begin
-    
+  
     if p_activation_code = 'N' or p_activation_code = 'Y' then
       update prms_emp_sal s
          set s.acc_no_active = p_activation_code
@@ -1744,23 +1750,31 @@ desig_seniority_code)
            where s.emp_id = p_emp_id),
          p_attached_bran,
          '');
-    elsif p_activation_code='T' then
-      pkg_prms.SP_EMPLOYEE_UPDATION(p_emp_id,p_attached_bran,0,'NA',p_effect_date,p_error);
-    elsif p_activation_code='QY' then
-     update prms_emp_sal s
+    elsif p_activation_code = 'T' then
+      pkg_prms.SP_EMPLOYEE_UPDATION(p_emp_id,
+                                    p_attached_bran,
+                                    0,
+                                    'NA',
+                                    p_effect_date,
+                                    p_error);
+    elsif p_activation_code = 'QY' then
+      update prms_emp_sal s
          set s.sq_residence = 'Y'
        where s.emp_id = p_emp_id;
-              
-    elsif p_activation_code='QN' then
+    
+    elsif p_activation_code = 'QN' then
       update prms_emp_sal s
          set s.sq_residence = 'N'
-       where s.emp_id = p_emp_id;  
+       where s.emp_id = p_emp_id;
     end if;
-  exception when others then 
-    p_error:='';
+  exception
+    when others then
+      p_error := '';
   end sp_emp_activation;
 
-  procedure sp_data_backup(p_entity_num in number,p_entry_date in date, p_error out varchar2) is
+  procedure sp_data_backup(p_entity_num in number,
+                           p_entry_date in date,
+                           p_error      out varchar2) is
     v_month_code number(2);
     v_sal_year   number(4);
   begin
@@ -1772,12 +1786,13 @@ desig_seniority_code)
       into v_sal_year
       from dual;
   
-    delete from PRMS_TRANSACTION_HIST_data d where d.bk_date=p_entry_date;
+    delete from PRMS_TRANSACTION_HIST_data d
+     where d.bk_date = p_entry_date;
     delete from prms_allowance_hist h where h.h_date = p_entry_date;
     delete from prms_deduc_hist h where h.h_date = p_entry_date;
   
     delete from prms_transaction_hist h
-     where h.entity_number=p_entity_num
+     where h.entity_number = p_entity_num
        and h.sal_year = v_sal_year
        and h.month_code = v_month_code;
   
@@ -1785,13 +1800,13 @@ desig_seniority_code)
       select *
         from prms_transaction p
        where p.sal_year = v_sal_year
-         and p.month_code = v_month_code;         
-         
-      insert into prms_transaction_hist_data
-      select p_entry_date,p.*
+         and p.month_code = v_month_code;
+  
+    insert into prms_transaction_hist_data
+      select p_entry_date, p.*
         from prms_transaction p
        where p.sal_year = v_sal_year
-         and p.month_code = v_month_code;    
+         and p.month_code = v_month_code;
   
     insert into prms_allowance_hist
       select emp_id,
@@ -1807,8 +1822,12 @@ desig_seniority_code)
              arrear,
              remarks,
              hill_allwnc,
-             hr_arear_alw
-        from prms_allowance;
+             hr_arear_alw,
+             p.enty_by,
+             p.enty_on,
+             p.mod_by,
+             p.mod_on
+        from prms_allowance p;
   
     insert into prms_deduc_hist
       select emp_id,
@@ -1838,8 +1857,12 @@ desig_seniority_code)
              income_tax,
              income_tax_arr,
              remarks,
-             hr_arear_ded
-        from prms_deduc;
+             hr_arear_ded,
+             p.enty_by,
+             p.enty_on,
+             p.mod_by,
+             p.mod_on
+        from prms_deduc p;
   exception
     when others then
       p_error := 'Error in sp_data_backup :' || sqlerrm;
@@ -1873,8 +1896,9 @@ desig_seniority_code)
          p_message,
          trunc(sysdate));
     end if;
-  exception when others then
-      p_error:='Error in sp_log_tracing'||sqlerrm;
+  exception
+    when others then
+      p_error := 'Error in sp_log_tracing' || sqlerrm;
   end sp_log_tracing;
   procedure sp_init_values(p_msg out varchar2) is
   
@@ -1884,28 +1908,26 @@ desig_seniority_code)
     --v_day_of_mon := 1;
     if (v_day_of_mon <= 9) then
     
-     
-        update prms_deduc d
-           set car_use         = 0,
-               elect_bill      = 0,
-               hbadv_arrear    = 0,
-               pfadv_arrear    = 0,
-               tel_excess_bill = 0,
-               d.hr_arear_ded  = 0,
-               d.remarks       = '';
-      
-        update prms_emp_sal set arrear_basic = 0;
-        update prms_allowance a
-           set arrear            = 0,
-               a.other_allowance = 0,
-               a.hr_arear_alw    = 0,
-               a.remarks         = '';
-        p_msg := 'SUCCESS';
-      else
-        p_msg := 'EXPIRED';
-      end if;
+      update prms_deduc d
+         set car_use         = 0,
+             elect_bill      = 0,
+             hbadv_arrear    = 0,
+             pfadv_arrear    = 0,
+             tel_excess_bill = 0,
+             d.hr_arear_ded  = 0,
+             d.remarks       = '';
     
-    
+      update prms_emp_sal set arrear_basic = 0;
+      update prms_allowance a
+         set arrear            = 0,
+             a.other_allowance = 0,
+             a.hr_arear_alw    = 0,
+             a.remarks         = '';
+      p_msg := 'SUCCESS';
+    else
+      p_msg := 'EXPIRED';
+    end if;
+  
   exception
     when others then
       p_msg := 'Error in SP_INIT_VALUES ' || sqlerrm;
@@ -1920,7 +1942,7 @@ desig_seniority_code)
     v_max_sl         number(5) := 0;
     v_desig_desc     prms_designation.designation_desc%type;
     v_effective_date date;
-    v_exist number:=0;
+    v_exist          number := 0;
   begin
   
     select to_date(p_effective_date /*to_date(p_effective_date, 'YYYY-MM-DD')*/,
@@ -1934,14 +1956,18 @@ desig_seniority_code)
          set emp_brn_code  = p_new_brn_code,
              transfer_date = v_effective_date
        where emp_id = p_emp_id;
-              
-      begin         
-       SELECT count(*) into v_exist  FROM erp_user u where u.user_id=p_emp_id and u.user_role in('g','G');
-        if v_exist=1 then            
-         update erp_user r set r.user_branch=p_new_brn_code,r.user_role='g'
-         where r.user_id=p_emp_id and r.user_role in('g','G');
-        end if;         
-      end ;       
+    
+      begin
+        SELECT count(*)
+          into v_exist
+          FROM erp_user u
+         where u.user_id = p_emp_id;
+        if v_exist = 1 then
+          update erp_user r
+             set r.user_branch = p_new_brn_code
+           where r.user_id = p_emp_id;
+        end if;
+      end;
     end if;
   
     if (nvl(p_new_basic, 0) > 0) then
@@ -1999,7 +2025,9 @@ desig_seniority_code)
          mod_by,
          mod_on,
          transfer_date,
-         emp_dept_code)
+         emp_dept_code,
+         Scale,
+         Grade)
         select v_effective_date, v_max_sl, s.*
           from prms_emp_sal s
          where s.emp_id = p_emp_id;
@@ -2115,7 +2143,17 @@ desig_seniority_code)
          (select prms_designation.designation_category
             from prms_designation
            where prms_designation.designation_code = p_designation), --emp_category,
-         decode(p_designation,'41',22000,'42',22000,'43',22000,'50',16000,'51',16000), --new_basic,
+         decode(p_designation,
+                '41',
+                22000,
+                '42',
+                22000,
+                '43',
+                22000,
+                '50',
+                16000,
+                '51',
+                16000), --new_basic,
          'Y', --bonus_yn,
          p_entd_by, --entd_by,
          sysdate, --entd_on,
@@ -2161,7 +2199,17 @@ desig_seniority_code)
          (select prms_designation.designation_category
             from prms_designation
            where prms_designation.designation_code = p_designation), --emp_category,
-         decode(p_designation,'41',22000,'42',22000,'43',22000,'50',16000,'51',16000), --new_basic,
+         decode(p_designation,
+                '41',
+                22000,
+                '42',
+                22000,
+                '43',
+                22000,
+                '50',
+                16000,
+                '51',
+                16000), --new_basic,
          'Y', --bonus_yn,
          p_entd_by, --entd_by,
          sysdate, --entd_on,
@@ -2174,7 +2222,10 @@ desig_seniority_code)
          'N');
     
       insert into prms_allowance (emp_id) values (p_employee_id);
-      insert into prms_deduc (emp_id, welfare,gen_insurance, revenue) values (p_employee_id,50,40,10);
+      insert into prms_deduc
+        (emp_id, welfare, gen_insurance, revenue)
+      values
+        (p_employee_id, 50, 40, 10);
     else
       select nvl(max(h.eft_serial), 0)
         into v_max_sl
@@ -2337,18 +2388,18 @@ desig_seniority_code)
             v_basic_amt := nvl(id.new_basic, 0);
         end;
       
-        v_bon_amt     := nvl(v_basic_amt, 0) *
-                         round((nvl(p_bon_pct, 0) / 100), 2);                         
-                         
-       /*
-       if id.emp_id='1569' or id.emp_id='1589' then
-          v_bon_amt     := nvl(v_basic_amt, 0) *
-                         round((nvl(p_bon_pct/2, 0) / 100), 2);
-       else
-          v_bon_amt     := nvl(v_basic_amt, 0) *
-                         round((nvl(p_bon_pct, 0) / 100), 2);
-       end if;
-       */                   
+        v_bon_amt := nvl(v_basic_amt, 0) *
+                     round((nvl(p_bon_pct, 0) / 100), 2);
+      
+        /*
+        if id.emp_id='1569' or id.emp_id='1589' then
+           v_bon_amt     := nvl(v_basic_amt, 0) *
+                          round((nvl(p_bon_pct/2, 0) / 100), 2);
+        else
+           v_bon_amt     := nvl(v_basic_amt, 0) *
+                          round((nvl(p_bon_pct, 0) / 100), 2);
+        end if;
+        */
         v_net_bon_amt := nvl(v_bon_amt, 0) - nvl(v_revenue, 0);
       
         insert into prms_bonus_transaction
@@ -2441,12 +2492,9 @@ desig_seniority_code)
         end;
       
         --  v_basic_amt   := nvl(id.new_basic, 0);
-        v_bon_amt     := nvl(v_basic_amt, 0) *
-                         round((nvl(p_bon_pct, 0) / 100), 2);
-                        
-                         
-                 
-                         
+        v_bon_amt := nvl(v_basic_amt, 0) *
+                     round((nvl(p_bon_pct, 0) / 100), 2);
+      
         v_net_bon_amt := nvl(v_bon_amt, 0) - nvl(v_revenue, 0);
       
         insert into prms_bonus_transaction
@@ -2505,56 +2553,54 @@ desig_seniority_code)
                               p_branch_code   in varchar2,
                               p_emp_id        in varchar2,
                               p_year          in number,
-                              p_month_code    in number) return number
-  is 
-      v_arear_basic number:=0;
+                              p_month_code    in number) return number is
+    v_arear_basic number := 0;
   begin
-    
-        begin
-         select nvl(b.arrear_basic,0)
-         into v_arear_basic
-         from prms_transaction_manual b 
-         where entity_number = p_entity_number 
-         and branch_code = p_branch_code 
-         and b.sal_year = p_year
-         and b.emp_id = p_emp_id
-         and b.month_code = p_month_code;
-         
-       exception when no_data_found then
-                         v_arear_basic:=0;
-        end;
- 
-    
-    return v_arear_basic;
-  end  fn_manual_sal_data;
   
-  function fn_manual_sal_data_pf(p_entity_number in number,
-                              p_branch_code   in varchar2,
-                              p_emp_id        in varchar2,
-                              p_year          in number,
-                              p_month_code    in number) return number
-  is 
-      v_pf_arear number:=0;
-  begin
-    
-        begin
-         select nvl(b.pf_deduction,0)
-         into v_pf_arear
-         from prms_transaction_manual b 
-         where entity_number = p_entity_number 
-         and branch_code = p_branch_code 
+    begin
+      select nvl(b.arrear_basic, 0)
+        into v_arear_basic
+        from prms_transaction_manual b
+       where entity_number = p_entity_number
+         and branch_code = p_branch_code
          and b.sal_year = p_year
          and b.emp_id = p_emp_id
          and b.month_code = p_month_code;
-         
-       exception when no_data_found then
-                         v_pf_arear:=0;
-        end;
- 
     
+    exception
+      when no_data_found then
+        v_arear_basic := 0;
+    end;
+  
+    return v_arear_basic;
+  end fn_manual_sal_data;
+
+  function fn_manual_sal_data_pf(p_entity_number in number,
+                                 p_branch_code   in varchar2,
+                                 p_emp_id        in varchar2,
+                                 p_year          in number,
+                                 p_month_code    in number) return number is
+    v_pf_arear number := 0;
+  begin
+  
+    begin
+      select nvl(b.pf_deduction, 0)
+        into v_pf_arear
+        from prms_transaction_manual b
+       where entity_number = p_entity_number
+         and branch_code = p_branch_code
+         and b.sal_year = p_year
+         and b.emp_id = p_emp_id
+         and b.month_code = p_month_code;
+    
+    exception
+      when no_data_found then
+        v_pf_arear := 0;
+    end;
+  
     return v_pf_arear;
-  end  fn_manual_sal_data_pf;
-                             
+  end fn_manual_sal_data_pf;
+
   function fn_tax_stmt_data(p_entity_number in number,
                             p_branch_code   in varchar2,
                             p_year1         in varchar2) return v_data
@@ -2664,5 +2710,5 @@ desig_seniority_code)
 
 begin
   NULL;
-end pkg_prms; 
+end pkg_prms;
 /

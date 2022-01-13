@@ -4,17 +4,17 @@ create or replace package pkg_mis_entry_ho is
                              p_start_date      in date,
                              p_end_date        in date,
                              p_activation_type in varchar2,
-                             p_parent_code in varchar2,
-                             p_target_type in varchar2,
+                             p_parent_code     in varchar2,
+                             p_target_type     in varchar2,
                              p_remarks         in varchar2,
                              p_error           out varchar2);
   procedure sp_loan_sanction(p_branch_code    in varchar2,
-                                      p_entry_date     in date,
-                                      p_zr_ln_sanction in number,
-                                      p_ot_ln_sanction in number,
-                                      p_zr_ln_disburse in number,
-                                      p_ot_ln_disburse in number,
-                                      p_error          out varchar2);
+                             p_entry_date     in date,
+                             p_zr_ln_sanction in number,
+                             p_ot_ln_sanction in number,
+                             p_zr_ln_disburse in number,
+                             p_ot_ln_disburse in number,
+                             p_error          out varchar2);
   procedure sp_loan_recovery(p_branch_code in varchar2,
                              p_entry_date  in date,
                              p_cl_amount   in number,
@@ -40,12 +40,12 @@ create or replace package pkg_mis_entry_ho is
                               p_entry_date    in date,
                               loan_case_count in number,
                               p_error         out varchar2);
-                              procedure sp_loan_disburse(p_branch_code    in varchar2,
-                                      p_entry_date     in date,
-                                      p_gov_ln_sanction in number,
-                                      p_zr_ln_disburse in number,
-                                      p_ot_ln_disburse in number,
-                                      p_error          out varchar2);
+  procedure sp_loan_disburse(p_branch_code     in varchar2,
+                             p_entry_date      in date,
+                             p_gov_ln_disburse in number,
+                             p_zr_ln_disburse  in number,
+                             p_ot_ln_disburse  in number,
+                             p_error           out varchar2);
 end pkg_mis_entry_ho;
 /
 create or replace package body pkg_mis_entry_ho is
@@ -54,8 +54,8 @@ create or replace package body pkg_mis_entry_ho is
                              p_start_date      in date,
                              p_end_date        in date,
                              p_activation_type in varchar2,
-                             p_parent_code in varchar2,
-                             p_target_type in varchar2,
+                             p_parent_code     in varchar2,
+                             p_target_type     in varchar2,
                              p_remarks         in varchar2,
                              p_error           out varchar2) is
     v_data_exist number := 0;
@@ -63,7 +63,7 @@ create or replace package body pkg_mis_entry_ho is
     for id in (SELECT *
                  FROM target_master m
                 where m.target_code = p_target_code) loop
-      v_data_exist := 1;   
+      v_data_exist := 1;
     end loop;
   
     if v_data_exist = 0 then
@@ -73,32 +73,38 @@ create or replace package body pkg_mis_entry_ho is
          end_date,
          target_description,
          active_flag,
-         target_remarks)
+         target_remarks,
+         activation,
+         parent_code)
       values
         (p_target_code,
          p_start_date,
          p_end_date,
          p_discription,
          p_activation_type,
-         p_remarks);
+         p_remarks,
+         p_target_type,
+         p_parent_code);
     else
       update target_master m
          set m.start_date         = p_start_date,
              m.end_date           = p_end_date,
              m.target_description = p_discription,
              m.active_flag        = p_activation_type,
-             m.target_remarks     = p_remarks
+             m.target_remarks     = p_remarks,
+             m.activation         = p_target_type,
+             m.parent_code        = p_parent_code
        where m.target_code = p_target_code;
     end if;
   
   end sp_target_master;
   procedure sp_loan_sanction(p_branch_code    in varchar2,
-                                      p_entry_date     in date,
-                                      p_zr_ln_sanction in number,
-                                      p_ot_ln_sanction in number,
-                                      p_zr_ln_disburse in number,
-                                      p_ot_ln_disburse in number,
-                                      p_error          out varchar2) is
+                             p_entry_date     in date,
+                             p_zr_ln_sanction in number,
+                             p_ot_ln_sanction in number,
+                             p_zr_ln_disburse in number,
+                             p_ot_ln_disburse in number,
+                             p_error          out varchar2) is
     v_exist number := 0;
     timmer  number := 0;
   begin
@@ -136,18 +142,18 @@ create or replace package body pkg_mis_entry_ho is
     end if;
   
   end sp_loan_sanction;
-  procedure sp_loan_disburse(p_branch_code    in varchar2,
-                                      p_entry_date     in date,
-                                      p_gov_ln_sanction in number,
-                                      p_zr_ln_disburse in number,
-                                      p_ot_ln_disburse in number,
-                                      p_error          out varchar2) is
+  procedure sp_loan_disburse(p_branch_code     in varchar2,
+                             p_entry_date      in date,
+                             p_gov_ln_disburse in number,
+                             p_zr_ln_disburse  in number,
+                             p_ot_ln_disburse  in number,
+                             p_error           out varchar2) is
     v_exist number := 0;
     timmer  number := 0;
   begin
     select count(*)
       into v_exist
-      from MIS_LOAN_SANCTION d
+      from mis_loan_sanction_disburse d
      where d.branch_code = p_branch_code
        and d.entry_date = p_entry_date;
   
@@ -155,10 +161,15 @@ create or replace package body pkg_mis_entry_ho is
       insert into mis_loan_sanction_disburse l
         (branch_code,
          entry_date,
-         zero_eq_disburse_amt, 
-         oth_prd_disburse_amt,gov_loan_disb	)
+         zero_eq_disburse_amt,
+         oth_prd_disburse_amt,
+         gov_loan_disb)
       values
-        (p_branch_code, p_entry_date, p_zr_ln_disburse, p_ot_ln_disburse,p_gov_ln_sanction);
+        (p_branch_code,
+         p_entry_date,
+         p_zr_ln_disburse,
+         p_ot_ln_disburse,
+         p_gov_ln_disburse);
     else
     
       select trunc(sysdate) - d.entry_date
@@ -171,7 +182,7 @@ create or replace package body pkg_mis_entry_ho is
         update mis_loan_sanction_disburse b
            set b.zero_eq_disburse_amt = p_zr_ln_disburse,
                b.oth_prd_disburse_amt = p_ot_ln_disburse,
-               b.gov_loan_disb=p_gov_ln_sanction
+               b.gov_loan_disb        = p_gov_ln_disburse
          where b.branch_code = p_branch_code
            and b.entry_date = p_entry_date;
       else

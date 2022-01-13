@@ -245,10 +245,10 @@ c1 number := 7;
   end fn_decode;
 begin
 
-  for idx in ( select *from bhbfc.pf/*select acc_no, count(*)
+  /*for idx in ( select *from bhbfc.pf\*select acc_no, count(*)
                 from bhbfc.pfcont
                group by acc_no
-              having count(*) < 12*/) loop            
+              having count(*) < 12*\) loop            
     c1 := 7;
     c2 := 1;
    
@@ -282,7 +282,9 @@ begin
       end if;
     end loop;
    
-  end loop;  
+  end loop;*/  
+  
+  null;
 end manual_blank_month;
 function month_day(p_month_code in number, p_year in number) return number is
     v_days number := 0;
@@ -438,7 +440,7 @@ procedure sp_pf_process(p_entity_num in number,
                                      p_month_code,
                                      id.emp_id);     
         v_cur_balance := round((v_prv_balance + id.pf_contribution_amt +
-                               v_cum_sum + v_int_chg_amt +                               
+                               v_cum_sum + v_int_chg_amt -                               
                                nvl(id.pf_adv_dr_amt, 0) +
                                nvl(id.pf_adv_cr_amt, 0) -
                                nvl(id.voucher_dr, 0) +

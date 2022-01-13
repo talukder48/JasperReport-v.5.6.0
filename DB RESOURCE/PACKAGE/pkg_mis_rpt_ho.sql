@@ -177,8 +177,20 @@ create or replace package body pkg_mis_rpt_ho is
     w_courtcase courtcase;
     v_from_date date;
     v_to_date   date;
+    v_target_code varchar2(10) := '';
+    v_PARENT_code varchar2(10) := '';
   begin
+    SELECT m.parent_code
+      into v_PARENT_code
+      FROM target_master m
+     where m.target_code = p_target_code;
   
+    IF v_PARENT_code IS NULL THEN
+      v_target_code := p_target_code;
+    ELSE
+      v_target_code := v_PARENT_code;
+    end if;
+    
     SELECT m.start_date, m.end_date, m.target_description||'( From Date: '||to_char(m.start_date,'DD/MM/YYYY')||' To Date: '||to_char(m.end_date,'DD/MM/YYYY')||')'
       into v_from_date, v_to_date, w_courtcase.target_description
       FROM target_master m
@@ -199,9 +211,14 @@ create or replace package body pkg_mis_rpt_ho is
         FROM prms_mbranch m
        where m.brn_code = idx.branch_off_code;
       begin
+       select  s.settle_writ_case,s.settle_executive_case
+               into w_courtcase.TARGET_misc,
+               w_courtcase.TARGET_execution
+               from mis_goal_setup s where s.target_code=v_target_code
+               and s.branch_code=idx.branch_off_code;
       
-        SELECT g.settle_writ_case,
-               g.settle_executive_case,
+      
+        SELECT 
                misc_cse,
                executive_case,
                case g.settle_writ_case
@@ -216,8 +233,7 @@ create or replace package body pkg_mis_rpt_ho is
                  else
                   round(executive_case / settle_executive_case * 100, 2)
                end ex_pct
-          into w_courtcase.TARGET_misc,
-               w_courtcase.TARGET_execution,
+          into 
                w_courtcase.ACHIVE_misc,
                w_courtcase.ACHIVE_execution,
                w_courtcase.ACHIVE_misc_PCT,
@@ -230,7 +246,7 @@ create or replace package body pkg_mis_rpt_ho is
                  where d.entry_date between v_from_date and v_to_date
                  group by branch_code) kk
             on (kk.branch_code = g.branch_code)
-         where g.target_code = 'FY21-22'
+         where g.target_code = v_target_code
            and g.branch_code = idx.branch_off_code;
       
       exception
@@ -254,7 +270,20 @@ create or replace package body pkg_mis_rpt_ho is
     w_kharidabari kharidabari;
     v_from_date   date;
     v_to_date     date;
+    v_target_code varchar2(10) := '';
+    v_PARENT_code varchar2(10) := '';
   begin
+    
+  SELECT m.parent_code
+      into v_PARENT_code
+      FROM target_master m
+     where m.target_code = p_target_code;
+  
+    IF v_PARENT_code IS NULL THEN
+      v_target_code := p_target_code;
+    ELSE
+      v_target_code := v_PARENT_code;
+    end if;
   
     SELECT m.start_date, m.end_date, m.target_description||'( From Date: '||to_char(m.start_date,'DD/MM/YYYY')||' To Date: '||to_char(m.end_date,'DD/MM/YYYY')||')'
       into v_from_date, v_to_date, w_kharidabari.target_description
@@ -277,8 +306,16 @@ create or replace package body pkg_mis_rpt_ho is
        where m.brn_code = idx.branch_off_code;
     
       begin
-        SELECT g.kharidabari_procession,
-               G.KHARIDABARI_SALE,
+        select s.kharidabari_procession,
+               s.KHARIDABARI_SALE 
+               into w_kharidabari.TARGET_possesion,
+               w_kharidabari.TARGET_sale
+               from mis_goal_setup s where s.target_code=v_target_code
+               and s.branch_code=idx.branch_off_code;
+      
+      
+      
+        SELECT 
                procession_ACHIEVMENT,
                sale_ACHIEVMENT,
                CASE kharidabari_procession
@@ -294,8 +331,7 @@ create or replace package body pkg_mis_rpt_ho is
                  ELSE
                   ROUND(sale_ACHIEVMENT / KHARIDABARI_SALE * 100, 2)
                END sale_PCT
-          into w_kharidabari.TARGET_possesion,
-               w_kharidabari.TARGET_sale,
+          into 
                w_kharidabari.ACHIVE_possesion,
                w_kharidabari.ACHIVE_sale,
                w_kharidabari.ACHIVE_possesion_PCT,
@@ -310,13 +346,11 @@ create or replace package body pkg_mis_rpt_ho is
            where d.entry_date between v_from_date and v_to_date
            GROUP BY D.BRANCH_CODE) KK
             ON (KK.branch_code = G.BRANCH_CODE)
-         where g.target_code = 'FY21-22'
+         where g.target_code = v_target_code
            and g.branch_code = idx.branch_off_code;
       
       exception
         when others then
-          w_kharidabari.TARGET_possesion     := 0;
-          w_kharidabari.TARGET_sale          := 0;
           w_kharidabari.ACHIVE_possesion     := 0;
           w_kharidabari.ACHIVE_sale          := 0;
           w_kharidabari.ACHIVE_possesion_PCT := 0;
@@ -333,8 +367,20 @@ create or replace package body pkg_mis_rpt_ho is
     w_DeedReturn DeedReturn;
     v_from_date  date;
     v_to_date    date;
+    v_target_code varchar2(10) := '';
+    v_PARENT_code varchar2(10) := '';
   begin
+  SELECT m.parent_code
+      into v_PARENT_code
+      FROM target_master m
+     where m.target_code = p_target_code;
   
+    IF v_PARENT_code IS NULL THEN
+      v_target_code := p_target_code;
+    ELSE
+      v_target_code := v_PARENT_code;
+    end if;
+    
     SELECT m.start_date, m.end_date, m.target_description||'( From Date: '||to_char(m.start_date,'DD/MM/YYYY')||' To Date: '||to_char(m.end_date,'DD/MM/YYYY')||')'
       into v_from_date, v_to_date, w_DeedReturn.target_description
       FROM target_master m
@@ -355,8 +401,13 @@ create or replace package body pkg_mis_rpt_ho is
         FROM prms_mbranch m
        where m.brn_code = idx.branch_off_code;
     
+     select s.deed_return_fl
+               into w_DeedReturn.TARGET_DeedReturn
+               from mis_goal_setup s where s.target_code=v_target_code
+               and s.branch_code=idx.branch_off_code;
+    
       begin
-        SELECT TARGET,
+        SELECT 
                ACHIVE,
                case TARGET
                  when 0 then
@@ -364,21 +415,20 @@ create or replace package body pkg_mis_rpt_ho is
                  else
                   round(ACHIVE / TARGET * 100, 2)
                end pct
-          into w_DeedReturn.TARGET_DeedReturn,
+          into 
                w_DeedReturn.ACHIVE_DeedReturn,
                w_DeedReturn.ACHIVE_DeedReturn_PCT
           FROM (SELECT g.deed_return_fl target,
-                       (SELECT sum(l.loan_account_no)
+                       (SELECT nvl(sum(l.loan_account_no),0)
                           FROM mis_faulty_ln_case l
                          where l.branch_code = g.branch_code
                            and l.entry_date between v_from_date and v_to_date) achive
                   FROM mis_goal_setup g
-                 where g.target_code = 'FY21-22'
+                 where g.target_code = v_target_code
                    and g.branch_code = idx.branch_off_code);
       
       exception
         when others then
-          w_DeedReturn.TARGET_DeedReturn     := 0;
           w_DeedReturn.ACHIVE_DeedReturn     := 0;
           w_DeedReturn.ACHIVE_DeedReturn_PCT := 0;
       end;

@@ -72,8 +72,8 @@ create or replace package pkg_param is
     pipelined;  
     procedure sp_application_log(p_RequestType  varchar2,
                                p_DataObject   varchar2,
-                               p_ErrorCode    in number,
-                               p_ErrorMessage in varchar2);
+                               p_ErrorMessage    in varchar2,
+                               p_Error_code in varchar2);
      procedure sp_DaySetUp(p_user_id in varchar2,
                         p_date    in date,
                         p_postType   in varchar2,
@@ -286,9 +286,11 @@ create or replace package body pkg_param is
   
   begin
   
-    SELECT m.start_date, m.end_date, m.finyear
+    SELECT m.start_date, m.end_date, m.fin_year
       into v_date1, v_date2, V_fin_year
-      FROM as_master m;
+      FROM as_finyear  m where m.activatation='Y';
+      
+      
     select b.sl_no + 1
       into v_count
       from as_subgl_sl b
@@ -381,12 +383,11 @@ create or replace package body pkg_param is
        and b.branch_code = p_branch
        and b.gl_code = p_head_gl;
   
-    if p_enty_date between v_date1 and v_date2 then
       insert into as_glbalance
         (entity_num, branch, fin_year, glcode, init_bal, cur_bal)
       values
         (1, p_branch, V_fin_year, p_newgl_code, 0, 0);
-    end if;
+        
   exception
     when others then
       p_error := 'Error in sp_branch_ledger_Opening' || sqlerrm;
@@ -1090,8 +1091,8 @@ select *
   end sp_branch_balance_init;
   procedure sp_application_log(p_RequestType  varchar2,
                                p_DataObject   varchar2,
-                               p_ErrorCode    in number,
-                               p_ErrorMessage in varchar2) is
+                               p_ErrorMessage    in varchar2,
+                               p_Error_code in varchar2) is
   begin
     insert into applicationlog
       (logid,
@@ -1105,7 +1106,7 @@ select *
        sysdate,
        p_RequestType,
        p_DataObject,
-       p_ErrorCode,
+       1,
        p_ErrorMessage);
   end sp_application_log;
 begin

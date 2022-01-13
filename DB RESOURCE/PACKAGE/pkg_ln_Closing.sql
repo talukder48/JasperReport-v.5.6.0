@@ -15,7 +15,7 @@ create or replace package body pkg_ln_Closing is
   procedure sp_data_migration(p_ln_type in varchar2, p_year in number) is
   begin
     if p_ln_type = 'MOTK' then
-      insert into elms_realization
+      /*insert into elms_realization
         select 1 entity,
                d.acc_no emp_id,
                'MOT' type,
@@ -54,13 +54,13 @@ create or replace package body pkg_ln_Closing is
                               '9',
                               '10',
                               '11',
-                              '12');
-    
+                              '12');*/
+    null;
     elsif p_ln_type = 'MOT' then  
         
       delete from elms_ln_summary s where s.loan_type = p_ln_type;
       delete from elms_ln_ledger d where d.loan_type = p_ln_type;    
-      insert into elms_ln_summary
+     /* insert into elms_ln_summary
         select 1 ENTITY_NUM,
                t.acc_no EMP_ID,
                'MOT' LOAN_TYPE,
@@ -68,9 +68,10 @@ create or replace package body pkg_ln_Closing is
                t.int_bal,
                t.prin_bal + t.int_bal TOT_BALANCE
           from bhbfc.motor_HBADV_CL2 t
-         where t.fin_year = '2019-2020';
+         where t.fin_year = '2019-2020';*/
+         null;
     
-      insert into elms_ln_ledger
+      /*insert into elms_ln_ledger
         select 1 ENTITY_NUM,
                t.acc_no EMP_ID,
                'MOT' LOAN_TYPE,
@@ -89,7 +90,8 @@ create or replace package body pkg_ln_Closing is
                'MIG' ENTD_BY,
                trunc(sysdate)
           from bhbfc.motor_HBADV_CL2 t
-         where t.fin_year = '2019-2020';
+         where t.fin_year = '2019-2020';*/
+         null;
     
     end if;
   
