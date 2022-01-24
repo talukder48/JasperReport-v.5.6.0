@@ -90,7 +90,7 @@ order by t.start_date]]>
 				<text><![CDATA[:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="4" y="98" width="606" height="13" forecolor="#009900" uuid="bc8930c1-7908-44a8-9401-42bd1125cb45"/>
+				<reportElement x="4" y="96" width="606" height="13" forecolor="#009900" uuid="bc8930c1-7908-44a8-9401-42bd1125cb45"/>
 				<box>
 					<bottomPen lineWidth="0.5"/>
 				</box>
@@ -216,7 +216,7 @@ order by t.start_date]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement>
-					<font fontName="SolaimanLipi" pdfFontName="SolaimanLipi" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<font fontName="SolaimanLipi" size="12" pdfFontName="SolaimanLipi" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{SUBJECT_DESC}]]></textFieldExpression>
 			</textField>
@@ -230,7 +230,7 @@ order by t.start_date]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement>
-					<font fontName="SolaimanLipi" pdfFontName="SolaimanLipi" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<font fontName="SolaimanLipi" size="12" pdfFontName="SolaimanLipi" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{INST_NAME}]]></textFieldExpression>
 			</textField>
@@ -254,6 +254,9 @@ order by t.start_date]]>
 					<bottomPen lineWidth="0.5"/>
 					<rightPen lineWidth="0.5"/>
 				</box>
+				<textElement>
+					<font fontName="SolaimanLipi"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{END_DATE}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
