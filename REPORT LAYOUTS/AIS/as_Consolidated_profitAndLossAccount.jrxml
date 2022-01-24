@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="as_profitAndLossAccount" language="groovy" pageWidth="650" pageHeight="842" columnWidth="610" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="809619f1-3aac-41dd-be7a-5b595ce412db">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="P_fin_year" class="java.lang.String"/>
+	<parameter name="M_LOGO" class="java.lang.String"/>
+	<parameter name="LOGO_PATH" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["D:\\iReport\\PRMS\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="BRANCH_ADDRESS" class="java.lang.String"/>
+	<parameter name="BRANCH_NAME" class="java.lang.String"/>
+	<parameter name="P_ENTITY_NUM" class="java.lang.String">
+		<defaultValueExpression><![CDATA["1"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_BRANCH" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select decode (k.type,'I','A.  INCOME','E','B.  EXPENDITURE ','C. Cost of Fund')GroupDesc , decode (k.type,'I',1,'E',2)Ordering,k.type, k.group_code ,(select y.group_description from as_profitloss_param y where y.group_code=k.group_code)particulars ,
+case k.type
+  when 'E' then sum(b.cur_bal)*-1
+  when 'C' then sum(b.cur_bal)*-1
+  else
+    sum(b.cur_bal) end Balance,
+    sum(b.cur_bal) sign_Ballance
+  from as_profitloss_param k
+  join as_profitloss_item i
+    on (k.group_code = i.group_code)
+ join as_glbalance b on(i.gl_code=b.glcode)
+ where  b.fin_year=$P{P_fin_year}
+ group by  k.type, k.group_code
+ order by  decode (k.type,'I',1,'E',2),k.type, k.group_code]]>
+	</queryString>
+	<field name="GROUPDESC" class="java.lang.String"/>
+	<field name="ORDERING" class="java.math.BigDecimal"/>
+	<field name="TYPE" class="java.lang.String"/>
+	<field name="GROUP_CODE" class="java.lang.String"/>
+	<field name="PARTICULARS" class="java.lang.String"/>
+	<field name="BALANCE" class="java.math.BigDecimal"/>
+	<field name="SIGN_BALLANCE" class="java.math.BigDecimal"/>
+	<variable name="v_Sub_total_balance" class="java.lang.Double" resetType="Group" resetGroup="ProfitLossGroup" calculation="Sum">
+		<variableExpression><![CDATA[$F{BALANCE}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="v_grand_total_balance" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{SIGN_BALLANCE}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<group name="ProfitLossGroup">
+		<groupExpression><![CDATA[$F{TYPE}]]></groupExpression>
+		<groupHeader>
+			<band height="19">
+				<textField>
+					<reportElement x="85" y="3" width="456" height="13" forecolor="#009933" uuid="f388d60b-bc4f-49e7-8d5c-0340b6b8f175"/>
+					<box leftPadding="1">
+						<pen lineWidth="0.0"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="0.0"/>
+					</box>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{GROUPDESC}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="18">
+				<textField pattern="#,##0.00;-#,##0.00">
+					<reportElement x="400" y="0" width="152" height="13" forecolor="#003399" uuid="cee15f5e-bcc0-4663-8a7a-77508d932be8"/>
+					<box rightPadding="10">
+						<pen lineWidth="0.0" lineStyle="Double"/>
+						<topPen lineWidth="0.0" lineStyle="Double"/>
+						<leftPen lineWidth="0.0" lineStyle="Double"/>
+						<bottomPen lineWidth="1.0" lineStyle="Double"/>
+						<rightPen lineWidth="0.0" lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Right">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{v_Sub_total_balance}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="34" y="0" width="366" height="13" forecolor="#003399" uuid="3fb30733-c05e-4fc8-aba6-3401b42e8d2c"/>
+					<box rightPadding="3">
+						<bottomPen lineWidth="1.0" lineStyle="Double"/>
+					</box>
+					<textElement textAlignment="Right">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total Amount:]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="102" splitType="Stretch">
+			<staticText>
+				<reportElement x="34" y="74" width="518" height="13" uuid="8edb7a0d-f70a-4703-bf84-339d38f7e163"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Consolidated Profit or Loss Account(Accrual Basis) as on]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="284" y="87" width="100" height="13" uuid="c7879af9-aefe-4374-9310-2db371187aea"/>
+				<box leftPadding="2"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="184" y="87" width="100" height="13" uuid="582ba023-b293-48aa-9f69-daa3695d7cba"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[As on ]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="0" y="0" width="610" height="73" uuid="8a67194a-43a5-4737-8042-08385cd11d13"/>
+				<subreportParameter name="BRANCH_NAME">
+					<subreportParameterExpression><![CDATA[$P{BRANCH_NAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="M_LOGO">
+					<subreportParameterExpression><![CDATA[$P{M_LOGO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="BRANCH_ADDRESS">
+					<subreportParameterExpression><![CDATA[$P{BRANCH_ADDRESS}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LOGO_PATH">
+					<subreportParameterExpression><![CDATA[$P{LOGO_PATH}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Header_Portrait.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="13" splitType="Stretch">
+			<staticText>
+				<reportElement x="85" y="0" width="315" height="13" forecolor="#003399" uuid="69ac3e49-1c83-45da-8b66-dcf38cbaeb81"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PARTICULARS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="400" y="0" width="152" height="13" forecolor="#003399" uuid="0ec187e1-a991-4955-a7bf-530635f66978"/>
+				<box rightPadding="10">
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Amount in Taka]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="34" y="0" width="51" height="13" forecolor="#003399" uuid="d0ff5dc1-9325-4bb5-8fc8-4f01990bbd30"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Code]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<textField>
+				<reportElement x="34" y="1" width="51" height="13" uuid="3d25bcc0-11cf-46cb-8612-6284ac0f1850"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{GROUP_CODE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="85" y="1" width="315" height="13" uuid="086a9ca4-c99a-41e9-9958-85d5474ee586"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{PARTICULARS}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00;-#,##0.00">
+				<reportElement x="400" y="1" width="152" height="13" uuid="ca90ee53-6f2e-47d4-9fc4-a9dc64d5acae"/>
+				<box rightPadding="10">
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{BALANCE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="16" splitType="Stretch">
+			<textField>
+				<reportElement x="264" y="2" width="80" height="13" uuid="40573df4-29f7-4e0d-b142-e11d1e4853e5"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="344" y="2" width="40" height="13" uuid="7c3fdd0b-aceb-418e-84c6-fee8645570c1"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch">
+			<textField pattern="#,##0.00;-#,##0.00">
+				<reportElement x="400" y="2" width="152" height="13" forecolor="#006666" uuid="654ee546-28c5-4a05-8c91-411ec5961b69"/>
+				<box rightPadding="10">
+					<topPen lineWidth="1.0" lineStyle="Double"/>
+					<bottomPen lineWidth="1.0" lineStyle="Double"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{v_grand_total_balance}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="34" y="2" width="366" height="13" forecolor="#006666" uuid="4c821828-e8e0-4339-ae28-bf1fc71281d3"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Double"/>
+					<bottomPen lineWidth="1.0" lineStyle="Double"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Profit for the year [A-(B+C)]]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>
