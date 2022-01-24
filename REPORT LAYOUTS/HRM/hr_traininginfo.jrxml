@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.2.1.final using JasperReports Library version 6.2.1  -->
+<!-- 2022-01-24T11:54:55 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="hr_traininginfo" language="groovy" pageWidth="650" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="610" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="eb95f746-4be6-41aa-9f0b-8652d8503a8b">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="GENDB"/>
+	<parameter name="p_empId" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select t.emp_id,
+       e.emp_name,
+       (select d.designation_desc
+          from prms_designation d
+         where d.designation_code = y.desig_code) designation,
+       e.namebangla,
+       s.subject_desc,
+       i.inst_name,
+       t.start_date,
+       t.end_date,
+       (select c.cat_description
+          from hr_training_catagory c
+         where c.cat_code = t.cat_code) Catagory
+  from HR_TRANINGDATA t
+  join prms_employee e
+    on (t.emp_id = e.emp_id)
+  join prms_emp_sal y
+    on (y.emp_id = t.emp_id)
+  join hr_traning_subject s
+    on (t.subject_code = s.subject_code)
+  join hr_institute i
+    on (t.inst_code = i.inst_code)
+ where t.emp_id = $P{p_empId}
+
+order by t.start_date]]>
+	</queryString>
+	<field name="EMP_ID" class="java.lang.String"/>
+	<field name="EMP_NAME" class="java.lang.String"/>
+	<field name="DESIGNATION" class="java.lang.String"/>
+	<field name="NAMEBANGLA" class="java.lang.String"/>
+	<field name="SUBJECT_DESC" class="java.lang.String"/>
+	<field name="INST_NAME" class="java.lang.String"/>
+	<field name="START_DATE" class="java.sql.Timestamp"/>
+	<field name="END_DATE" class="java.sql.Timestamp"/>
+	<field name="CATAGORY" class="java.lang.String"/>
+	<variable name="v_sl" class="java.lang.Number" incrementType="Report">
+		<variableExpression><![CDATA[$V{v_sl}+1]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="202" splitType="Stretch">
+			<textField>
+				<reportElement x="72" y="155" width="205" height="13" uuid="2544ed56-99d7-4197-82be-db8324d43e87"/>
+				<textFieldExpression><![CDATA[$F{EMP_ID}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="72" y="169" width="205" height="13" uuid="e0bc1c4c-a9a5-44a7-8812-17f53c6b25ff"/>
+				<textFieldExpression><![CDATA[$F{EMP_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="72" y="184" width="205" height="13" uuid="6cdcb981-46f1-4375-a8da-1e33e54db510"/>
+				<textFieldExpression><![CDATA[$F{DESIGNATION}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="4" y="155" width="59" height="13" uuid="003032dc-5a7c-4abb-8dc5-e6bdcdcc02b3"/>
+				<text><![CDATA[PF No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="169" width="59" height="13" uuid="31fbcc10-5d28-4a48-91e4-5259bfdebcc6"/>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="184" width="59" height="13" uuid="409c3047-348c-4c2d-a3b2-5033accf5362"/>
+				<text><![CDATA[Designation]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="63" y="155" width="9" height="13" uuid="00e116bc-64de-490d-8ad6-b64bad6e1779"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="63" y="169" width="9" height="13" uuid="91ecd1da-fe33-44f8-85ff-63d07abfbc5b"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="63" y="184" width="9" height="13" uuid="545df963-7b44-4490-9d3a-96a0356e5ca5"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="134" width="606" height="13" forecolor="#009900" uuid="bc8930c1-7908-44a8-9401-42bd1125cb45"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Training Related Information]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement x="512" y="169" width="98" height="20" uuid="e4cd44a5-e8a6-4f70-ace3-1a4e3dce9ec3"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="412" y="169" width="100" height="20" uuid="a33a35f0-46d9-42f0-9ab9-08be019e88c9"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Print Date:]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="13" splitType="Stretch">
+			<staticText>
+				<reportElement x="39" y="0" width="200" height="13" uuid="a11ee0ad-9130-4242-b4b3-0083544a4c63"/>
+				<box leftPadding="5">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Training Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="239" y="0" width="152" height="13" uuid="4f37ab3e-c135-4662-8a96-853cade1ac19"/>
+				<box leftPadding="5">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Institute Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="391" y="0" width="58" height="13" uuid="befe6e6e-20a5-46d0-93a1-315e9299c532"/>
+				<box leftPadding="5">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[From Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="449" y="0" width="63" height="13" uuid="95198f3a-2a66-46bc-8f23-bb5a5f75563c"/>
+				<box leftPadding="5">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[To Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="512" y="0" width="98" height="13" uuid="69af779c-b739-40d6-8601-3156d2458552"/>
+				<box leftPadding="5">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Category]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="0" width="38" height="13" uuid="b511bd35-24f9-488e-bea5-5eaa4e291168"/>
+				<box leftPadding="5">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[SL No.]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="13" splitType="Prevent">
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToBandHeight" x="39" y="0" width="200" height="13" uuid="5e97d59e-6b1e-444b-8b40-f9d80714fa99"/>
+				<box leftPadding="5">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="SolaimanLipi"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUBJECT_DESC}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" x="239" y="0" width="152" height="13" uuid="d2203b0d-0698-4fef-aff8-5d0cd9c5d1a0"/>
+				<box leftPadding="5">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="SolaimanLipi"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{INST_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy">
+				<reportElement stretchType="RelativeToTallestObject" x="391" y="0" width="58" height="13" uuid="c39c8402-d8e1-48e3-97e8-59c59232c941"/>
+				<box leftPadding="5">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{START_DATE}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy">
+				<reportElement stretchType="RelativeToTallestObject" x="449" y="0" width="63" height="13" uuid="84bb44f7-d709-4d6e-9b12-b5c0bd3d0989"/>
+				<box leftPadding="5">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{END_DATE}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="512" y="0" width="98" height="13" uuid="60b71e88-650d-4eae-bff8-e20ee0959e71"/>
+				<box leftPadding="5">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font fontName="SolaimanLipi"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CATAGORY}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" x="1" y="0" width="38" height="13" uuid="04956ac9-fe3c-41c3-8794-530bc9b501e5"/>
+				<box leftPadding="5">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$V{v_sl}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="20">
+			<textField>
+				<reportElement x="482" y="7" width="80" height="13" uuid="87e564e9-1bb8-4839-bf04-2f8cb7d09c99"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="562" y="7" width="40" height="13" uuid="a8c7e3df-cb86-467f-ac06-7e9cdbeb6205"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="4" y="6" width="466" height="13" uuid="6ecc31d1-b45f-4c4d-9143-ddf2adc97f97"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Copyright © 2022. Design & Developed By ICT Department, BHBFC. All Rights Reserved.]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>
