@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="hr_transfer_order" language="groovy" pageWidth="680" pageHeight="842" columnWidth="640" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f496d7e9-ce66-4cfb-8f4d-b8be729ba50e">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="M_LOGO" class="java.lang.String"/>
+	<parameter name="P_ENTITY_NUM" class="java.lang.String">
+		<defaultValueExpression><![CDATA["1"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="BRANCH_NAME" class="java.lang.String"/>
+	<parameter name="BRANCH_ADDRESS" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["D:\\iReport\\PRMS\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="LOGO_PATH" class="java.lang.String"/>
+	<parameter name="P_ORDER_SERIAL" class="java.lang.String"/>
+	<parameter name="P_ORDER_DATE" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select o.empid,
+        (select d.designation_desc from prms_designation d where d.designation_code=(select e.desig_code from prms_emp_sal e where e.emp_id = o.empid))Designation,
+       o.order_date,
+       o.ordersl,
+       k.manual_order_number ManualOrder,
+       (select e.emp_name from prms_employee e where e.emp_id = o.empid) Name,
+       (select d.dept_name
+          from prms_brn_department d
+         where d.brn_code = pre_branch_code
+           and d.dept_code = o.pre_dept_code) || ' ,' ||
+       (select m.brn_name
+          from prms_mbranch m
+         where m.brn_code = o.pre_branch_code) Previous_workPlace,
+       (select d.dept_name
+          from prms_brn_department d
+         where d.brn_code = post_branch_code
+           and d.dept_code = o.attach_dept_code) || ' ,' ||
+       (select m.brn_name
+          from prms_mbranch m
+         where m.brn_code = o.post_branch_code) Post_workPlace
+
+  from hr_order_list k
+  join hr_transfer_order o
+    on (k.order_date = o.order_date and k.ordersl = o.ordersl)
+ where k.order_date=$P{P_ORDER_DATE}
+     and k.ordersl=$P{P_ORDER_SERIAL}
+]]>
+	</queryString>
+	<field name="EMPID" class="java.lang.String"/>
+	<field name="DESIGNATION" class="java.lang.String"/>
+	<field name="ORDER_DATE" class="java.sql.Timestamp"/>
+	<field name="ORDERSL" class="java.math.BigDecimal"/>
+	<field name="MANUALORDER" class="java.lang.String"/>
+	<field name="NAME" class="java.lang.String"/>
+	<field name="PREVIOUS_WORKPLACE" class="java.lang.String"/>
+	<field name="POST_WORKPLACE" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="156" splitType="Stretch">
+			<textField>
+				<reportElement x="261" y="139" width="358" height="15" uuid="fab03a09-118b-42b7-8775-0fc55c9c2329"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Manual Office Order:"+$F{MANUALORDER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="89" y="124" width="100" height="15" uuid="ae7a8853-2bf0-4854-bea0-255b5946d3ed"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORDER_DATE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="89" y="139" width="100" height="15" uuid="ab2ed4fd-3ce0-4099-b2af-ef26cae1bb89"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORDERSL}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="6" y="124" width="69" height="15" uuid="a3f929d3-30ad-4cbc-b196-2b9b465e8260"/>
+				<box leftPadding="3">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Order Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="139" width="69" height="15" uuid="0f1b67ed-bcbc-4fb9-9755-9e012b6f2a37"/>
+				<box leftPadding="3">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Order SL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="75" y="124" width="14" height="15" uuid="957c1da6-3dd6-4cdd-a0ed-410e70f4dcdb"/>
+				<box leftPadding="3">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="75" y="139" width="14" height="15" uuid="cf4726ef-25c5-40b5-a987-faa48682dc4a"/>
+				<box leftPadding="3">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="104" width="613" height="15" forecolor="#330033" uuid="84b7e5d0-b1ae-43b3-8c01-0c8ed9b94d1f"/>
+				<box leftPadding="3">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Transfer Order]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="6" y="10" width="613" height="75" uuid="a8e7fdf4-9ca5-4224-9c6f-94767633e6c8"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="BRANCH_NAME">
+					<subreportParameterExpression><![CDATA[$P{BRANCH_NAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="M_LOGO">
+					<subreportParameterExpression><![CDATA[$P{M_LOGO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="BRANCH_ADDRESS">
+					<subreportParameterExpression><![CDATA[$P{BRANCH_ADDRESS}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="LOGO_PATH">
+					<subreportParameterExpression><![CDATA[$P{LOGO_PATH}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Header_Portrait.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="6" y="0" width="69" height="20" uuid="ec806531-b526-42da-b99a-aa42680ff1a2"/>
+				<box leftPadding="3">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PF No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="75" y="0" width="186" height="20" uuid="067dce91-e30f-4556-861c-4ac9b82f677b"/>
+				<box leftPadding="3">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Name & Designation]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="261" y="0" width="175" height="20" uuid="3849b02b-7c8d-4c2c-8a7e-c44410aa2a12"/>
+				<box leftPadding="3">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Present Work Place]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="436" y="0" width="183" height="20" uuid="bb3740a9-eba1-44cd-bbd2-d6a04bcc2d52"/>
+				<box leftPadding="3">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Posted Work Place]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="42" splitType="Stretch">
+			<textField>
+				<reportElement x="6" y="0" width="69" height="42" uuid="dbbbedc6-3004-4c0a-bceb-0ec08f7ca46e"/>
+				<box leftPadding="3">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{EMPID}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="75" y="0" width="186" height="21" uuid="99bb2a7d-4201-4cbb-808f-24df3dbbf716"/>
+				<box leftPadding="5">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="261" y="0" width="175" height="42" forecolor="#000099" uuid="854c1250-fc6f-44f1-b5d6-3559a2f4fe21"/>
+				<box leftPadding="3">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PREVIOUS_WORKPLACE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="436" y="0" width="183" height="42" forecolor="#009933" uuid="48254f6e-a6bd-4f4f-af20-e669a76c8105"/>
+				<box leftPadding="3">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{POST_WORKPLACE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="75" y="21" width="186" height="21" uuid="2705001c-5134-4a6c-b821-43adceb56275"/>
+				<box leftPadding="8">
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DESIGNATION}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement x="192" y="2" width="80" height="20" uuid="ce60552d-861f-4f80-929a-bf9e0e43f5a3"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="272" y="2" width="40" height="20" uuid="3b38d731-ac22-474a-9f58-8ad492f7b470"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement x="436" y="0" width="183" height="20" uuid="e975615f-c804-4df4-956f-a74a0c76fd93"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>
