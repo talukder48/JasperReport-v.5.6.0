@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="lms_personal_ledger_gov" language="groovy" pageWidth="1300" pageHeight="595" orientation="Landscape" columnWidth="1270" leftMargin="15" rightMargin="15" topMargin="10" bottomMargin="10" uuid="8ec9f210-3408-4f8d-9b8b-529ccd88ed9b">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="lms_personal_ledger_old" language="groovy" pageWidth="1250" pageHeight="595" orientation="Landscape" columnWidth="1220" leftMargin="15" rightMargin="15" topMargin="10" bottomMargin="10" uuid="8ec9f210-3408-4f8d-9b8b-529ccd88ed9b">
 	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="834"/>
+	<property name="ireport.x" value="884"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="p_LoanAC" class="java.lang.String"/>
 	<parameter name="P_FinYear" class="java.lang.String"/>
@@ -76,7 +76,7 @@ Disburse_AMT,
        CUM_PRIN_BAL,
        CUM_INT_BAL
 
-from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_LoanAC},$P{P_FinYear},$P{p_prinType})) order by LOAN_CODE, serial]]>
+from table(pkg_report_lms.fn_get_personal_stmt_emi($P{p_BranchCode},$P{p_LoanAC},$P{P_FinYear},$P{p_prinType})) order by LOAN_CODE, serial]]>
 	</queryString>
 	<field name="SERIAL" class="java.math.BigDecimal"/>
 	<field name="LOAN_CODE" class="java.lang.String"/>
@@ -160,7 +160,7 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
 	<variable name="client_int_real" class="java.lang.Double" calculation="Sum">
-		<variableExpression><![CDATA[$F{CLIENT_POREAL_AMT}]]></variableExpression>
+		<variableExpression><![CDATA[$F{INT_REAL}]]></variableExpression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
 	<variable name="total_djust" class="java.lang.Double">
@@ -327,21 +327,7 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 					<text><![CDATA[Int. Dr./Cr.]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="783" y="57" width="70" height="13" forecolor="#000099" uuid="c936b7cb-1d9d-4e45-83d5-66671a66f6b7"/>
-					<box>
-						<pen lineWidth="1.0" lineStyle="Dotted"/>
-						<topPen lineStyle="Solid"/>
-						<leftPen lineWidth="0.0" lineStyle="Dotted"/>
-						<bottomPen lineStyle="Solid"/>
-						<rightPen lineWidth="0.0" lineStyle="Dotted"/>
-					</box>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font isBold="true"/>
-					</textElement>
-					<text><![CDATA[Int. Gov. Sub]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="935" y="57" width="103" height="13" forecolor="#000099" uuid="f3ccf53b-155f-42f3-831d-fb1914b5442d"/>
+					<reportElement x="865" y="57" width="103" height="13" forecolor="#000099" uuid="f3ccf53b-155f-42f3-831d-fb1914b5442d"/>
 					<box>
 						<pen lineWidth="1.0" lineStyle="Dotted"/>
 						<topPen lineStyle="Solid"/>
@@ -355,7 +341,7 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 					<text><![CDATA[Interest Balance]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="1038" y="57" width="78" height="13" forecolor="#000099" uuid="ca3e772c-604c-41de-aab4-5da229fcd734"/>
+					<reportElement x="968" y="57" width="78" height="13" forecolor="#000099" uuid="ca3e772c-604c-41de-aab4-5da229fcd734"/>
 					<box>
 						<pen lineWidth="1.0" lineStyle="Dotted"/>
 						<topPen lineStyle="Solid"/>
@@ -369,7 +355,7 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 					<text><![CDATA[Prin. Overdue]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="1116" y="57" width="72" height="13" forecolor="#000099" uuid="9a544aee-0c3f-4c1c-a3e8-dc9968127018"/>
+					<reportElement x="1046" y="57" width="72" height="13" forecolor="#000099" uuid="9a544aee-0c3f-4c1c-a3e8-dc9968127018"/>
 					<box>
 						<pen lineWidth="1.0" lineStyle="Dotted"/>
 						<topPen lineStyle="Solid"/>
@@ -383,7 +369,7 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 					<text><![CDATA[Int. Overdue]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="1188" y="57" width="82" height="13" forecolor="#000099" uuid="b02da62e-a74b-4b36-bbae-ab2964217e47"/>
+					<reportElement x="1118" y="57" width="82" height="13" forecolor="#000099" uuid="b02da62e-a74b-4b36-bbae-ab2964217e47"/>
 					<box>
 						<pen lineWidth="1.0" lineStyle="Dotted"/>
 						<topPen lineStyle="Solid"/>
@@ -397,7 +383,7 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 					<text><![CDATA[Total Overdue]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="853" y="57" width="82" height="13" forecolor="#000099" uuid="a1f5716f-41ea-432e-97db-cfe38bd66b50"/>
+					<reportElement x="783" y="57" width="82" height="13" forecolor="#000099" uuid="a1f5716f-41ea-432e-97db-cfe38bd66b50"/>
 					<box>
 						<pen lineWidth="1.0" lineStyle="Dotted"/>
 						<topPen lineStyle="Solid"/>
@@ -408,7 +394,7 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font isBold="true"/>
 					</textElement>
-					<text><![CDATA[Int. Borr. Real]]></text>
+					<text><![CDATA[Int Real]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="225" y="57" width="73" height="13" forecolor="#000099" uuid="826dda82-ac09-4a14-9820-2e28caa5ce85"/>
@@ -425,14 +411,14 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 					<text><![CDATA[Amount]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="6" y="12" width="358" height="13" uuid="ffdd8175-d700-4b20-a9e4-0372ad4ab394"/>
+					<reportElement x="6" y="12" width="291" height="15" uuid="ffdd8175-d700-4b20-a9e4-0372ad4ab394"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{NAME}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="60" y="-1" width="124" height="13" uuid="76c0292f-fa11-4ee4-8c82-87794f324031"/>
+					<reportElement x="60" y="-1" width="164" height="13" uuid="76c0292f-fa11-4ee4-8c82-87794f324031"/>
 					<textFieldExpression><![CDATA[$F{LOAN_CODE}]]></textFieldExpression>
 				</textField>
 				<staticText>
@@ -443,114 +429,165 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 					<text><![CDATA[Loan A/C:]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="6" y="27" width="358" height="13" uuid="e5b21115-0614-417f-8213-ba94f7973efa"/>
+					<reportElement x="6" y="27" width="293" height="29" uuid="e5b21115-0614-417f-8213-ba94f7973efa"/>
 					<textElement verticalAlignment="Middle"/>
 					<textFieldExpression><![CDATA[$F{ADDRESS}]]></textFieldExpression>
 				</textField>
-				<staticText>
-					<reportElement x="6" y="41" width="54" height="13" uuid="9d5ce578-5bfb-4292-8b02-d70ba4f60b2d"/>
-					<textElement>
-						<font isBold="true"/>
-					</textElement>
-					<text><![CDATA[PRL. Date:]]></text>
-				</staticText>
-				<textField pattern="dd/MM/yy" isBlankWhenNull="true">
-					<reportElement x="60" y="42" width="124" height="13" uuid="917ee679-6c1c-4820-9cfd-3e2dfa869e98"/>
-					<textFieldExpression><![CDATA[$F{PRL_OR_LPR_DATE}]]></textFieldExpression>
+				<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
+					<reportElement x="424" y="30" width="86" height="13" uuid="78894ca6-49c3-4ff0-a145-0e5957aa632d"/>
+					<box rightPadding="5"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{INT_RATE}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="700" y="35" width="100" height="13" uuid="6567af4b-228f-4f1a-b44e-586232468134"/>
+					<box rightPadding="5"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[ $F{LOAN_PERIOD}]]></textFieldExpression>
 				</textField>
 				<textField pattern="dd/MM/yy" isBlankWhenNull="true">
-					<reportElement x="726" y="1" width="68" height="13" uuid="954d3833-71f0-463e-9863-9004e338361b"/>
+					<reportElement x="700" y="7" width="100" height="13" uuid="954d3833-71f0-463e-9863-9004e338361b"/>
 					<box rightPadding="5"/>
 					<textElement textAlignment="Right"/>
 					<textFieldExpression><![CDATA[$F{REPAY_DATE}]]></textFieldExpression>
 				</textField>
+				<textField pattern="###0.00;-###0.00">
+					<reportElement x="424" y="2" width="86" height="13" uuid="a59b578d-576e-46df-bb30-e631e905b53e"/>
+					<box rightPadding="5"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{SANC_AMT}]]></textFieldExpression>
+				</textField>
 				<staticText>
-					<reportElement x="606" y="0" width="109" height="13" uuid="0e0dde78-bc92-4faa-8d9c-b4a23da2227e"/>
+					<reportElement x="305" y="2" width="109" height="13" uuid="8ed66bc5-4741-4f47-9608-de49a4bef6c2"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Loan Sanctioned Tk.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="591" y="7" width="99" height="13" uuid="0e0dde78-bc92-4faa-8d9c-b4a23da2227e"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[Repayment Started]]></text>
 				</staticText>
+				<staticText>
+					<reportElement x="591" y="35" width="99" height="13" uuid="915b97ab-37a5-414a-8068-b95a021e740d"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Repayment Period]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="305" y="31" width="109" height="13" uuid="ca0b7ba5-0bc9-4b5b-9aa9-45d6c0be2a06"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Interest Rate]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="305" y="16" width="109" height="13" uuid="0b22e767-f1c7-4496-bcf3-5c2099301ebf"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total Disburse Tk.]]></text>
+				</staticText>
 				<textField pattern="dd/MM/yy" isBlankWhenNull="true">
-					<reportElement x="726" y="15" width="68" height="13" uuid="949302ad-cf5f-467d-be54-c19a90803d36"/>
+					<reportElement x="700" y="21" width="100" height="13" uuid="949302ad-cf5f-467d-be54-c19a90803d36"/>
 					<box rightPadding="5"/>
 					<textElement textAlignment="Right"/>
 					<textFieldExpression><![CDATA[$F{EXPIRY_DATE}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="606" y="14" width="109" height="13" uuid="0b57b50d-4c00-4234-9b16-c76d45544ec8"/>
+					<reportElement x="591" y="21" width="99" height="13" uuid="0b57b50d-4c00-4234-9b16-c76d45544ec8"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[Expiry Date]]></text>
 				</staticText>
 				<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
-					<reportElement x="726" y="43" width="68" height="14" uuid="4fc8295c-88ba-4a6c-a2a9-93ac123b9c71"/>
+					<reportElement x="424" y="16" width="86" height="13" uuid="287a2b9b-1972-47fe-8363-9b4a3fce1274"/>
 					<box rightPadding="5"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$F{INT_AMT_BY_GOV}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{DISBURSE_AMT}]]></textFieldExpression>
 				</textField>
-				<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
-					<reportElement x="726" y="29" width="68" height="13" uuid="109536c7-50eb-4396-9ccc-b1bbf5b8fc60"/>
-					<box rightPadding="5"/>
-					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$F{INT_RATE_BY_GOV}]]></textFieldExpression>
+				<textField isBlankWhenNull="true">
+					<reportElement x="896" y="13" width="101" height="13" uuid="428d3edd-0001-405d-8f45-c43ba957f297"/>
+					<box rightPadding="10"/>
+					<textFieldExpression><![CDATA[$F{LOAN_RESC}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="896" y="27" width="101" height="13" uuid="876dce05-761c-4d4f-a917-c874700cc54f"/>
+					<box rightPadding="10"/>
+					<textFieldExpression><![CDATA[$F{LN_CRITERIA}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="606" y="42" width="109" height="13" uuid="160ec081-23f8-451c-b22d-378ae7205471"/>
+					<reportElement x="821" y="13" width="67" height="13" uuid="ed254c99-d5a6-4b3b-9f81-6f27893982dd"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
-					<text><![CDATA[Int. Amt. (Govt. Sub.)]]></text>
+					<text><![CDATA[Resh. No]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="606" y="28" width="109" height="14" uuid="60df92d5-9502-4794-8cf3-68f3a68b51f8"/>
+					<reportElement x="821" y="27" width="67" height="13" uuid="8e6d1f55-bf45-464c-baa5-e5ad1a126959"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
-					<text><![CDATA[Int. Rate(Govt. Sub.)]]></text>
+					<text><![CDATA[Loan CRI.]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="896" y="41" width="101" height="15" uuid="999d22cc-fa6b-447b-9351-f39904f43870"/>
+					<box rightPadding="10"/>
+					<textFieldExpression><![CDATA[$F{GRACEPERIOD}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="821" y="41" width="67" height="15" uuid="35a2dc03-69c0-4f76-a4bd-71d0a48a485f"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Grace Period]]></text>
 				</staticText>
 				<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
-					<reportElement x="1186" y="15" width="83" height="13" uuid="f4ca7b58-efe1-4159-a3b2-e1dcce31300f"/>
+					<reportElement x="1118" y="15" width="83" height="13" uuid="f4ca7b58-efe1-4159-a3b2-e1dcce31300f"/>
 					<box rightPadding="3"/>
 					<textElement textAlignment="Right"/>
 					<textFieldExpression><![CDATA[$F{PRIN_INST}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
-					<reportElement x="1186" y="29" width="83" height="14" uuid="da3effc7-2e3a-4063-a7f8-3c75858f460e"/>
+					<reportElement x="1118" y="29" width="83" height="14" uuid="da3effc7-2e3a-4063-a7f8-3c75858f460e"/>
 					<box rightPadding="3"/>
 					<textElement textAlignment="Right"/>
 					<textFieldExpression><![CDATA[$F{INT_INST}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
-					<reportElement x="1186" y="44" width="83" height="13" uuid="0edaecdb-846d-4ebe-b936-0316b7b11d02"/>
+					<reportElement x="1118" y="44" width="83" height="13" uuid="0edaecdb-846d-4ebe-b936-0316b7b11d02"/>
 					<box rightPadding="3"/>
 					<textElement textAlignment="Right"/>
 					<textFieldExpression><![CDATA[$F{TOTAL_INST}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="1079" y="15" width="107" height="13" uuid="197ab44e-8a8b-4353-bb3e-a5c0e8e2e9ce"/>
+					<reportElement x="1011" y="15" width="107" height="13" uuid="197ab44e-8a8b-4353-bb3e-a5c0e8e2e9ce"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[Principal Installment]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="1079" y="44" width="107" height="14" uuid="e9bc6b3b-a8c0-4e25-92c5-4399796a7cc0"/>
+					<reportElement x="1011" y="44" width="107" height="14" uuid="e9bc6b3b-a8c0-4e25-92c5-4399796a7cc0"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[Total Installment Tk.]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="1079" y="29" width="107" height="14" uuid="a573427a-78cd-4d0a-b4a9-dbd8a1294cde"/>
+					<reportElement x="1011" y="29" width="107" height="14" uuid="a573427a-78cd-4d0a-b4a9-dbd8a1294cde"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[Interest Installment]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="1079" y="0" width="190" height="15" uuid="ad803dea-c285-4d05-9ef5-7364ac783cfd"/>
+					<reportElement x="1011" y="0" width="190" height="15" uuid="ad803dea-c285-4d05-9ef5-7364ac783cfd"/>
 					<box>
 						<pen lineStyle="Double"/>
 						<topPen lineStyle="Double"/>
@@ -563,165 +600,83 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 					</textElement>
 					<text><![CDATA[Monthy Installment]]></text>
 				</staticText>
-				<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
-					<reportElement x="503" y="22" width="86" height="13" uuid="dd753cd0-fc11-4046-926b-0c8fab5722e2"/>
-					<box rightPadding="5"/>
-					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$F{DISBURSE_AMT}]]></textFieldExpression>
-				</textField>
 				<staticText>
-					<reportElement x="493" y="22" width="10" height="13" uuid="a376b689-668d-41c6-a39a-7e80b465fbb6"/>
-					<textElement textAlignment="Center">
-						<font isBold="true"/>
-					</textElement>
-					<text><![CDATA[:]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="384" y="22" width="109" height="13" uuid="0824439c-3795-4632-967d-2021751bc33f"/>
-					<textElement>
-						<font isBold="true"/>
-					</textElement>
-					<text><![CDATA[Total Disburse Tk.]]></text>
-				</staticText>
-				<textField pattern="###0.00;-###0.00">
-					<reportElement x="503" y="8" width="86" height="13" uuid="e536d209-e191-4d77-b4b6-044914b731dd"/>
-					<box rightPadding="5"/>
-					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$F{SANC_AMT}]]></textFieldExpression>
-				</textField>
-				<staticText>
-					<reportElement x="384" y="37" width="109" height="13" uuid="bdaf3146-e57c-4c95-9561-6b56f39cf8b5"/>
-					<textElement>
-						<font isBold="true"/>
-					</textElement>
-					<text><![CDATA[Interest Rate]]></text>
-				</staticText>
-				<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
-					<reportElement x="503" y="36" width="86" height="13" uuid="a06412a6-41bc-4992-a8b6-a986f87ef3ac"/>
-					<box rightPadding="5"/>
-					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$F{INT_RATE}]]></textFieldExpression>
-				</textField>
-				<staticText>
-					<reportElement x="493" y="8" width="10" height="14" uuid="c02f8b8f-7b22-4486-9e02-13d0d6f2e9a7"/>
-					<textElement textAlignment="Center">
-						<font isBold="true"/>
-					</textElement>
-					<text><![CDATA[:]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="384" y="8" width="109" height="13" uuid="8c43addb-ef8a-407a-994f-ec2e1d294206"/>
-					<textElement>
-						<font isBold="true"/>
-					</textElement>
-					<text><![CDATA[Loan Sanctioned Tk.]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="493" y="36" width="10" height="14" uuid="c6b44880-cebf-4c56-902f-a2b7936f1a91"/>
-					<textElement textAlignment="Center">
-						<font isBold="true"/>
-					</textElement>
-					<text><![CDATA[:]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="927" y="14" width="10" height="14" uuid="10b9bdae-ae3c-4477-b056-22da8f8f3111"/>
-					<textElement textAlignment="Center">
-						<font isBold="true"/>
-					</textElement>
-					<text><![CDATA[:]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="860" y="41" width="67" height="15" uuid="977579de-9664-40db-a4d5-9d7ede066491"/>
-					<textElement>
-						<font isBold="true"/>
-					</textElement>
-					<text><![CDATA[Grace Period]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="927" y="41" width="10" height="14" uuid="92deabe3-0f11-49a9-87dd-1ed0f74afdb8"/>
-					<textElement textAlignment="Center">
-						<font isBold="true"/>
-					</textElement>
-					<text><![CDATA[:]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="860" y="13" width="67" height="13" uuid="d961898c-0b59-4c5a-971d-fc4a4d12a971"/>
-					<textElement>
-						<font isBold="true"/>
-					</textElement>
-					<text><![CDATA[Resh. No]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="860" y="27" width="67" height="13" uuid="700cc3b6-fabd-49a1-a2c4-757bf69553bd"/>
-					<textElement>
-						<font isBold="true"/>
-					</textElement>
-					<text><![CDATA[Loan CRI.]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="927" y="27" width="10" height="13" uuid="c57d3074-db21-47ca-8532-9d459df27a1f"/>
-					<textElement textAlignment="Center">
-						<font isBold="true"/>
-					</textElement>
-					<text><![CDATA[:]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="860" y="1" width="67" height="14" uuid="e92e1579-a143-40e0-a0c7-c5a9d8ea2af5"/>
+					<reportElement x="821" y="1" width="67" height="14" uuid="c6928647-0bed-4174-8841-b4e1a4d3afa4"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[Leagl Act.]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement x="936" y="1" width="101" height="15" uuid="cc34dd09-10a9-4201-8e13-7b11f03c521a"/>
+					<reportElement x="896" y="0" width="101" height="15" uuid="21bb38b7-413c-47ab-84aa-39fdcffd7f16"/>
 					<box rightPadding="10"/>
 					<textFieldExpression><![CDATA[$F{LEGAL_ACT}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="927" y="0" width="10" height="14" uuid="123ffa00-808e-4819-af90-42c3441ad7db"/>
-					<textElement textAlignment="Center">
-						<font isBold="true"/>
-					</textElement>
-					<text><![CDATA[:]]></text>
-				</staticText>
-				<textField isBlankWhenNull="true">
-					<reportElement x="936" y="14" width="101" height="13" uuid="dc2146ea-b91d-41ee-9b20-a9f28fd4eebe"/>
-					<box rightPadding="10"/>
-					<textFieldExpression><![CDATA[$F{LOAN_RESC}]]></textFieldExpression>
-				</textField>
-				<textField isBlankWhenNull="true">
-					<reportElement x="936" y="28" width="101" height="13" uuid="ed59fbbc-d834-4e60-b50d-a85937248f1d"/>
-					<box rightPadding="10"/>
-					<textFieldExpression><![CDATA[$F{LN_CRITERIA}]]></textFieldExpression>
-				</textField>
-				<textField isBlankWhenNull="true">
-					<reportElement x="936" y="41" width="101" height="15" uuid="bd6245a6-cdb7-4b2e-a685-ff1ccbad74f4"/>
-					<box rightPadding="10"/>
-					<textFieldExpression><![CDATA[$F{GRACEPERIOD}]]></textFieldExpression>
-				</textField>
-				<staticText>
-					<reportElement x="716" y="42" width="10" height="14" uuid="ddab1414-7a86-453a-89a0-0e146d0d4a2b"/>
+					<reportElement x="888" y="0" width="10" height="14" uuid="6d5cd083-7d63-4721-9b5a-96fe3d8d56fd"/>
 					<textElement textAlignment="Center">
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[:]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="716" y="15" width="10" height="14" uuid="ddacbecb-cc07-4f4e-9f55-e1b596a18e89"/>
+					<reportElement x="888" y="14" width="10" height="14" uuid="e4c86f23-e6ea-472f-ab67-4f9af11f9a7d"/>
 					<textElement textAlignment="Center">
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[:]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="716" y="28" width="10" height="13" uuid="6deac96d-bb58-40fa-9156-9befca9a0878"/>
+					<reportElement x="888" y="27" width="10" height="13" uuid="0464a3b9-3934-4d67-99ae-62f00ffa0ef5"/>
 					<textElement textAlignment="Center">
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[:]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="716" y="1" width="10" height="14" uuid="8355ece0-a620-46ce-9fce-a05e1eba5cf8"/>
+					<reportElement x="888" y="41" width="10" height="14" uuid="0db12cb1-2db6-4186-b8f4-636272c1a3f1"/>
+					<textElement textAlignment="Center">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="690" y="7" width="10" height="14" uuid="467a8d89-7f0d-4960-b003-2bb4277fc6cd"/>
+					<textElement textAlignment="Center">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="690" y="35" width="10" height="14" uuid="095fe32f-d413-40f4-a98b-fe7130cb72af"/>
+					<textElement textAlignment="Center">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="690" y="21" width="10" height="13" uuid="95e3e6ee-fbcf-4156-950f-a23c0fe4b46d"/>
+					<textElement textAlignment="Center">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="414" y="16" width="10" height="13" uuid="5e6b258f-5753-4178-871d-3394d01a9be6"/>
+					<textElement textAlignment="Center">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="414" y="2" width="10" height="14" uuid="582dc77d-c2cf-45bb-b603-0e9020c5b3f8"/>
+					<textElement textAlignment="Center">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="414" y="30" width="10" height="14" uuid="84a7936d-ad04-412e-be20-13c845f8e65c"/>
 					<textElement textAlignment="Center">
 						<font isBold="true"/>
 					</textElement>
@@ -748,15 +703,7 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 					<textFieldExpression><![CDATA[$V{Principal_real}]]></textFieldExpression>
 				</textField>
 				<textField pattern="#,##0.00;-#,##0.00">
-					<reportElement x="783" y="0" width="70" height="13" forecolor="#000099" uuid="61fed284-59fc-4300-a0bc-32bfa8857066"/>
-					<box rightPadding="6"/>
-					<textElement textAlignment="Right">
-						<font isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{gov_int_real}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00;-#,##0.00">
-					<reportElement x="853" y="0" width="82" height="13" forecolor="#000099" uuid="18f279b3-6419-48fc-bef7-83b195d41e34"/>
+					<reportElement x="783" y="0" width="82" height="13" forecolor="#000099" uuid="18f279b3-6419-48fc-bef7-83b195d41e34"/>
 					<box rightPadding="6"/>
 					<textElement textAlignment="Right">
 						<font isBold="true"/>
@@ -792,24 +739,24 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 				<textFieldExpression><![CDATA[$P{BRANCH_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="6" y="26" width="1262" height="15" forecolor="#000099" uuid="e91612f1-b521-4bd7-bcdc-b691c77aef81"/>
+				<reportElement x="6" y="26" width="1204" height="15" forecolor="#000099" uuid="e91612f1-b521-4bd7-bcdc-b691c77aef81"/>
 				<box>
 					<bottomPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Center">
 					<font isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Govt. Loan A/C Statement (Provisional) Financial Period : "+$P{P_FinYear}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[" Loan A/C Statement (Provisional) Financial Period : "+$P{P_FinYear}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="1205" y="13" width="64" height="13" uuid="55cc4a1b-bd88-4117-b54f-a602bfb8b6b0"/>
+				<reportElement x="1146" y="13" width="64" height="13" uuid="55cc4a1b-bd88-4117-b54f-a602bfb8b6b0"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1105" y="13" width="100" height="13" uuid="c0a792a1-192d-46e6-a274-57d3a70787ef"/>
+				<reportElement x="1046" y="13" width="100" height="13" uuid="c0a792a1-192d-46e6-a274-57d3a70787ef"/>
 				<box rightPadding="2"/>
 				<textElement textAlignment="Right">
 					<font isBold="true"/>
@@ -953,7 +900,7 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 				<textFieldExpression><![CDATA[$F{INT_DRCR}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00;-#,##0.00" isBlankWhenNull="true">
-				<reportElement x="853" y="0" width="82" height="13" uuid="444eaad7-e347-4cf0-9d92-4c2dc214d83b"/>
+				<reportElement x="783" y="0" width="82" height="13" uuid="444eaad7-e347-4cf0-9d92-4c2dc214d83b"/>
 				<box rightPadding="5">
 					<pen lineWidth="1.0" lineStyle="Dotted"/>
 					<topPen lineStyle="Solid"/>
@@ -962,10 +909,10 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 					<rightPen lineWidth="0.0" lineStyle="Dotted"/>
 				</box>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[$F{CLIENT_POREAL_AMT}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{INT_REAL}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00;-#,##0.00" isBlankWhenNull="true">
-				<reportElement x="935" y="0" width="103" height="13" uuid="b4013d67-97e6-4d6a-a16b-eec55444bbc1"/>
+				<reportElement x="865" y="0" width="103" height="13" uuid="b4013d67-97e6-4d6a-a16b-eec55444bbc1"/>
 				<box rightPadding="5">
 					<pen lineWidth="1.0" lineStyle="Dotted"/>
 					<topPen lineStyle="Solid"/>
@@ -977,7 +924,7 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 				<textFieldExpression><![CDATA[$F{ADJ_INT_BAL}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00;-#,##0.00" isBlankWhenNull="true">
-				<reportElement x="1038" y="0" width="78" height="13" uuid="21964ee2-3d52-4ce2-9501-fce4206511cc"/>
+				<reportElement x="968" y="0" width="78" height="13" uuid="21964ee2-3d52-4ce2-9501-fce4206511cc"/>
 				<box rightPadding="5">
 					<pen lineWidth="1.0" lineStyle="Dotted"/>
 					<topPen lineStyle="Solid"/>
@@ -989,7 +936,7 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 				<textFieldExpression><![CDATA[$F{PRIN_INST_OV}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00;-#,##0.00" isBlankWhenNull="true">
-				<reportElement x="1116" y="0" width="72" height="13" uuid="93a85795-396e-4d19-8d0f-a538d0cf016e"/>
+				<reportElement x="1046" y="0" width="72" height="13" uuid="93a85795-396e-4d19-8d0f-a538d0cf016e"/>
 				<box rightPadding="5">
 					<pen lineWidth="1.0" lineStyle="Dotted"/>
 					<topPen lineStyle="Solid"/>
@@ -1001,7 +948,7 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 				<textFieldExpression><![CDATA[$F{INT_INST_OV}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
-				<reportElement x="1188" y="0" width="82" height="13" uuid="b513adc0-af08-437d-b9f9-7814172cc62a"/>
+				<reportElement x="1118" y="0" width="82" height="13" uuid="b513adc0-af08-437d-b9f9-7814172cc62a"/>
 				<box rightPadding="5">
 					<pen lineWidth="1.0" lineStyle="Dotted"/>
 					<topPen lineStyle="Solid"/>
@@ -1011,18 +958,6 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 				</box>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA[$F{TOTAL}]]></textFieldExpression>
-			</textField>
-			<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
-				<reportElement x="783" y="0" width="70" height="13" uuid="a44eaf4a-f39c-4e23-bb7a-f1ecfe8a5b31"/>
-				<box rightPadding="5">
-					<pen lineWidth="1.0" lineStyle="Dotted"/>
-					<topPen lineStyle="Solid"/>
-					<leftPen lineWidth="0.0" lineStyle="Dotted"/>
-					<bottomPen lineStyle="Solid"/>
-					<rightPen lineWidth="0.0" lineStyle="Dotted"/>
-				</box>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[$F{GOV_POREAL_AMT}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
 				<reportElement x="224" y="0" width="73" height="13" uuid="f61c8081-e622-4bb8-95c2-ec487de24507"/>
@@ -1143,13 +1078,13 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 				<textFieldExpression><![CDATA[$F{CUR_INT_CR}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00;-###0.00">
-				<reportElement x="1020" y="29" width="100" height="15" uuid="304d32cb-8661-44b9-bc2f-1cad6f8b02ab"/>
+				<reportElement x="1100" y="30" width="100" height="15" uuid="304d32cb-8661-44b9-bc2f-1cad6f8b02ab"/>
 				<box rightPadding="6"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom"/>
 				<textFieldExpression><![CDATA[$F{CUM_PRIN_BAL}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00;-###0.00">
-				<reportElement x="1020" y="45" width="100" height="13" uuid="252e3250-af97-4bbe-a905-ad7bdfff5f94"/>
+				<reportElement x="1100" y="46" width="100" height="13" uuid="252e3250-af97-4bbe-a905-ad7bdfff5f94"/>
 				<box rightPadding="6"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom"/>
 				<textFieldExpression><![CDATA[$F{CUM_INT_BAL}]]></textFieldExpression>
@@ -1260,31 +1195,18 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 				<text><![CDATA[(d) Interest Cr.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="954" y="29" width="66" height="15" uuid="77f94d28-0c74-4a65-91e1-e09f7abbb9d2"/>
+				<reportElement x="1034" y="30" width="66" height="15" uuid="77f94d28-0c74-4a65-91e1-e09f7abbb9d2"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[(a) Principal]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="954" y="44" width="66" height="14" uuid="f3e1f80c-a835-4cd4-87b1-a5dcb3bd0596"/>
+				<reportElement x="1034" y="45" width="66" height="14" uuid="f3e1f80c-a835-4cd4-87b1-a5dcb3bd0596"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[(b) Interest]]></text>
-			</staticText>
-			<textField pattern="###0.00;-###0.00">
-				<reportElement x="1204" y="30" width="64" height="14" uuid="4fef84f9-9a80-4a6b-a7d6-3baaddb2f01f"/>
-				<box rightPadding="6"/>
-				<textElement textAlignment="Right" verticalAlignment="Bottom"/>
-				<textFieldExpression><![CDATA[$V{gov_int_real}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="1148" y="29" width="56" height="15" uuid="4480555c-3f28-495c-8ec6-aa82a5593e11"/>
-				<textElement>
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[(a) Interest]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="5" y="15" width="178" height="13" uuid="d8fbc22e-385e-444b-a17c-363e8288c149"/>
@@ -1327,7 +1249,7 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 				<text><![CDATA[4. Miscellaneous Adjusted]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="954" y="16" width="166" height="13" uuid="b65cd1de-f88c-4cdd-aee5-4d9c93afe9b8"/>
+				<reportElement x="1034" y="17" width="166" height="13" uuid="b65cd1de-f88c-4cdd-aee5-4d9c93afe9b8"/>
 				<box>
 					<bottomPen lineWidth="1.0"/>
 				</box>
@@ -1337,17 +1259,7 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 				<text><![CDATA[5. After Adjustment of all deposits]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1148" y="16" width="120" height="13" uuid="416cdb5f-c18d-4b2e-a13d-6b671ed7c28c"/>
-				<box>
-					<bottomPen lineWidth="1.0"/>
-				</box>
-				<textElement textAlignment="Center">
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[6. Govt. Subsidary]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="5" y="0" width="1263" height="13" uuid="364d23ca-b02f-49b1-9459-774d33f8b325"/>
+				<reportElement x="5" y="0" width="1195" height="13" uuid="364d23ca-b02f-49b1-9459-774d33f8b325"/>
 				<box>
 					<pen lineWidth="1.0" lineStyle="Solid"/>
 					<topPen lineWidth="1.0" lineStyle="Solid"/>
@@ -1393,7 +1305,7 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 				<textFieldExpression><![CDATA[$V{MiscTotal}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00;-###0.00">
-				<reportElement x="1020" y="84" width="100" height="13" uuid="1162d882-34e1-43a3-ae42-881d301aec71"/>
+				<reportElement x="1100" y="85" width="100" height="13" uuid="1162d882-34e1-43a3-ae42-881d301aec71"/>
 				<box rightPadding="6"/>
 				<textElement textAlignment="Right">
 					<font isBold="true"/>
@@ -1401,16 +1313,8 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 				<textFieldExpression><![CDATA[$V{v_balance_total}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="4" y="83" width="1264" height="1" uuid="ecb3a97d-0acc-4a90-9f4b-b7efc8a5c562"/>
+				<reportElement x="4" y="83" width="1196" height="1" uuid="ecb3a97d-0acc-4a90-9f4b-b7efc8a5c562"/>
 			</line>
-			<textField pattern="###0.00;-###0.00">
-				<reportElement x="1204" y="84" width="64" height="14" uuid="53dbd252-eb53-4b3d-bb30-8de3419f7b73"/>
-				<box rightPadding="6"/>
-				<textElement textAlignment="Right" verticalAlignment="Bottom">
-					<font isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{gov_int_real}]]></textFieldExpression>
-			</textField>
 			<staticText>
 				<reportElement x="4" y="84" width="79" height="13" uuid="bee12f45-13e1-427b-a3e9-64f3e21b4c99"/>
 				<textElement textAlignment="Center">
@@ -1419,7 +1323,7 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 				<text><![CDATA[Total:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="4" y="98" width="1263" height="13" uuid="10312d25-0077-4cc3-ad7c-e5296b27c376"/>
+				<reportElement x="4" y="98" width="1196" height="13" uuid="10312d25-0077-4cc3-ad7c-e5296b27c376"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Dotted"/>
 					<bottomPen lineWidth="1.0" lineStyle="Dotted"/>
@@ -1430,14 +1334,14 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 				<text><![CDATA[AP= Advance Payment, IN=Incentive Credit,L=Law Charge, R=Refund,A=Advertisement Charge, V=Voucher, C(n)=Cheque Issued(1 to 99) ,CR=Credit,DR=Debit ,IC=Incentive Voucher,M=Repayment]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="4" y="111" width="1263" height="13" uuid="30eed66f-f205-49ad-b2ab-1634ff4d6bc2"/>
+				<reportElement x="4" y="111" width="1196" height="13" uuid="30eed66f-f205-49ad-b2ab-1634ff4d6bc2"/>
 				<textElement textAlignment="Center">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[*** Unless discrepancy is intimated within a month, the statement will be treated as correct ***]]></text>
 			</staticText>
 			<textField pattern="dd/MM/yy" isBlankWhenNull="true">
-				<reportElement x="1064" y="62" width="56" height="14" uuid="2d6e237b-38ef-4530-ba82-0531126739e9"/>
+				<reportElement x="1132" y="66" width="68" height="14" uuid="d145cd5f-0f8f-4d77-8cab-21d0ae87459d"/>
 				<box leftPadding="2">
 					<pen lineWidth="1.0" lineStyle="Dotted"/>
 					<topPen lineWidth="0.0" lineStyle="Solid"/>
@@ -1451,7 +1355,7 @@ from table(pkg_report_lms.fn_get_personal_ledger_stmt($P{p_BranchCode},$P{p_Loan
 				<textFieldExpression><![CDATA[$F{TRANS_DATE}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="954" y="62" width="110" height="14" uuid="9d2d6781-77f1-4be2-b3be-7024ff742569"/>
+				<reportElement x="1022" y="66" width="110" height="14" uuid="8ff51f77-695b-442e-862a-afcdc4e9ae77"/>
 				<textElement textAlignment="Right">
 					<font isBold="true"/>
 				</textElement>

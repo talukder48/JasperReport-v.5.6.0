@@ -216,7 +216,7 @@ order by t.start_date]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement>
-					<font fontName="SolaimanLipi" size="12" pdfFontName="SolaimanLipi" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<font fontName="SansSerif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{SUBJECT_DESC}]]></textFieldExpression>
 			</textField>
@@ -230,7 +230,7 @@ order by t.start_date]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement>
-					<font fontName="SolaimanLipi" size="12" pdfFontName="SolaimanLipi" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<font fontName="SansSerif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{INST_NAME}]]></textFieldExpression>
 			</textField>
@@ -255,7 +255,7 @@ order by t.start_date]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement>
-					<font fontName="SolaimanLipi"/>
+					<font fontName="SansSerif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{END_DATE}]]></textFieldExpression>
 			</textField>
@@ -269,7 +269,7 @@ order by t.start_date]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement>
-					<font fontName="SolaimanLipi" pdfFontName="SolaimanLipi" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<font fontName="SansSerif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{CATAGORY}]]></textFieldExpression>
 			</textField>

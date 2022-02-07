@@ -411,14 +411,14 @@ from table(pkg_report_lms.fn_get_personal_stmt($P{p_BranchCode},$P{p_LoanAC},$P{
 					<text><![CDATA[Amount]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="6" y="12" width="232" height="15" uuid="ffdd8175-d700-4b20-a9e4-0372ad4ab394"/>
+					<reportElement x="6" y="12" width="305" height="15" uuid="ffdd8175-d700-4b20-a9e4-0372ad4ab394"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{NAME}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="60" y="-1" width="124" height="13" uuid="76c0292f-fa11-4ee4-8c82-87794f324031"/>
+					<reportElement x="60" y="-1" width="251" height="13" uuid="76c0292f-fa11-4ee4-8c82-87794f324031"/>
 					<textFieldExpression><![CDATA[$F{LOAN_CODE}]]></textFieldExpression>
 				</textField>
 				<staticText>
@@ -429,119 +429,119 @@ from table(pkg_report_lms.fn_get_personal_stmt($P{p_BranchCode},$P{p_LoanAC},$P{
 					<text><![CDATA[Loan A/C:]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="6" y="27" width="233" height="29" uuid="e5b21115-0614-417f-8213-ba94f7973efa"/>
+					<reportElement x="6" y="27" width="305" height="29" uuid="e5b21115-0614-417f-8213-ba94f7973efa"/>
 					<textElement verticalAlignment="Middle"/>
 					<textFieldExpression><![CDATA[$F{ADDRESS}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
-					<reportElement x="348" y="29" width="100" height="13" uuid="78894ca6-49c3-4ff0-a145-0e5957aa632d"/>
+					<reportElement x="444" y="34" width="100" height="13" uuid="78894ca6-49c3-4ff0-a145-0e5957aa632d"/>
 					<box rightPadding="5"/>
 					<textElement textAlignment="Right"/>
 					<textFieldExpression><![CDATA[$F{INT_RATE}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement x="580" y="28" width="100" height="13" uuid="6567af4b-228f-4f1a-b44e-586232468134"/>
+					<reportElement x="675" y="34" width="87" height="13" uuid="6567af4b-228f-4f1a-b44e-586232468134"/>
 					<box rightPadding="5"/>
 					<textElement textAlignment="Right"/>
 					<textFieldExpression><![CDATA[$F{LOAN_PERIOD}]]></textFieldExpression>
 				</textField>
 				<textField pattern="dd/MM/yy" isBlankWhenNull="true">
-					<reportElement x="580" y="0" width="100" height="13" uuid="954d3833-71f0-463e-9863-9004e338361b"/>
+					<reportElement x="675" y="6" width="87" height="13" uuid="954d3833-71f0-463e-9863-9004e338361b"/>
 					<box rightPadding="5"/>
 					<textElement textAlignment="Right"/>
 					<textFieldExpression><![CDATA[$F{REPAY_DATE}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00;-###0.00">
-					<reportElement x="348" y="1" width="100" height="13" uuid="a59b578d-576e-46df-bb30-e631e905b53e"/>
+					<reportElement x="444" y="6" width="100" height="13" uuid="a59b578d-576e-46df-bb30-e631e905b53e"/>
 					<box rightPadding="5"/>
 					<textElement textAlignment="Right"/>
 					<textFieldExpression><![CDATA[$F{SANC_AMT}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="239" y="1" width="109" height="13" uuid="8ed66bc5-4741-4f47-9608-de49a4bef6c2"/>
+					<reportElement x="335" y="6" width="109" height="13" uuid="8ed66bc5-4741-4f47-9608-de49a4bef6c2"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[Loan Sanctioned Tk.]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="471" y="0" width="109" height="13" uuid="0e0dde78-bc92-4faa-8d9c-b4a23da2227e"/>
+					<reportElement x="566" y="6" width="109" height="13" uuid="0e0dde78-bc92-4faa-8d9c-b4a23da2227e"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[Repayment Started]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="471" y="28" width="109" height="13" uuid="915b97ab-37a5-414a-8068-b95a021e740d"/>
+					<reportElement x="566" y="34" width="109" height="13" uuid="915b97ab-37a5-414a-8068-b95a021e740d"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[Repayment Period]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="239" y="29" width="109" height="13" uuid="ca0b7ba5-0bc9-4b5b-9aa9-45d6c0be2a06"/>
+					<reportElement x="335" y="34" width="109" height="13" uuid="ca0b7ba5-0bc9-4b5b-9aa9-45d6c0be2a06"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[Interest Rate]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="239" y="15" width="109" height="13" uuid="0b22e767-f1c7-4496-bcf3-5c2099301ebf"/>
+					<reportElement x="335" y="20" width="109" height="13" uuid="0b22e767-f1c7-4496-bcf3-5c2099301ebf"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[Total Disburse Tk.]]></text>
 				</staticText>
 				<textField pattern="dd/MM/yy" isBlankWhenNull="true">
-					<reportElement x="580" y="14" width="100" height="13" uuid="949302ad-cf5f-467d-be54-c19a90803d36"/>
+					<reportElement x="675" y="20" width="87" height="13" uuid="949302ad-cf5f-467d-be54-c19a90803d36"/>
 					<box rightPadding="5"/>
 					<textElement textAlignment="Right"/>
 					<textFieldExpression><![CDATA[$F{EXPIRY_DATE}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="471" y="14" width="109" height="13" uuid="0b57b50d-4c00-4234-9b16-c76d45544ec8"/>
+					<reportElement x="566" y="20" width="109" height="13" uuid="0b57b50d-4c00-4234-9b16-c76d45544ec8"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[Expiry Date]]></text>
 				</staticText>
 				<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
-					<reportElement x="348" y="15" width="100" height="13" uuid="287a2b9b-1972-47fe-8363-9b4a3fce1274"/>
+					<reportElement x="444" y="20" width="100" height="13" uuid="287a2b9b-1972-47fe-8363-9b4a3fce1274"/>
 					<box rightPadding="5"/>
 					<textElement textAlignment="Right"/>
 					<textFieldExpression><![CDATA[$F{DISBURSE_AMT}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement x="800" y="13" width="126" height="13" uuid="428d3edd-0001-405d-8f45-c43ba957f297"/>
+					<reportElement x="880" y="13" width="103" height="13" uuid="428d3edd-0001-405d-8f45-c43ba957f297"/>
 					<box rightPadding="10"/>
 					<textFieldExpression><![CDATA[$F{LOAN_RESC}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement x="800" y="27" width="126" height="13" uuid="876dce05-761c-4d4f-a917-c874700cc54f"/>
+					<reportElement x="880" y="27" width="103" height="13" uuid="876dce05-761c-4d4f-a917-c874700cc54f"/>
 					<box rightPadding="10"/>
 					<textFieldExpression><![CDATA[$F{LN_CRITERIA}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="717" y="13" width="83" height="13" uuid="ed254c99-d5a6-4b3b-9f81-6f27893982dd"/>
+					<reportElement x="782" y="13" width="83" height="13" uuid="ed254c99-d5a6-4b3b-9f81-6f27893982dd"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[Resh. No]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="717" y="27" width="83" height="13" uuid="8e6d1f55-bf45-464c-baa5-e5ad1a126959"/>
+					<reportElement x="782" y="27" width="83" height="13" uuid="8e6d1f55-bf45-464c-baa5-e5ad1a126959"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[Loan CRI.]]></text>
 				</staticText>
 				<textField isBlankWhenNull="true">
-					<reportElement x="800" y="41" width="126" height="15" uuid="999d22cc-fa6b-447b-9351-f39904f43870"/>
+					<reportElement x="880" y="41" width="103" height="15" uuid="999d22cc-fa6b-447b-9351-f39904f43870"/>
 					<box rightPadding="10"/>
 					<textFieldExpression><![CDATA[$F{GRACEPERIOD}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="717" y="41" width="83" height="15" uuid="35a2dc03-69c0-4f76-a4bd-71d0a48a485f"/>
+					<reportElement x="782" y="41" width="83" height="15" uuid="35a2dc03-69c0-4f76-a4bd-71d0a48a485f"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
@@ -600,18 +600,18 @@ from table(pkg_report_lms.fn_get_personal_stmt($P{p_BranchCode},$P{p_LoanAC},$P{
 					</textElement>
 					<text><![CDATA[Monthy Installment]]></text>
 				</staticText>
-				<textField isBlankWhenNull="true">
-					<reportElement x="800" y="-1" width="126" height="15" uuid="21bb38b7-413c-47ab-84aa-39fdcffd7f16"/>
-					<box rightPadding="10"/>
-					<textFieldExpression><![CDATA[$F{LEGAL_ACT}]]></textFieldExpression>
-				</textField>
 				<staticText>
-					<reportElement x="717" y="1" width="83" height="15" uuid="c6928647-0bed-4174-8841-b4e1a4d3afa4"/>
+					<reportElement x="782" y="1" width="83" height="15" uuid="c6928647-0bed-4174-8841-b4e1a4d3afa4"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[Leagl Act.]]></text>
 				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="880" y="-1" width="103" height="14" uuid="21bb38b7-413c-47ab-84aa-39fdcffd7f16"/>
+					<box rightPadding="10"/>
+					<textFieldExpression><![CDATA[$F{LEGAL_ACT}]]></textFieldExpression>
+				</textField>
 			</band>
 		</groupHeader>
 		<groupFooter>
@@ -1270,6 +1270,27 @@ from table(pkg_report_lms.fn_get_personal_stmt($P{p_BranchCode},$P{p_LoanAC},$P{
 				</textElement>
 				<text><![CDATA[*** Unless discrepancy is intimated within a month, the statement will be treated as correct ***]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="1028" y="64" width="110" height="14" uuid="8736800d-047c-4c95-9c3c-2c630ade156d"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Closing Balance As on]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yy" isBlankWhenNull="true">
+				<reportElement x="1138" y="64" width="68" height="14" uuid="7a557f38-2bbd-46d4-8ba5-5167cc48dbeb"/>
+				<box leftPadding="2">
+					<pen lineWidth="1.0" lineStyle="Dotted"/>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Dotted"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Dotted"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TRANS_DATE}]]></textFieldExpression>
+			</textField>
 		</band>
 	</summary>
 </jasperReport>
